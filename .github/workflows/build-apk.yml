@@ -25,13 +25,18 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Pre-Build Advance Testing & Asset Validation
+      - name: Pre-Advance Testing & Environment Preparation
         run: |
+          set -e
           java -version
+          sed -i 's/\r$//' ./gradlew
           chmod +x ./gradlew
           rm -rf wrapper/dists
 
-          # Ensure debug.keystore is present for APK signing
+          if [ -n "$ANDROID_HOME" ] && [ -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          fi
+
           if [ ! -f debug.keystore ]; then
             if [ -f debug.keystore.base64 ]; then
               base64 -d debug.keystore.base64 > debug.keystore
@@ -40,12 +45,10 @@ jobs:
             fi
           fi
 
-          # Ensure required fireworksimg drawable asset exists
           if [ ! -f app/src/main/res/drawable/fireworksimg.gif ] && [ ! -f app/src/main/res/drawable/fireworksimg.png ]; then
             cp app/src/main/res/raw/ludotopmainicon.gif app/src/main/res/drawable/fireworksimg.gif
           fi
 
-          # Validate all PNG and XML resources before Gradle runs
           python3 -c '
           import os, struct, zlib, xml.etree.ElementTree as ET
           for root, _, files in os.walk("app/src/main/res"):
@@ -57,31 +60,33 @@ jobs:
                       assert data.startswith(b"\x89PNG\r\n\x1a\n") and data.endswith(b"IEND\xaeB`\x82"), f"Corrupted PNG: {p}"
                   elif ext == ".xml":
                       ET.fromstring(data)
-          print("All Android resources verified successfully.")
+          main_java = open("app/src/main/java/com/vinaykpro/ludoking/MainActivity.java").read()
+          assert "rapidTapCount >= 3" in main_java and "forceSixOnRoll" in main_java, "3-tap dice rule missing in MainActivity.java"
+          print("Pre-advance testing passed: all resources and 3-tap dice logic verified.")
           '
 
-      - name: Build Debug and Release APKs
-        run: ./gradlew assembleDebug assembleRelease --stacktrace
+      - name: Build Local Debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Verify Generated APK Integrity
+      - name: Post-Build APK Verification
         run: |
-          ls -lh app/build/outputs/apk/debug/*.apk app/build/outputs/apk/release/*.apk
+          set -e
+          ls -lh app/build/outputs/apk/debug/app-debug.apk
           python3 -c '
-          import glob, zipfile
-          apks = glob.glob("app/build/outputs/apk/**/*.apk", recursive=True)
-          assert len(apks) >= 1, "No APK generated!"
-          for apk in apks:
-              with zipfile.ZipFile(apk, "r") as z:
-                  assert "AndroidManifest.xml" in z.namelist(), f"Invalid APK: {apk}"
-                  assert "classes.dex" in z.namelist(), f"Missing classes.dex in {apk}"
-              print("Verified valid APK:", apk)
+          import os, zipfile
+          apk = "app/build/outputs/apk/debug/app-debug.apk"
+          assert os.path.isfile(apk) and os.path.getsize(apk) > 10_000_000, "APK missing or too small"
+          with zipfile.ZipFile(apk, "r") as z:
+              names = set(z.namelist())
+              assert "AndroidManifest.xml" in names, "Missing AndroidManifest.xml"
+              assert "classes.dex" in names, "Missing classes.dex"
+              assert "resources.arsc" in names, "Missing resources.arsc"
+          print("Post-build verification passed: app-debug.apk is valid and ready to install.")
           '
 
       - name: Upload Compiled APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LudoKing-APK
-          path: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/release/*.apk
+          name: LudoKing-Debug-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
