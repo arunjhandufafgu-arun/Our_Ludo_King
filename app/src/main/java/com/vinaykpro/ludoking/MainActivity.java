@@ -1162,7 +1162,7 @@ public class MainActivity extends AppCompatActivity {
                         rapidTapCount = 1;
                     }
                     lastRapidTapTime = now;
-                    if (rapidTapCount >= 10) {
+                    if (rapidTapCount >= 3) {
                         forceSixOnRoll = true;
                     }
 
@@ -1190,7 +1190,7 @@ public class MainActivity extends AppCompatActivity {
                         rapidTapCount = 1;
                     }
                     lastRapidTapTime = now;
-                    if (rapidTapCount >= 10) {
+                    if (rapidTapCount >= 3) {
                         forceSixOnRoll = true;
                         if (!isRolling && (isDiceClickable || isDiceMovableExtraChance)) {
                             hintArrow.setVisibility(GONE);
@@ -1326,7 +1326,7 @@ public class MainActivity extends AppCompatActivity {
 
                 int ch = (int) Math.ceil(Math.random()*6);
                 if (!currentPlayer.isBot) {
-                    if (forceSixOnRoll || rapidTapCount >= 10) {
+                    if (forceSixOnRoll || rapidTapCount >= 3) {
                         ch = 6;
                     }
                     forceSixOnRoll = false;

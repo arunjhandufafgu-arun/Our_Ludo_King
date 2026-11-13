@@ -28,6 +28,7 @@ jobs:
       - name: Prepare Drawable Assets and Gradlew Permissions
         run: |
           chmod +x ./gradlew
+          rm -rf wrapper/dists
           if [ ! -f app/src/main/res/drawable/fireworksimg.gif ] && [ ! -f app/src/main/res/drawable/fireworksimg.png ]; then
             if command -v ffmpeg >/dev/null 2>&1 && [ -f app/src/main/res/raw/fireworks.mp4 ]; then
               ffmpeg -y -i app/src/main/res/raw/fireworks.mp4 -vf "fps=10,scale=320:-1:flags=lanczos" app/src/main/res/drawable/fireworksimg.gif || cp app/src/main/res/raw/ludotopmainicon.gif app/src/main/res/drawable/fireworksimg.gif
@@ -37,7 +38,7 @@ jobs:
           fi
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug -Pandroid.nonFinalResIds=false --stacktrace
 
       - name: Upload Compiled APK Artifact
         uses: actions/upload-artifact@v4
