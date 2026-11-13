@@ -1156,13 +1156,9 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     long now = System.currentTimeMillis();
-                    if (now - lastRapidTapTime <= 500) {
-                        rapidTapCount++;
-                    } else {
-                        rapidTapCount = 1;
-                    }
+                    rapidTapCount = updateRapidTapCount(rapidTapCount, lastRapidTapTime, now);
                     lastRapidTapTime = now;
-                    if (rapidTapCount >= 3) {
+                    if (shouldForceSix(rapidTapCount)) {
                         forceSixOnRoll = true;
                     }
 
@@ -1184,13 +1180,9 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     long now = System.currentTimeMillis();
-                    if (now - lastRapidTapTime <= 500) {
-                        rapidTapCount++;
-                    } else {
-                        rapidTapCount = 1;
-                    }
+                    rapidTapCount = updateRapidTapCount(rapidTapCount, lastRapidTapTime, now);
                     lastRapidTapTime = now;
-                    if (rapidTapCount >= 3) {
+                    if (shouldForceSix(rapidTapCount)) {
                         forceSixOnRoll = true;
                         if (!isRolling && (isDiceClickable || isDiceMovableExtraChance)) {
                             hintArrow.setVisibility(GONE);
@@ -1324,11 +1316,8 @@ public class MainActivity extends AppCompatActivity {
                 if(currentPlayerIndex==0) { x=players.size()-1; } else { x=currentPlayerIndex-1; }
                 Player currentPlayer = players.get(x);
 
-                int ch = (int) Math.ceil(Math.random()*6);
+                int ch = resolveDiceValue((int) Math.ceil(Math.random()*6), currentPlayer.isBot, forceSixOnRoll, rapidTapCount);
                 if (!currentPlayer.isBot) {
-                    if (forceSixOnRoll || rapidTapCount >= 3) {
-                        ch = 6;
-                    }
                     forceSixOnRoll = false;
                     rapidTapCount = 0;
                 }
@@ -3052,6 +3041,28 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return wBlocks52;
         }
+    }
+
+    public static final long RAPID_TAP_INTERVAL_MS = 500L;
+    public static final int RAPID_TAP_THRESHOLD = 3;
+
+    public static int updateRapidTapCount(int currentTapCount, long lastTapTimeMs, long currentTapTimeMs) {
+        if (lastTapTimeMs > 0L && (currentTapTimeMs - lastTapTimeMs) <= RAPID_TAP_INTERVAL_MS) {
+            return currentTapCount + 1;
+        }
+        return 1;
+    }
+
+    public static boolean shouldForceSix(int rapidTapCount) {
+        return rapidTapCount >= RAPID_TAP_THRESHOLD;
+    }
+
+    public static int resolveDiceValue(int randomRoll, boolean isBot, boolean forceSixOnRoll, int rapidTapCount) {
+        int normalizedRoll = (randomRoll >= 1 && randomRoll <= 6) ? randomRoll : 1;
+        if (!isBot && (forceSixOnRoll || shouldForceSix(rapidTapCount))) {
+            return 6;
+        }
+        return normalizedRoll;
     }
 
     @Override

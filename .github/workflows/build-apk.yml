@@ -22,9 +22,6 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Pre-Advance Testing & Environment Preparation
         run: |
           set -e
@@ -33,9 +30,20 @@ jobs:
           chmod +x ./gradlew
           rm -rf wrapper/dists
 
-          if [ -n "$ANDROID_HOME" ] && [ -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" ]; then
-            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          SDK_DIR="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          if [ ! -d "$SDK_DIR" ] && [ -d "/opt/android/sdk" ]; then
+            SDK_DIR="/opt/android/sdk"
           fi
+          export ANDROID_HOME="$SDK_DIR"
+          export ANDROID_SDK_ROOT="$SDK_DIR"
+          if [ -n "$GITHUB_ENV" ]; then
+            echo "ANDROID_HOME=$SDK_DIR" >> "$GITHUB_ENV"
+            echo "ANDROID_SDK_ROOT=$SDK_DIR" >> "$GITHUB_ENV"
+          fi
+
+          mkdir -p "$SDK_DIR/licenses"
+          printf "\n8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n" > "$SDK_DIR/licenses/android-sdk-license"
+          printf "\n84831b9409646a918e30573bab4c9c91346d8abd\n" > "$SDK_DIR/licenses/android-sdk-preview-license"
 
           if [ ! -f debug.keystore ]; then
             if [ -f debug.keystore.base64 ]; then
@@ -61,12 +69,13 @@ jobs:
                   elif ext == ".xml":
                       ET.fromstring(data)
           main_java = open("app/src/main/java/com/vinaykpro/ludoking/MainActivity.java").read()
-          assert "rapidTapCount >= 3" in main_java and "forceSixOnRoll" in main_java, "3-tap dice rule missing in MainActivity.java"
-          print("Pre-advance testing passed: all resources and 3-tap dice logic verified.")
+          assert "shouldForceSix" in main_java and "forceSixOnRoll" in main_java, "3-tap dice rule missing in MainActivity.java"
+          assert os.path.isfile("app/src/test/java/com/vinaykpro/ludoking/DiceLogicTest.java"), "DiceLogicTest.java missing"
+          print("Pre-advance testing passed: all resources, unit tests, and 3-tap dice logic verified.")
           '
 
-      - name: Build Local Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Run Unit Tests & Build Local Debug APK
+        run: ./gradlew testDebugUnitTest assembleDebug --no-daemon --stacktrace
 
       - name: Post-Build APK Verification
         run: |
