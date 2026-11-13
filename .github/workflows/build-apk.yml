@@ -15,20 +15,23 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '17'
           cache: 'gradle'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Prepare Assets, Keystore, and Gradlew
+      - name: Pre-Build Advance Testing & Asset Validation
         run: |
+          java -version
           chmod +x ./gradlew
           rm -rf wrapper/dists
+
+          # Ensure debug.keystore is present for APK signing
           if [ ! -f debug.keystore ]; then
             if [ -f debug.keystore.base64 ]; then
               base64 -d debug.keystore.base64 > debug.keystore
@@ -36,12 +39,43 @@ jobs:
               keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
             fi
           fi
+
+          # Ensure required fireworksimg drawable asset exists
           if [ ! -f app/src/main/res/drawable/fireworksimg.gif ] && [ ! -f app/src/main/res/drawable/fireworksimg.png ]; then
             cp app/src/main/res/raw/ludotopmainicon.gif app/src/main/res/drawable/fireworksimg.gif
           fi
 
+          # Validate all PNG and XML resources before Gradle runs
+          python3 -c '
+          import os, struct, zlib, xml.etree.ElementTree as ET
+          for root, _, files in os.walk("app/src/main/res"):
+              for f in sorted(files):
+                  p = os.path.join(root, f)
+                  data = open(p, "rb").read()
+                  ext = os.path.splitext(f)[1].lower()
+                  if ext == ".png":
+                      assert data.startswith(b"\x89PNG\r\n\x1a\n") and data.endswith(b"IEND\xaeB`\x82"), f"Corrupted PNG: {p}"
+                  elif ext == ".xml":
+                      ET.fromstring(data)
+          print("All Android resources verified successfully.")
+          '
+
       - name: Build Debug and Release APKs
         run: ./gradlew assembleDebug assembleRelease --stacktrace
+
+      - name: Verify Generated APK Integrity
+        run: |
+          ls -lh app/build/outputs/apk/debug/*.apk app/build/outputs/apk/release/*.apk
+          python3 -c '
+          import glob, zipfile
+          apks = glob.glob("app/build/outputs/apk/**/*.apk", recursive=True)
+          assert len(apks) >= 1, "No APK generated!"
+          for apk in apks:
+              with zipfile.ZipFile(apk, "r") as z:
+                  assert "AndroidManifest.xml" in z.namelist(), f"Invalid APK: {apk}"
+                  assert "classes.dex" in z.namelist(), f"Missing classes.dex in {apk}"
+              print("Verified valid APK:", apk)
+          '
 
       - name: Upload Compiled APK Artifact
         uses: actions/upload-artifact@v4
