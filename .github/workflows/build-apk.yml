@@ -69,13 +69,15 @@ jobs:
                       assert data.startswith(b"\x89PNG\r\n\x1a\n") and data.endswith(b"IEND\xaeB`\x82"), f"Corrupted PNG: {p}"
                   elif ext == ".xml":
                       ET.fromstring(data)
+          manifest_xml = open("app/src/main/AndroidManifest.xml").read()
+          assert manifest_xml.count("android.intent.category.LAUNCHER") == 1, "AndroidManifest.xml must have exactly 1 LAUNCHER activity to prevent duplicate app icons"
           app_gradle = open("app/build.gradle").read()
           assert "JavaVersion.VERSION_17" in app_gradle, "Java 17 compatibility missing in app/build.gradle"
           assert "abortOnError = false" in app_gradle, "Lint abortOnError = false missing in app/build.gradle"
           main_java = open("app/src/main/java/com/vinaykpro/ludoking/MainActivity.java").read()
-          assert "shouldForceSix" in main_java and "forceSixOnRoll" in main_java, "3-tap dice rule missing in MainActivity.java"
+          assert "tryLockWinnerColor" in main_java and "selectSmartBoardDiceRoll" in main_java, "Winner lock logic missing in MainActivity.java"
           assert os.path.isfile("app/src/test/java/com/vinaykpro/ludoking/DiceLogicTest.java"), "DiceLogicTest.java missing"
-          print("Pre-advance testing passed: Java 17 config, lint config, resources, unit tests, and 3-tap dice logic verified.")
+          print("Pre-advance testing passed: single launcher icon, Java 17 config, lint config, resources, unit tests, and 3-tap winner lock logic verified.")
           '
 
       - name: Run Unit Tests & Build Local Debug APK

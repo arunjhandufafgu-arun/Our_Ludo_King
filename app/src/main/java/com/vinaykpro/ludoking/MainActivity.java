@@ -1117,10 +1117,64 @@ public class MainActivity extends AppCompatActivity {
         String mainColor;
 
         int player = 0,numberOfPlayers;
+        String lockedWinnerColor = null;
+        String lastTappedColor = null;
+        String activeRollColor = null;
         int rapidTapCount = 0;
         long lastRapidTapTime = 0L;
-        boolean forceSixOnRoll = false;
+        int consecutiveSixCount = 0;
+        String lastRolledColor = null;
+        int favoredTurnsWithoutOpen = 0;
         Runnable rollFinishRunnable;
+
+        String getActiveOrInitialColor() {
+            if (isRolling && activeRollColor != null && !activeRollColor.isEmpty()) {
+                return activeRollColor;
+            }
+            if (currentPlayerColor != null && !currentPlayerColor.isEmpty()) {
+                return currentPlayerColor;
+            }
+            if (players != null && !players.isEmpty()) {
+                return players.get(0).getColor();
+            }
+            return mainColor;
+        }
+
+        String getColorForCornerPosition(int cornerPosition) {
+            if (players != null) {
+                for (Player p : players) {
+                    if (p.getPosition() == cornerPosition) {
+                        return p.getColor();
+                    }
+                }
+            }
+            return getActiveOrInitialColor();
+        }
+
+        boolean isBotForColor(String color) {
+            if (color == null || players == null) {
+                return false;
+            }
+            for (Player p : players) {
+                if (color.equals(p.getColor())) {
+                    return p.isBot;
+                }
+            }
+            return false;
+        }
+
+        void handleSilentWinnerLockTap(String tapColor, long nowMs) {
+            if (lockedWinnerColor != null && !lockedWinnerColor.isEmpty()) {
+                return;
+            }
+            if (tapColor == null || tapColor.isEmpty() || isBotForColor(tapColor)) {
+                return;
+            }
+            rapidTapCount = updateColorRapidTapCount(rapidTapCount, lastTappedColor, tapColor, lastRapidTapTime, nowMs);
+            lastTappedColor = tapColor;
+            lastRapidTapTime = nowMs;
+            lockedWinnerColor = tryLockWinnerColor(lockedWinnerColor, tapColor, rapidTapCount, false);
+        }
 
         Dice(ImageView diceImgView,int nop,String color)
         {
@@ -1156,55 +1210,45 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     long now = System.currentTimeMillis();
-                    rapidTapCount = updateRapidTapCount(rapidTapCount, lastRapidTapTime, now);
-                    lastRapidTapTime = now;
-                    if (shouldForceSix(rapidTapCount)) {
-                        forceSixOnRoll = true;
-                    }
+                    String tapColor = getActiveOrInitialColor();
+                    handleSilentWinnerLockTap(tapColor, now);
 
                     if(!isRolling && (isDiceClickable || isDiceMovableExtraChance)) {
                         hintArrow.setVisibility(GONE);
                         roll();
-                    } else if (isRolling) {
-                        diceAnimationDrawable.stop();
-                        diceAnimationDrawable.start();
-                        if (rollFinishRunnable != null) {
-                            diceHandler.removeCallbacks(rollFinishRunnable);
-                            diceHandler.postDelayed(rollFinishRunnable, 350);
-                        }
                     }
                 }
             });
 
-            View.OnClickListener dicePadTapListener = new View.OnClickListener() {
+            View.OnClickListener cornerTapListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     long now = System.currentTimeMillis();
-                    rapidTapCount = updateRapidTapCount(rapidTapCount, lastRapidTapTime, now);
-                    lastRapidTapTime = now;
-                    if (shouldForceSix(rapidTapCount)) {
-                        forceSixOnRoll = true;
-                        if (!isRolling && (isDiceClickable || isDiceMovableExtraChance)) {
-                            hintArrow.setVisibility(GONE);
-                            roll();
-                        }
-                    } else if (isRolling && rollFinishRunnable != null) {
-                        diceAnimationDrawable.stop();
-                        diceAnimationDrawable.start();
-                        diceHandler.removeCallbacks(rollFinishRunnable);
-                        diceHandler.postDelayed(rollFinishRunnable, 350);
+                    int id = view.getId();
+                    String tapColor;
+                    if (id == R.id.tleftdicebg || id == R.id.tleftpieceimage) {
+                        tapColor = getColorForCornerPosition(1);
+                    } else if (id == R.id.trightdicebg || id == R.id.trightpieceimage) {
+                        tapColor = getColorForCornerPosition(2);
+                    } else if (id == R.id.bleftdicebg || id == R.id.bleftpieceimage) {
+                        tapColor = getColorForCornerPosition(3);
+                    } else if (id == R.id.brightdicebg || id == R.id.brightpieceimage) {
+                        tapColor = getColorForCornerPosition(4);
+                    } else {
+                        tapColor = getActiveOrInitialColor();
                     }
+                    handleSilentWinnerLockTap(tapColor, now);
                 }
             };
-            tLeftLayout.setOnClickListener(dicePadTapListener);
-            tRightLayout.setOnClickListener(dicePadTapListener);
-            bLeftLayout.setOnClickListener(dicePadTapListener);
-            bRightLayout.setOnClickListener(dicePadTapListener);
-            tLeftImgColor.setOnClickListener(dicePadTapListener);
-            tRightImgColor.setOnClickListener(dicePadTapListener);
-            bLeftImgColor.setOnClickListener(dicePadTapListener);
-            bRightImgColor.setOnClickListener(dicePadTapListener);
-            hintArrow.setOnClickListener(dicePadTapListener);
+            tLeftLayout.setOnClickListener(cornerTapListener);
+            tRightLayout.setOnClickListener(cornerTapListener);
+            bLeftLayout.setOnClickListener(cornerTapListener);
+            bRightLayout.setOnClickListener(cornerTapListener);
+            tLeftImgColor.setOnClickListener(cornerTapListener);
+            tRightImgColor.setOnClickListener(cornerTapListener);
+            bLeftImgColor.setOnClickListener(cornerTapListener);
+            bRightImgColor.setOnClickListener(cornerTapListener);
+            hintArrow.setOnClickListener(cornerTapListener);
 
             if(nop==2) {
                 menuremoveplayersbtn.setVisibility(GONE);
@@ -1301,6 +1345,7 @@ public class MainActivity extends AppCompatActivity {
             isRolling = true;
             isDiceClickable = false;
             isDiceMovableExtraChance = false;
+            activeRollColor = currentPlayerColor;
             if(isSoundOn) {
                 if (diceRollSound.isPlaying()) {
                     diceRollSound.pause();
@@ -1316,10 +1361,16 @@ public class MainActivity extends AppCompatActivity {
                 if(currentPlayerIndex==0) { x=players.size()-1; } else { x=currentPlayerIndex-1; }
                 Player currentPlayer = players.get(x);
 
-                int ch = resolveDiceValue((int) Math.ceil(Math.random()*6), currentPlayer.isBot, forceSixOnRoll, rapidTapCount);
-                if (!currentPlayer.isBot) {
-                    forceSixOnRoll = false;
-                    rapidTapCount = 0;
+                int rawRoll = (int) Math.ceil(Math.random()*6);
+                if (!currentPlayer.getColor().equals(lastRolledColor)) {
+                    consecutiveSixCount = 0;
+                    lastRolledColor = currentPlayer.getColor();
+                }
+                int ch = selectSmartBoardDiceRoll(rawRoll, currentPlayer);
+                if (ch == 6) {
+                    consecutiveSixCount++;
+                } else {
+                    consecutiveSixCount = 0;
                 }
                 String number = editText.getText().toString();
                 try {
@@ -1452,7 +1503,6 @@ public class MainActivity extends AppCompatActivity {
                         String colour = players.get(y).getColor();
                         if (!colour.equals(currentPlayerColor)) {
                             List<Piece> enemypieces = getPiecesByColor(colour);
-                            Toast.makeText(MainActivity.this, colour, Toast.LENGTH_SHORT).show();
                             for (Piece tp : enemypieces) {
                                 if (tp.isAlive) {
                                     for (Piece mp : movablePieces) {
@@ -1462,9 +1512,7 @@ public class MainActivity extends AppCompatActivity {
                                             if (safeSpots.contains(mp.currBlock)) {
                                                 safetypoints = 15;
                                             }
-                                            /*if (mp.currBlock == tp.currBlock && safeSpots.contains(mp.currBlock)) {
-                                                if(bestMovablePiece.numberOfSteps<=mp.numberOfSteps) { safetypoints = 15; } else { safetypoints = 9; }
-                                            } else*/ if (mp.currBlock >= 0 && mp.currBlock <= 10 && (tp.currBlock >= 51 - (10 - mp.currBlock))) {
+                                            if (mp.currBlock >= 0 && mp.currBlock <= 10 && (tp.currBlock >= 51 - (10 - mp.currBlock))) {
                                                 if (tp.currBlock >= 51 - (10 - mp.currBlock)) {
                                                     safetypoints -= 10 - mp.currBlock;
                                                 }
@@ -1508,18 +1556,29 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     // killing the best piece max priority
+                    boolean botIsFavored = isFavoredColor(currentPlayerColor, lockedWinnerColor, gametype);
                     y = x;
                     for (int i = 0; i < players.size(); i++) {
                         String color = players.get(y).getColor();
                         if (!color.equals(currentPlayerColor)) {
-                            List<Piece> enemypieces = getPiecesByColor(color);
-                            for (Piece tp : enemypieces) {
-                                if (tp.isAlive && !safeSpots.contains(tp.currBlock)) {
-                                    for (Piece mp : movablePieces) {
-                                        if (tp.currBlock == (mp.currBlock+ch)) {
-                                            if (tp.numberOfSteps > bestKillingTargetSteps) {
-                                                bestKillingTargetSteps = tp.numberOfSteps;
-                                                bestMovablePiece = mp;  // should not be commented at deployment stage
+                            boolean targetIsFavored = isFavoredColor(color, lockedWinnerColor, gametype);
+                            if (lockedWinnerColor != null && !botIsFavored && targetIsFavored) {
+                                // Opponent bot does not prioritize capturing locked winner's pieces
+                            } else if (gametype == 2 && isSameTeamColor(currentPlayerColor, color)) {
+                                // Teammate does not capture teammate
+                            } else {
+                                List<Piece> enemypieces = getPiecesByColor(color);
+                                for (Piece tp : enemypieces) {
+                                    if (tp.isAlive && !safeSpots.contains(tp.currBlock)) {
+                                        for (Piece mp : movablePieces) {
+                                            if (mp.isAlive && mp.numberOfSteps + ch <= 50) {
+                                                int nextBlock = (mp.startPosition + mp.numberOfSteps + ch) % 52;
+                                                if (tp.currBlock == nextBlock) {
+                                                    if (tp.numberOfSteps > bestKillingTargetSteps) {
+                                                        bestKillingTargetSteps = tp.numberOfSteps;
+                                                        bestMovablePiece = mp;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -1532,7 +1591,6 @@ public class MainActivity extends AppCompatActivity {
                             y++;
                         }
                     }
-                    //Toast.makeText(MainActivity.this, bestMovablePiece.colour+","+bestMovablePiece.startPosition, Toast.LENGTH_SHORT).show();
                     bestMovablePiece.onClickForBot();
                 } else if (chances == 0) {
                         diceHandler.postDelayed(() -> {
@@ -3047,22 +3105,441 @@ public class MainActivity extends AppCompatActivity {
     public static final int RAPID_TAP_THRESHOLD = 3;
 
     public static int updateRapidTapCount(int currentTapCount, long lastTapTimeMs, long currentTapTimeMs) {
-        if (lastTapTimeMs > 0L && (currentTapTimeMs - lastTapTimeMs) <= RAPID_TAP_INTERVAL_MS) {
+        if (lastTapTimeMs > 0L && (currentTapTimeMs - lastTapTimeMs) >= 0L && (currentTapTimeMs - lastTapTimeMs) <= RAPID_TAP_INTERVAL_MS) {
             return currentTapCount + 1;
         }
         return 1;
     }
 
+    public static int updateColorRapidTapCount(int currentTapCount, String lastTappedColor, String currentTappedColor, long lastTapTimeMs, long currentTapTimeMs) {
+        if (currentTappedColor == null || currentTappedColor.isEmpty()) {
+            return 0;
+        }
+        if (currentTappedColor.equals(lastTappedColor)) {
+            return updateRapidTapCount(currentTapCount, lastTapTimeMs, currentTapTimeMs);
+        }
+        return 1;
+    }
+
     public static boolean shouldForceSix(int rapidTapCount) {
-        return rapidTapCount >= RAPID_TAP_THRESHOLD;
+        // 3-tap forced 6 is disabled; 3 rapid taps now silently lock the winner color once per match
+        return false;
     }
 
     public static int resolveDiceValue(int randomRoll, boolean isBot, boolean forceSixOnRoll, int rapidTapCount) {
-        int normalizedRoll = (randomRoll >= 1 && randomRoll <= 6) ? randomRoll : 1;
-        if (!isBot && (forceSixOnRoll || shouldForceSix(rapidTapCount))) {
-            return 6;
+        return (randomRoll >= 1 && randomRoll <= 6) ? randomRoll : 1;
+    }
+
+    public static String tryLockWinnerColor(String currentLockedColor, String tappedColor, int rapidTapCount, boolean isBot) {
+        if (currentLockedColor != null && !currentLockedColor.isEmpty()) {
+            return currentLockedColor;
         }
-        return normalizedRoll;
+        if (!isBot && tappedColor != null && !tappedColor.isEmpty() && rapidTapCount >= RAPID_TAP_THRESHOLD) {
+            return tappedColor;
+        }
+        return null;
+    }
+
+    public static boolean isSameTeamColor(String colorA, String colorB) {
+        if (colorA == null || colorB == null) {
+            return false;
+        }
+        if (colorA.equals(colorB)) {
+            return true;
+        }
+        boolean aRedYellow = colorA.equals("red") || colorA.equals("yellow");
+        boolean bRedYellow = colorB.equals("red") || colorB.equals("yellow");
+        if (aRedYellow && bRedYellow) {
+            return true;
+        }
+        boolean aBlueGreen = colorA.equals("blue") || colorA.equals("green");
+        boolean bBlueGreen = colorB.equals("blue") || colorB.equals("green");
+        return aBlueGreen && bBlueGreen;
+    }
+
+    public static boolean isFavoredColor(String candidateColor, String lockedWinnerColor, int gameType) {
+        if (candidateColor == null || lockedWinnerColor == null || lockedWinnerColor.isEmpty()) {
+            return false;
+        }
+        if (candidateColor.equals(lockedWinnerColor)) {
+            return true;
+        }
+        if (gameType == 2) {
+            return isSameTeamColor(candidateColor, lockedWinnerColor);
+        }
+        return false;
+    }
+
+    public static int selectSmartFairRoll(
+            int randomRoll,
+            boolean isFavoredPlayer,
+            int[] playerPieceSteps,
+            int completedPieces,
+            int favoredCompletedPieces,
+            int gameType,
+            int consecutiveSixes
+    ) {
+        int normalized = (randomRoll >= 1 && randomRoll <= 6) ? randomRoll : 1;
+        int pantaValue = (gameType == 3) ? 1 : 4;
+
+        if (isFavoredPlayer) {
+            boolean anyAlive = false;
+            boolean anyInBase = false;
+            int homeFinishRoll = -1;
+            for (int steps : playerPieceSteps) {
+                if (steps == -1) {
+                    anyInBase = true;
+                } else if (steps >= 0 && steps < 56) {
+                    anyAlive = true;
+                    int needed = 56 - steps;
+                    if (needed >= 1 && needed <= 6 && (needed != 6 || consecutiveSixes < 2)) {
+                        homeFinishRoll = needed;
+                    }
+                }
+            }
+            if (homeFinishRoll != -1) {
+                return homeFinishRoll;
+            }
+            if (!anyAlive && anyInBase && consecutiveSixes < 2) {
+                return 6;
+            }
+            if (normalized == 6 && consecutiveSixes >= 2) {
+                return 4;
+            }
+            return normalized;
+        } else {
+            // Opponent player: prevent completing the final winning piece before the favored side wins
+            boolean mustBlockCompletion = (gameType == 3)
+                    || (completedPieces >= pantaValue - 1)
+                    || (completedPieces >= favoredCompletedPieces);
+
+            int bestRoll = normalized;
+            int bestScore = -100000;
+            for (int cand = 1; cand <= 6; cand++) {
+                int score = (cand == normalized) ? 50 : 10;
+                if (cand == 6 && consecutiveSixes >= 1) {
+                    score -= 5000;
+                }
+                for (int steps : playerPieceSteps) {
+                    if (steps >= 0 && steps < 56) {
+                        int next = steps + cand;
+                        if (next == 56 && mustBlockCompletion) {
+                            score -= 50000;
+                        } else if (next >= 48 && mustBlockCompletion) {
+                            score -= 1000 + next * 10;
+                        }
+                    }
+                }
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestRoll = cand;
+                }
+            }
+            return bestRoll;
+        }
+    }
+
+    private boolean isThreatenedByEnemyAtBlock(int block, String pieceColor) {
+        if (block < 0 || block > 51 || safeSpots.contains(block)) {
+            return false;
+        }
+        for (Player pl : players) {
+            String enemyColor = pl.getColor();
+            if (enemyColor.equals(pieceColor) || (gametype == 2 && isSameTeamColor(enemyColor, pieceColor))) {
+                continue;
+            }
+            for (Piece ep : getPiecesByColor(enemyColor)) {
+                if (ep.isAlive && !ep.hasCompletedItsPurpose && ep.numberOfSteps <= 50) {
+                    int dist = (block - ep.currBlock + 52) % 52;
+                    if (dist >= 1 && dist <= 6 && ep.numberOfSteps + dist <= 50) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasUnprotectedEnemyAtBlock(int block, String moverColor, boolean onlyNonFavoredTargets) {
+        if (block < 0 || block > 51 || safeSpots.contains(block)) {
+            return false;
+        }
+        for (Player pl : players) {
+            String otherColor = pl.getColor();
+            if (otherColor.equals(moverColor) || (gametype == 2 && isSameTeamColor(otherColor, moverColor))) {
+                continue;
+            }
+            if (onlyNonFavoredTargets && d != null && isFavoredColor(otherColor, d.lockedWinnerColor, gametype)) {
+                continue;
+            }
+            for (Piece ep : getPiecesByColor(otherColor)) {
+                if (ep.isAlive && !ep.hasCompletedItsPurpose && ep.currBlock == block) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasUnprotectedFavoredPieceAtBlock(int block) {
+        if (d == null || d.lockedWinnerColor == null || block < 0 || block > 51 || safeSpots.contains(block)) {
+            return false;
+        }
+        String[] allColors = {"red", "green", "blue", "yellow"};
+        for (String col : allColors) {
+            if (isFavoredColor(col, d.lockedWinnerColor, gametype)) {
+                List<Piece> fPieces = getPiecesByColor(col);
+                if (fPieces != null) {
+                    for (Piece fp : fPieces) {
+                        if (fp.isAlive && !fp.hasCompletedItsPurpose && fp.currBlock == block) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private int selectSmartBoardDiceRoll(int randomRoll, Player currentPlayer) {
+        int normalizedRoll = (randomRoll >= 1 && randomRoll <= 6) ? randomRoll : 1;
+        if (d == null || d.lockedWinnerColor == null || d.lockedWinnerColor.isEmpty() || currentWinnerPosition > 1) {
+            return normalizedRoll;
+        }
+
+        String currentColor = currentPlayer.getColor();
+        boolean isFavored = isFavoredColor(currentColor, d.lockedWinnerColor, gametype);
+        int pantaValue = (gametype == 3) ? 1 : 4;
+
+        int favoredCompleted = 0;
+        int favoredProgress = 0;
+        int maxOpponentCompleted = 0;
+        int maxOpponentProgress = 0;
+        boolean anyOpponentAlive = false;
+
+        for (Player pl : players) {
+            String col = pl.getColor();
+            List<Piece> colPieces = getPiecesByColor(col);
+            int comp = 0;
+            int prog = 0;
+            for (Piece p : colPieces) {
+                if (p.hasCompletedItsPurpose || p.numberOfSteps >= 56) {
+                    comp++;
+                    prog += 65;
+                } else if (p.isAlive) {
+                    prog += p.numberOfSteps + 8;
+                    if (!isFavoredColor(col, d.lockedWinnerColor, gametype)) {
+                        anyOpponentAlive = true;
+                    }
+                }
+            }
+            if (isFavoredColor(col, d.lockedWinnerColor, gametype)) {
+                if (comp > favoredCompleted) {
+                    favoredCompleted = comp;
+                }
+                if (prog > favoredProgress) {
+                    favoredProgress = prog;
+                }
+            } else {
+                if (comp > maxOpponentCompleted) {
+                    maxOpponentCompleted = comp;
+                }
+                if (prog > maxOpponentProgress) {
+                    maxOpponentProgress = prog;
+                }
+            }
+        }
+
+        List<Piece> myPieces = getPiecesByColor(currentColor);
+
+        if (isFavored) {
+            int aliveCount = 0;
+            int baseCount = 0;
+            for (Piece p : myPieces) {
+                if (!p.hasCompletedItsPurpose && !p.isThisPlayerWon) {
+                    if (p.isAlive) {
+                        aliveCount++;
+                    } else {
+                        baseCount++;
+                    }
+                }
+            }
+
+            if (aliveCount == 0 && baseCount > 0) {
+                if (d.consecutiveSixCount < 2 && (normalizedRoll == 6 || d.favoredTurnsWithoutOpen >= 1 || anyOpponentAlive || maxOpponentProgress > 0)) {
+                    d.favoredTurnsWithoutOpen = 0;
+                    return 6;
+                }
+                d.favoredTurnsWithoutOpen++;
+                return normalizedRoll;
+            }
+            d.favoredTurnsWithoutOpen = 0;
+
+            int[] candScores = new int[7];
+            int bestCand = normalizedRoll;
+            int bestScore = -100000;
+
+            for (int cand = 1; cand <= 6; cand++) {
+                if (cand == 6 && d.consecutiveSixCount >= 2) {
+                    candScores[cand] = -50000;
+                    continue;
+                }
+
+                int maxPieceScore = -10000;
+                int movableCount = 0;
+
+                for (Piece p : myPieces) {
+                    boolean canMove = (cand == 6)
+                            ? (!p.isAlive || (p.numberOfSteps + 6 < 57 && !p.hasCompletedItsPurpose && !p.isThisPlayerWon))
+                            : (p.isAlive && (p.numberOfSteps + cand < 57) && !p.hasCompletedItsPurpose && !p.isThisPlayerWon);
+                    if (!canMove) {
+                        continue;
+                    }
+                    movableCount++;
+                    int pScore = 0;
+
+                    if (!p.isAlive && cand == 6) {
+                        pScore = (aliveCount <= 1) ? 85 : 55;
+                    } else if (p.isAlive) {
+                        int nextSteps = p.numberOfSteps + cand;
+                        boolean currentlyInDanger = isThreatenedByEnemyAtBlock(p.currBlock, currentColor);
+
+                        if (nextSteps == 56) {
+                            pScore = 280;
+                        } else if (p.numberOfSteps <= 50 && nextSteps > 50) {
+                            pScore = 165 + (currentlyInDanger ? 60 : 0);
+                        } else if (p.numberOfSteps > 50) {
+                            pScore = 90 + cand * 4;
+                        } else {
+                            int targetBlock = (p.startPosition + nextSteps) % 52;
+                            boolean killsEnemy = hasUnprotectedEnemyAtBlock(targetBlock, currentColor, true);
+                            boolean landsSafe = safeSpots.contains(targetBlock);
+                            boolean landsInDanger = isThreatenedByEnemyAtBlock(targetBlock, currentColor);
+
+                            if (killsEnemy) {
+                                pScore = 230 + (landsInDanger ? -30 : 20);
+                            } else if (currentlyInDanger && (landsSafe || !landsInDanger)) {
+                                pScore = 155 + (landsSafe ? 30 : 0);
+                            } else if (landsSafe) {
+                                pScore = 115 + (p.numberOfSteps / 2);
+                            } else if (landsInDanger) {
+                                pScore = -80 + cand;
+                            } else {
+                                pScore = 35 + cand * 4 + (p.numberOfSteps / 2);
+                            }
+                        }
+                    }
+
+                    if (pScore > maxPieceScore) {
+                        maxPieceScore = pScore;
+                    }
+                }
+
+                if (movableCount == 0) {
+                    if (baseCount > 0 && cand == 6 && d.consecutiveSixCount < 2) {
+                        maxPieceScore = 160;
+                    } else {
+                        maxPieceScore = -5000;
+                    }
+                }
+
+                if (cand == 6 && d.consecutiveSixCount == 1) {
+                    maxPieceScore -= 110;
+                }
+
+                candScores[cand] = maxPieceScore;
+                if (maxPieceScore > bestScore) {
+                    bestScore = maxPieceScore;
+                    bestCand = cand;
+                }
+            }
+
+            boolean urgentSituation = (maxOpponentProgress >= favoredProgress - 15)
+                    || (maxOpponentCompleted >= favoredCompleted && maxOpponentCompleted > 0);
+            if (!urgentSituation && candScores[normalizedRoll] >= 35 && bestScore < 150) {
+                return normalizedRoll;
+            }
+            return bestCand;
+        } else {
+            // Opponent turn: play naturally while preventing favored-piece captures and opponent match completion
+            int myCompleted = 0;
+            int myProgress = 0;
+            for (Piece p : myPieces) {
+                if (p.hasCompletedItsPurpose || p.numberOfSteps >= 56) {
+                    myCompleted++;
+                    myProgress += 65;
+                } else if (p.isAlive) {
+                    myProgress += p.numberOfSteps + 8;
+                }
+            }
+
+            boolean opponentTeamReady = false;
+            if (gametype == 2) {
+                if (currentColor.equals("red") || currentColor.equals("yellow")) {
+                    opponentTeamReady = isredyellowreadytowin;
+                } else {
+                    opponentTeamReady = isbluegreenreadytowin;
+                }
+            }
+
+            boolean blockCompletion = (gametype == 3)
+                    || (myCompleted >= pantaValue - 1)
+                    || (gametype == 2 && opponentTeamReady && myCompleted >= 3)
+                    || (myCompleted >= favoredCompleted);
+
+            int[] candScores = new int[7];
+            int bestCand = normalizedRoll;
+            int bestScore = -1000000;
+
+            for (int cand = 1; cand <= 6; cand++) {
+                int score = (cand == normalizedRoll) ? 40 : 15;
+
+                if (cand == 6) {
+                    if (d.consecutiveSixCount >= 1) {
+                        score -= 15000;
+                    }
+                    if (myProgress >= favoredProgress) {
+                        score -= 1200;
+                    }
+                }
+
+                for (Piece p : myPieces) {
+                    boolean canMove = (cand == 6)
+                            ? (!p.isAlive || (p.numberOfSteps + 6 < 57 && !p.hasCompletedItsPurpose && !p.isThisPlayerWon))
+                            : (p.isAlive && (p.numberOfSteps + cand < 57) && !p.hasCompletedItsPurpose && !p.isThisPlayerWon);
+                    if (!canMove) {
+                        continue;
+                    }
+
+                    if (p.isAlive) {
+                        int nextSteps = p.numberOfSteps + cand;
+                        if (nextSteps == 56 && blockCompletion) {
+                            score -= 100000;
+                        } else if (nextSteps >= 48 && blockCompletion) {
+                            score -= (2500 + nextSteps * 25);
+                        }
+
+                        if (nextSteps <= 50) {
+                            int targetBlock = (p.startPosition + nextSteps) % 52;
+                            if (hasUnprotectedFavoredPieceAtBlock(targetBlock)) {
+                                score -= 50000;
+                            }
+                        }
+                    }
+                }
+
+                candScores[cand] = score;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestCand = cand;
+                }
+            }
+
+            if (candScores[normalizedRoll] >= 0) {
+                return normalizedRoll;
+            }
+            return bestCand;
+        }
     }
 
     @Override
