@@ -36,6 +36,7 @@ jobs:
           fi
           export ANDROID_HOME="$SDK_DIR"
           export ANDROID_SDK_ROOT="$SDK_DIR"
+          echo "sdk.dir=$SDK_DIR" > local.properties
           if [ -n "$GITHUB_ENV" ]; then
             echo "ANDROID_HOME=$SDK_DIR" >> "$GITHUB_ENV"
             echo "ANDROID_SDK_ROOT=$SDK_DIR" >> "$GITHUB_ENV"
@@ -58,7 +59,7 @@ jobs:
           fi
 
           python3 -c '
-          import os, struct, zlib, xml.etree.ElementTree as ET
+          import os, xml.etree.ElementTree as ET
           for root, _, files in os.walk("app/src/main/res"):
               for f in sorted(files):
                   p = os.path.join(root, f)
@@ -68,10 +69,13 @@ jobs:
                       assert data.startswith(b"\x89PNG\r\n\x1a\n") and data.endswith(b"IEND\xaeB`\x82"), f"Corrupted PNG: {p}"
                   elif ext == ".xml":
                       ET.fromstring(data)
+          app_gradle = open("app/build.gradle").read()
+          assert "JavaVersion.VERSION_17" in app_gradle, "Java 17 compatibility missing in app/build.gradle"
+          assert "abortOnError = false" in app_gradle, "Lint abortOnError = false missing in app/build.gradle"
           main_java = open("app/src/main/java/com/vinaykpro/ludoking/MainActivity.java").read()
           assert "shouldForceSix" in main_java and "forceSixOnRoll" in main_java, "3-tap dice rule missing in MainActivity.java"
           assert os.path.isfile("app/src/test/java/com/vinaykpro/ludoking/DiceLogicTest.java"), "DiceLogicTest.java missing"
-          print("Pre-advance testing passed: all resources, unit tests, and 3-tap dice logic verified.")
+          print("Pre-advance testing passed: Java 17 config, lint config, resources, unit tests, and 3-tap dice logic verified.")
           '
 
       - name: Run Unit Tests & Build Local Debug APK
