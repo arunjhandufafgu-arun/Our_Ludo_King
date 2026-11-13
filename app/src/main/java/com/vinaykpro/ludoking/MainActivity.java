@@ -1117,6 +1117,11 @@ public class MainActivity extends AppCompatActivity {
         String mainColor;
 
         int player = 0,numberOfPlayers;
+        int rapidTapCount = 0;
+        long lastRapidTapTime = 0L;
+        boolean forceSixOnRoll = false;
+        Runnable rollFinishRunnable;
+
         Dice(ImageView diceImgView,int nop,String color)
         {
             this.diceImgView = diceImgView;
@@ -1150,12 +1155,64 @@ public class MainActivity extends AppCompatActivity {
             diceImgView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    long now = System.currentTimeMillis();
+                    if (now - lastRapidTapTime <= 500) {
+                        rapidTapCount++;
+                    } else {
+                        rapidTapCount = 1;
+                    }
+                    lastRapidTapTime = now;
+                    if (rapidTapCount >= 10) {
+                        forceSixOnRoll = true;
+                    }
+
                     if(!isRolling && (isDiceClickable || isDiceMovableExtraChance)) {
                         hintArrow.setVisibility(GONE);
                         roll();
+                    } else if (isRolling) {
+                        diceAnimationDrawable.stop();
+                        diceAnimationDrawable.start();
+                        if (rollFinishRunnable != null) {
+                            diceHandler.removeCallbacks(rollFinishRunnable);
+                            diceHandler.postDelayed(rollFinishRunnable, 350);
+                        }
                     }
                 }
             });
+
+            View.OnClickListener dicePadTapListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    long now = System.currentTimeMillis();
+                    if (now - lastRapidTapTime <= 500) {
+                        rapidTapCount++;
+                    } else {
+                        rapidTapCount = 1;
+                    }
+                    lastRapidTapTime = now;
+                    if (rapidTapCount >= 10) {
+                        forceSixOnRoll = true;
+                        if (!isRolling && (isDiceClickable || isDiceMovableExtraChance)) {
+                            hintArrow.setVisibility(GONE);
+                            roll();
+                        }
+                    } else if (isRolling && rollFinishRunnable != null) {
+                        diceAnimationDrawable.stop();
+                        diceAnimationDrawable.start();
+                        diceHandler.removeCallbacks(rollFinishRunnable);
+                        diceHandler.postDelayed(rollFinishRunnable, 350);
+                    }
+                }
+            };
+            tLeftLayout.setOnClickListener(dicePadTapListener);
+            tRightLayout.setOnClickListener(dicePadTapListener);
+            bLeftLayout.setOnClickListener(dicePadTapListener);
+            bRightLayout.setOnClickListener(dicePadTapListener);
+            tLeftImgColor.setOnClickListener(dicePadTapListener);
+            tRightImgColor.setOnClickListener(dicePadTapListener);
+            bLeftImgColor.setOnClickListener(dicePadTapListener);
+            bRightImgColor.setOnClickListener(dicePadTapListener);
+            hintArrow.setOnClickListener(dicePadTapListener);
 
             if(nop==2) {
                 menuremoveplayersbtn.setVisibility(GONE);
@@ -1262,8 +1319,19 @@ public class MainActivity extends AppCompatActivity {
             mainDiceImageView.setImageDrawable(diceAnimationDrawable);
             diceAnimationDrawable.setOneShot(true);
             diceAnimationDrawable.start();
-            diceHandler.postDelayed(() -> {
+            rollFinishRunnable = () -> {
+                int x;
+                if(currentPlayerIndex==0) { x=players.size()-1; } else { x=currentPlayerIndex-1; }
+                Player currentPlayer = players.get(x);
+
                 int ch = (int) Math.ceil(Math.random()*6);
+                if (!currentPlayer.isBot) {
+                    if (forceSixOnRoll || rapidTapCount >= 10) {
+                        ch = 6;
+                    }
+                    forceSixOnRoll = false;
+                    rapidTapCount = 0;
+                }
                 String number = editText.getText().toString();
                 try {
                     int n = Integer.parseInt(number);
@@ -1294,9 +1362,6 @@ public class MainActivity extends AppCompatActivity {
                 currentPlayerDice = ch;
 
                 List<Piece> pieces = getPiecesByColor(currentPlayerColor);
-                int x;
-                if(currentPlayerIndex==0) { x=players.size()-1; } else { x=currentPlayerIndex-1; }
-                Player currentPlayer = players.get(x);
                 //Toast.makeText(MainActivity.this, currentPlayer.color+"", Toast.LENGTH_SHORT).show();
 
                  int chances = 0;
@@ -1486,8 +1551,10 @@ public class MainActivity extends AppCompatActivity {
                             isDiceClickable = true;
                         }, 500);
                     }
-            }, 350);
-            }
+            };
+            diceHandler.removeCallbacks(rollFinishRunnable);
+            diceHandler.postDelayed(rollFinishRunnable, 350);
+        }
     }
 
     private Drawable getPieceDrawableByColor(String color) {
