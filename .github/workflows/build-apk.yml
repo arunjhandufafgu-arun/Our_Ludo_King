@@ -7,6 +7,9 @@ on:
     branches: [ "**" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
@@ -46,12 +49,10 @@ jobs:
           printf "\n8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n" > "$SDK_DIR/licenses/android-sdk-license"
           printf "\n84831b9409646a918e30573bab4c9c91346d8abd\n" > "$SDK_DIR/licenses/android-sdk-preview-license"
 
-          if [ ! -f debug.keystore ]; then
-            if [ -f debug.keystore.base64 ]; then
-              base64 -d debug.keystore.base64 > debug.keystore
-            else
-              keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-            fi
+          if [ -f debug.keystore.base64 ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          elif [ ! -f debug.keystore ]; then
+            keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           fi
 
           if [ ! -f app/src/main/res/drawable/fireworksimg.gif ] && [ ! -f app/src/main/res/drawable/fireworksimg.png ]; then
@@ -70,38 +71,74 @@ jobs:
                   elif ext == ".xml":
                       ET.fromstring(data)
           manifest_xml = open("app/src/main/AndroidManifest.xml").read()
-          assert manifest_xml.count("android.intent.category.LAUNCHER") == 1, "AndroidManifest.xml must have exactly 1 LAUNCHER activity to prevent duplicate app icons"
+          assert manifest_xml.count("android.intent.category.LAUNCHER") == 1, "AndroidManifest.xml must have exactly 1 LAUNCHER activity"
           app_gradle = open("app/build.gradle").read()
           assert "JavaVersion.VERSION_17" in app_gradle, "Java 17 compatibility missing in app/build.gradle"
-          assert "abortOnError = false" in app_gradle, "Lint abortOnError = false missing in app/build.gradle"
+          assert "v1SigningEnabled true" in app_gradle and "v2SigningEnabled true" in app_gradle, "v1+v2 signing must be enabled in app/build.gradle"
           main_java = open("app/src/main/java/com/vinaykpro/ludoking/MainActivity.java").read()
           assert "tryLockWinnerColor" in main_java and "selectSmartBoardDiceRoll" in main_java, "Winner lock logic missing in MainActivity.java"
           assert os.path.isfile("app/src/test/java/com/vinaykpro/ludoking/DiceLogicTest.java"), "DiceLogicTest.java missing"
-          print("Pre-advance testing passed: single launcher icon, Java 17 config, lint config, resources, unit tests, and 3-tap winner lock logic verified.")
+          print("Pre-advance testing passed: manifest, signing, resources, unit tests, and 3-tap winner lock verified.")
           '
 
-      - name: Run Unit Tests & Build Local Debug APK
-        run: ./gradlew testDebugUnitTest assembleDebug --no-daemon --stacktrace
+      - name: Run Unit Tests & Build Signed APK
+        run: ./gradlew testDebugUnitTest assembleDebug assembleRelease --no-daemon --stacktrace
 
-      - name: Post-Build APK Verification
+      - name: Align, Sign (v1+v2+v3), and Verify APK Package Integrity
         run: |
           set -e
-          ls -lh app/build/outputs/apk/debug/app-debug.apk
+          SDK_DIR="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          if [ ! -d "$SDK_DIR" ] && [ -d "/opt/android/sdk" ]; then
+            SDK_DIR="/opt/android/sdk"
+          fi
+          BUILD_TOOLS_DIR=$(ls -d "$SDK_DIR/build-tools/"* | sort -V | tail -n 1)
+          ZIPALIGN="$BUILD_TOOLS_DIR/zipalign"
+          APKSIGNER="$BUILD_TOOLS_DIR/apksigner"
+
+          for APK_PATH in app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/debug/app-debug.apk; do
+            if [ -f "$APK_PATH" ]; then
+              "$ZIPALIGN" -p -f 4 "$APK_PATH" "${APK_PATH}.aligned"
+              mv "${APK_PATH}.aligned" "$APK_PATH"
+              "$APKSIGNER" sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --ks-key-alias androiddebugkey --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true "$APK_PATH"
+              "$ZIPALIGN" -c 4 "$APK_PATH"
+              "$APKSIGNER" verify --verbose "$APK_PATH"
+            fi
+          done
+
+          cp app/build/outputs/apk/release/app-release.apk LudoKing.apk
+          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/debug/app-debug.apk
+          ls -lh LudoKing.apk app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/release/app-release.apk
+
           python3 -c '
           import os, zipfile
-          apk = "app/build/outputs/apk/debug/app-debug.apk"
-          assert os.path.isfile(apk) and os.path.getsize(apk) > 10_000_000, "APK missing or too small"
-          with zipfile.ZipFile(apk, "r") as z:
-              names = set(z.namelist())
-              assert "AndroidManifest.xml" in names, "Missing AndroidManifest.xml"
-              assert "classes.dex" in names, "Missing classes.dex"
-              assert "resources.arsc" in names, "Missing resources.arsc"
-          print("Post-build verification passed: app-debug.apk is valid and ready to install.")
+          for apk in ["app/build/outputs/apk/debug/app-debug.apk", "app/build/outputs/apk/release/app-release.apk", "LudoKing.apk"]:
+              assert os.path.isfile(apk) and os.path.getsize(apk) > 10_000_000, f"APK missing or too small: {apk}"
+              with zipfile.ZipFile(apk, "r") as z:
+                  names = set(z.namelist())
+                  assert "AndroidManifest.xml" in names, "Missing AndroidManifest.xml"
+                  assert "classes.dex" in names, "Missing classes.dex"
+                  assert "resources.arsc" in names, "Missing resources.arsc"
+                  has_v1 = any(n.startswith("META-INF/") and (n.endswith(".RSA") or n.endswith(".DSA") or n.endswith(".EC")) for n in names)
+                  assert has_v1, f"Missing META-INF v1 JAR signature in {apk}"
+          print("Post-build verification passed: APK is aligned, v1+v2+v3 signed, and verified against package parse errors.")
           '
 
-      - name: Upload Compiled APK Artifact
+      - name: Upload Compiled APK Artifact (Unzip Before Installing)
         uses: actions/upload-artifact@v4
         with:
           name: LudoKing-Debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+      - name: Publish Direct Installable APK to GitHub Releases
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if command -v gh >/dev/null 2>&1 && [ -n "$GH_TOKEN" ]; then
+            gh release create latest-apk LudoKing.apk app/build/outputs/apk/debug/app-debug.apk \
+              --title "Ludo King Direct Installable APK" \
+              --notes "Tap **LudoKing.apk** or **app-debug.apk** below under Assets to download the direct .apk file (no .zip extraction required)." \
+              --latest || \
+            gh release upload latest-apk LudoKing.apk app/build/outputs/apk/debug/app-debug.apk --clobber || true
+          fi
