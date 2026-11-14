@@ -859,7 +859,7 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/relativeLayout"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout"
         app:layout_constraintWidth_percent="0.4" />
 
@@ -880,7 +880,7 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/relativeLayout"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout"
         app:layout_constraintWidth_percent="0.4" />
 
@@ -935,7 +935,7 @@
         android:scaleY="0.75"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/relativeLayout"
         app:layout_constraintWidth_percent="0.4"
         app:srcCompat="@drawable/winnercrown" />
 
@@ -962,7 +962,7 @@
         android:scaleX="0.75"
         android:scaleY="0.75"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/relativeLayout"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout"
         app:layout_constraintWidth_percent="0.4"
         app:srcCompat="@drawable/winnercrown" />

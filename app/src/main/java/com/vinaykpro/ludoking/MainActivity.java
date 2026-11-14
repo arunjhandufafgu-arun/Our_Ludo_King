@@ -439,12 +439,12 @@ public class MainActivity extends AppCompatActivity {
                 piece.animate().translationX(x[winnerBlocks[currWinnerBlock]] + pushXForPieces).translationY(y[winnerBlocks[currWinnerBlock]] - pushYForPieces).setDuration(300).start();
             }*/
 
-            PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f, 1.4f);
-            PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f, 1.4f);
+            PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f, 1.2f);
+            PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f, 1.2f);
             ObjectAnimator popUpAnimator = ObjectAnimator.ofPropertyValuesHolder(piece, scaleX, scaleY);
             popUpAnimator.setDuration(100);
-            scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1.4f, 1.0f);
-            scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.4f, 1.0f);
+            scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1.2f, 1.0f);
+            scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.2f, 1.0f);
             ObjectAnimator popDownAnimator = ObjectAnimator.ofPropertyValuesHolder(piece, scaleX, scaleY);
             popDownAnimator.setDuration(90);
 
@@ -1555,16 +1555,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                    // killing the best piece max priority
-                    boolean botIsFavored = isFavoredColor(currentPlayerColor, lockedWinnerColor, gametype);
+                    // killing the best piece max priority (fair for all players)
                     y = x;
                     for (int i = 0; i < players.size(); i++) {
                         String color = players.get(y).getColor();
                         if (!color.equals(currentPlayerColor)) {
-                            boolean targetIsFavored = isFavoredColor(color, lockedWinnerColor, gametype);
-                            if (lockedWinnerColor != null && !botIsFavored && targetIsFavored) {
-                                // Opponent bot does not prioritize capturing locked winner's pieces
-                            } else if (gametype == 2 && isSameTeamColor(currentPlayerColor, color)) {
+                            if (gametype == 2 && isSameTeamColor(currentPlayerColor, color)) {
                                 // Teammate does not capture teammate
                             } else {
                                 List<Piece> enemypieces = getPiecesByColor(color);
@@ -1733,7 +1729,9 @@ public class MainActivity extends AppCompatActivity {
         setFullScreen();
         setContentView(R.layout.activity_main);
         //setContentView(new GameCanvas(this));
-        Objects.requireNonNull(getSupportActionBar()).hide();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
         initViews();
 
@@ -1811,6 +1809,10 @@ public class MainActivity extends AppCompatActivity {
 
         //
 
+        crownIndex1.getLayoutParams().width = (int) total;
+        crownIndex2.getLayoutParams().width = (int) total;
+        crownIndex3.getLayoutParams().width = (int) total;
+        crownIndex4.getLayoutParams().width = (int) total;
         crownIndex1.getLayoutParams().height = (int) total;
         crownIndex2.getLayoutParams().height = (int) total;
         crownIndex3.getLayoutParams().height = (int) total;
@@ -1824,6 +1826,11 @@ public class MainActivity extends AppCompatActivity {
         p2exitbox.getLayoutParams().width = (int) (total * 0.985);
         p3exitbox.getLayoutParams().width = (int) (total * 0.985);
         p4exitbox.getLayoutParams().width = (int) (total * 0.985);
+
+        playername1.getLayoutParams().width = (int) total;
+        playername2.getLayoutParams().width = (int) total;
+        playername3.getLayoutParams().width = (int) total;
+        playername4.getLayoutParams().width = (int) total;
 
         if(gametype!=4) {
             playername1.getLayoutParams().width = (int) (total);
@@ -2699,8 +2706,9 @@ public class MainActivity extends AppCompatActivity {
         displayMetrics = getResources().getDisplayMetrics();
         dpHeight = displayMetrics.heightPixels/displayMetrics.density;
         dpWidth = displayMetrics.widthPixels/displayMetrics.density;
-        pxWidth = displayMetrics.widthPixels;
-        pxHeight = displayMetrics.heightPixels-getStatusBarHeight();
+        double maxBoardSize = Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels - (int) (195 * displayMetrics.density));
+        pxWidth = maxBoardSize > 0 ? maxBoardSize : displayMetrics.widthPixels;
+        pxHeight = displayMetrics.heightPixels;
         ludoBoard = findViewById(R.id.imageView);
         red1activecircle = findViewById(R.id.red1activecircle);
         red2activecircle = findViewById(R.id.red2activecircle);
@@ -2968,24 +2976,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setFullScreen() {
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            View dview = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            dview.setSystemUiVisibility(uiOptions);
-        } else {
-            View dview = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            dview.setSystemUiVisibility(uiOptions);
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                WindowInsetsController insetsController = getWindow().getInsetsController();
-                if(insetsController !=null) {
-                    insetsController.hide(WindowInsets.Type.navigationBars());
-                    insetsController.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-                }
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            getWindow().setAttributes(lp);
+        }
+        View dview = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        dview.setSystemUiVisibility(uiOptions);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            WindowInsetsController insetsController = getWindow().getInsetsController();
+            if(insetsController !=null) {
+                insetsController.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+                insetsController.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
             }
-
         }
     }
 
@@ -3012,8 +3023,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         View dview = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         dview.setSystemUiVisibility(uiOptions);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            WindowInsetsController insetsController = getWindow().getInsetsController();
+            if (insetsController != null) {
+                insetsController.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+                insetsController.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            }
+        }
     }
 
     void moveToTopLeft()
@@ -3102,7 +3125,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static final long RAPID_TAP_INTERVAL_MS = 500L;
-    public static final int RAPID_TAP_THRESHOLD = 3;
+    public static final int RAPID_TAP_THRESHOLD = 4;
 
     public static int updateRapidTapCount(int currentTapCount, long lastTapTimeMs, long currentTapTimeMs) {
         if (lastTapTimeMs > 0L && (currentTapTimeMs - lastTapTimeMs) >= 0L && (currentTapTimeMs - lastTapTimeMs) <= RAPID_TAP_INTERVAL_MS) {
@@ -3122,7 +3145,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static boolean shouldForceSix(int rapidTapCount) {
-        // 3-tap forced 6 is disabled; 3 rapid taps now silently lock the winner color once per match
+        // Forced 6 on tap is disabled; 4 rapid taps silently lock the first toucher's color once per match
         return false;
     }
 
@@ -3185,20 +3208,23 @@ public class MainActivity extends AppCompatActivity {
         if (isFavoredPlayer) {
             boolean anyAlive = false;
             boolean anyInBase = false;
-            int homeFinishRoll = -1;
+            int clutchHomeFinishRoll = -1;
+            boolean inLateClutch = (completedPieces >= pantaValue - 1) || (favoredCompletedPieces >= pantaValue - 1);
             for (int steps : playerPieceSteps) {
                 if (steps == -1) {
                     anyInBase = true;
                 } else if (steps >= 0 && steps < 56) {
                     anyAlive = true;
-                    int needed = 56 - steps;
-                    if (needed >= 1 && needed <= 6 && (needed != 6 || consecutiveSixes < 2)) {
-                        homeFinishRoll = needed;
+                    if (steps >= 50) {
+                        int needed = 56 - steps;
+                        if (needed >= 1 && needed <= 6 && (needed != 6 || consecutiveSixes < 2)) {
+                            clutchHomeFinishRoll = needed;
+                        }
                     }
                 }
             }
-            if (homeFinishRoll != -1) {
-                return homeFinishRoll;
+            if (clutchHomeFinishRoll != -1 && (inLateClutch || completedPieces >= pantaValue - 2)) {
+                return clutchHomeFinishRoll;
             }
             if (!anyAlive && anyInBase && consecutiveSixes < 2) {
                 return 6;
@@ -3208,25 +3234,42 @@ public class MainActivity extends AppCompatActivity {
             }
             return normalized;
         } else {
-            // Opponent player: prevent completing the final winning piece before the favored side wins
-            boolean mustBlockCompletion = (gameType == 3)
-                    || (completedPieces >= pantaValue - 1)
-                    || (completedPieces >= favoredCompletedPieces);
+            // Opponent player: allow full natural progress and completing tokens until the final match-winning token
+            boolean onFinalWinningToken = (gameType == 3) || (completedPieces >= pantaValue - 1);
+            if (!onFinalWinningToken) {
+                if (normalized == 6 && consecutiveSixes >= 2) {
+                    return 4;
+                }
+                return normalized;
+            }
+
+            // On final match-winning token: let it advance up to 51..55 (right at the end), only block exact 56 match win
+            boolean naturalWinsMatch = false;
+            for (int steps : playerPieceSteps) {
+                if (steps >= 0 && steps < 56 && steps + normalized == 56) {
+                    naturalWinsMatch = true;
+                    break;
+                }
+            }
+            if (!naturalWinsMatch && !(normalized == 6 && consecutiveSixes >= 2)) {
+                return normalized;
+            }
 
             int bestRoll = normalized;
             int bestScore = -100000;
             for (int cand = 1; cand <= 6; cand++) {
-                int score = (cand == normalized) ? 50 : 10;
+                int score = (cand == normalized) ? 30 : 20;
                 if (cand == 6 && consecutiveSixes >= 1) {
                     score -= 5000;
                 }
                 for (int steps : playerPieceSteps) {
                     if (steps >= 0 && steps < 56) {
                         int next = steps + cand;
-                        if (next == 56 && mustBlockCompletion) {
+                        if (next == 56) {
                             score -= 50000;
-                        } else if (next >= 48 && mustBlockCompletion) {
-                            score -= 1000 + next * 10;
+                        } else if (next >= 51 && next <= 55) {
+                            // Encourage reaching steps 51..55 so opponent feels they are right on the verge of winning
+                            score += 40;
                         }
                     }
                 }
@@ -3281,7 +3324,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private boolean hasUnprotectedFavoredPieceAtBlock(int block) {
+    private boolean hasCriticalLateGameFavoredPieceAtBlock(int block) {
         if (d == null || d.lockedWinnerColor == null || block < 0 || block > 51 || safeSpots.contains(block)) {
             return false;
         }
@@ -3290,8 +3333,15 @@ public class MainActivity extends AppCompatActivity {
             if (isFavoredColor(col, d.lockedWinnerColor, gametype)) {
                 List<Piece> fPieces = getPiecesByColor(col);
                 if (fPieces != null) {
+                    int aliveCount = 0;
                     for (Piece fp : fPieces) {
-                        if (fp.isAlive && !fp.hasCompletedItsPurpose && fp.currBlock == block) {
+                        if (fp.isAlive && !fp.hasCompletedItsPurpose) {
+                            aliveCount++;
+                        }
+                    }
+                    for (Piece fp : fPieces) {
+                        // Only protect if it is the favored player's sole active piece deep near the home stretch (steps >= 40)
+                        if (fp.isAlive && !fp.hasCompletedItsPurpose && fp.currBlock == block && aliveCount <= 1 && fp.numberOfSteps >= 40) {
                             return true;
                         }
                     }
@@ -3315,7 +3365,7 @@ public class MainActivity extends AppCompatActivity {
         int favoredProgress = 0;
         int maxOpponentCompleted = 0;
         int maxOpponentProgress = 0;
-        boolean anyOpponentAlive = false;
+        int maxOpponentSinglePieceSteps = 0;
 
         for (Player pl : players) {
             String col = pl.getColor();
@@ -3325,11 +3375,11 @@ public class MainActivity extends AppCompatActivity {
             for (Piece p : colPieces) {
                 if (p.hasCompletedItsPurpose || p.numberOfSteps >= 56) {
                     comp++;
-                    prog += 65;
+                    prog += 60;
                 } else if (p.isAlive) {
-                    prog += p.numberOfSteps + 8;
-                    if (!isFavoredColor(col, d.lockedWinnerColor, gametype)) {
-                        anyOpponentAlive = true;
+                    prog += p.numberOfSteps + 6;
+                    if (!isFavoredColor(col, d.lockedWinnerColor, gametype) && p.numberOfSteps > maxOpponentSinglePieceSteps) {
+                        maxOpponentSinglePieceSteps = p.numberOfSteps;
                     }
                 }
             }
@@ -3365,8 +3415,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            // Determine whether the match has reached the late-game clutch phase
+            boolean opponentAtMatchPoint = (gametype == 3)
+                    ? (maxOpponentSinglePieceSteps >= 44)
+                    : (maxOpponentCompleted >= pantaValue - 1 || (maxOpponentCompleted >= pantaValue - 2 && maxOpponentProgress >= 175));
+            boolean lateGameClutch = opponentAtMatchPoint
+                    || (maxOpponentProgress >= favoredProgress + 45 && maxOpponentProgress >= 110);
+
             if (aliveCount == 0 && baseCount > 0) {
-                if (d.consecutiveSixCount < 2 && (normalizedRoll == 6 || d.favoredTurnsWithoutOpen >= 1 || anyOpponentAlive || maxOpponentProgress > 0)) {
+                int openThreshold = opponentAtMatchPoint ? 1 : 3;
+                if (d.consecutiveSixCount < 2 && (normalizedRoll == 6 || d.favoredTurnsWithoutOpen >= openThreshold)) {
                     d.favoredTurnsWithoutOpen = 0;
                     return 6;
                 }
@@ -3375,6 +3433,16 @@ public class MainActivity extends AppCompatActivity {
             }
             d.favoredTurnsWithoutOpen = 0;
 
+            // During early & mid game, play 100% naturally so no one suspects anything
+            if (!lateGameClutch) {
+                if (normalizedRoll == 6 && d.consecutiveSixCount >= 2) {
+                    return 4;
+                }
+                return normalizedRoll;
+            }
+
+            // Late-game clutch phase: subtly help the 4-tap player catch up and finish at the end
+            // Even in late game (unless opponent is right at match point), keep ~40% of natural rolls if they are decent
             int[] candScores = new int[7];
             int bestCand = normalizedRoll;
             int bestScore = -100000;
@@ -3399,33 +3467,32 @@ public class MainActivity extends AppCompatActivity {
                     int pScore = 0;
 
                     if (!p.isAlive && cand == 6) {
-                        pScore = (aliveCount <= 1) ? 85 : 55;
+                        pScore = (aliveCount <= 1) ? 95 : 65;
                     } else if (p.isAlive) {
                         int nextSteps = p.numberOfSteps + cand;
                         boolean currentlyInDanger = isThreatenedByEnemyAtBlock(p.currBlock, currentColor);
 
                         if (nextSteps == 56) {
-                            pScore = 280;
+                            // Only take exact home finish immediately if opponent is at match point or roll is natural
+                            pScore = opponentAtMatchPoint ? 260 : ((cand == normalizedRoll) ? 240 : 120);
                         } else if (p.numberOfSteps <= 50 && nextSteps > 50) {
-                            pScore = 165 + (currentlyInDanger ? 60 : 0);
+                            pScore = 150 + (currentlyInDanger ? 45 : 0);
                         } else if (p.numberOfSteps > 50) {
-                            pScore = 90 + cand * 4;
+                            pScore = 85 + cand * 4;
                         } else {
                             int targetBlock = (p.startPosition + nextSteps) % 52;
-                            boolean killsEnemy = hasUnprotectedEnemyAtBlock(targetBlock, currentColor, true);
                             boolean landsSafe = safeSpots.contains(targetBlock);
                             boolean landsInDanger = isThreatenedByEnemyAtBlock(targetBlock, currentColor);
 
-                            if (killsEnemy) {
-                                pScore = 230 + (landsInDanger ? -30 : 20);
-                            } else if (currentlyInDanger && (landsSafe || !landsInDanger)) {
-                                pScore = 155 + (landsSafe ? 30 : 0);
+                            // Do NOT artificially prioritize hunting opponent tokens; focus on natural forward progress
+                            if (currentlyInDanger && !landsInDanger) {
+                                pScore = 135 + cand * 3;
                             } else if (landsSafe) {
-                                pScore = 115 + (p.numberOfSteps / 2);
+                                pScore = 105 + (p.numberOfSteps / 2);
                             } else if (landsInDanger) {
-                                pScore = -80 + cand;
+                                pScore = 10 + cand * 2;
                             } else {
-                                pScore = 35 + cand * 4 + (p.numberOfSteps / 2);
+                                pScore = 50 + cand * 8 + (p.numberOfSteps / 2);
                             }
                         }
                     }
@@ -3437,14 +3504,14 @@ public class MainActivity extends AppCompatActivity {
 
                 if (movableCount == 0) {
                     if (baseCount > 0 && cand == 6 && d.consecutiveSixCount < 2) {
-                        maxPieceScore = 160;
+                        maxPieceScore = 150;
                     } else {
                         maxPieceScore = -5000;
                     }
                 }
 
                 if (cand == 6 && d.consecutiveSixCount == 1) {
-                    maxPieceScore -= 110;
+                    maxPieceScore -= 120;
                 }
 
                 candScores[cand] = maxPieceScore;
@@ -3454,22 +3521,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            boolean urgentSituation = (maxOpponentProgress >= favoredProgress - 15)
-                    || (maxOpponentCompleted >= favoredCompleted && maxOpponentCompleted > 0);
-            if (!urgentSituation && candScores[normalizedRoll] >= 35 && bestScore < 150) {
+            if (!opponentAtMatchPoint && candScores[normalizedRoll] >= 55) {
                 return normalizedRoll;
             }
             return bestCand;
         } else {
-            // Opponent turn: play naturally while preventing favored-piece captures and opponent match completion
+            // Opponent turn:
+            // 1. Favored player's tokens CAN be cut normally like real Ludo.
+            // 2. Opponent's tokens advance freely till the end (completing pantaValue - 1 tokens and entering 51..55).
+            // 3. ONLY block the final match-winning home entry (nextSteps == 56 on the last required token).
             int myCompleted = 0;
-            int myProgress = 0;
             for (Piece p : myPieces) {
                 if (p.hasCompletedItsPurpose || p.numberOfSteps >= 56) {
                     myCompleted++;
-                    myProgress += 65;
-                } else if (p.isAlive) {
-                    myProgress += p.numberOfSteps + 8;
                 }
             }
 
@@ -3482,25 +3546,50 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            boolean blockCompletion = (gametype == 3)
-                    || (myCompleted >= pantaValue - 1)
-                    || (gametype == 2 && opponentTeamReady && myCompleted >= 3)
-                    || (myCompleted >= favoredCompleted);
+            boolean onFinalWinningToken = (gametype == 3)
+                    || (gametype != 2 && myCompleted >= pantaValue - 1)
+                    || (gametype == 2 && opponentTeamReady && myCompleted >= 3);
 
-            int[] candScores = new int[7];
+            // If opponent is not on their final match-winning token, play 100% natural random dice!
+            if (!onFinalWinningToken) {
+                if (normalizedRoll == 6 && d.consecutiveSixCount >= 2) {
+                    return 4;
+                }
+                return normalizedRoll;
+            }
+
+            // Opponent is on their final match-winning token:
+            // Check if normalizedRoll would complete the final token (nextSteps == 56) or cut a critical sole late-game favored piece
+            boolean mustAdjust = (normalizedRoll == 6 && d.consecutiveSixCount >= 2);
+            for (Piece p : myPieces) {
+                if (p.isAlive && !p.hasCompletedItsPurpose && !p.isThisPlayerWon) {
+                    int nextSteps = p.numberOfSteps + normalizedRoll;
+                    if (nextSteps == 56) {
+                        mustAdjust = true;
+                        break;
+                    }
+                    if (nextSteps <= 50) {
+                        int targetBlock = (p.startPosition + nextSteps) % 52;
+                        if (hasCriticalLateGameFavoredPieceAtBlock(targetBlock)) {
+                            mustAdjust = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!mustAdjust) {
+                return normalizedRoll;
+            }
+
             int bestCand = normalizedRoll;
             int bestScore = -1000000;
 
             for (int cand = 1; cand <= 6; cand++) {
-                int score = (cand == normalizedRoll) ? 40 : 15;
+                int score = (cand == normalizedRoll) ? 35 : 20;
 
-                if (cand == 6) {
-                    if (d.consecutiveSixCount >= 1) {
-                        score -= 15000;
-                    }
-                    if (myProgress >= favoredProgress) {
-                        score -= 1200;
-                    }
+                if (cand == 6 && d.consecutiveSixCount >= 1) {
+                    score -= 10000;
                 }
 
                 for (Piece p : myPieces) {
@@ -3513,31 +3602,26 @@ public class MainActivity extends AppCompatActivity {
 
                     if (p.isAlive) {
                         int nextSteps = p.numberOfSteps + cand;
-                        if (nextSteps == 56 && blockCompletion) {
+                        if (nextSteps == 56) {
                             score -= 100000;
-                        } else if (nextSteps >= 48 && blockCompletion) {
-                            score -= (2500 + nextSteps * 25);
-                        }
-
-                        if (nextSteps <= 50) {
+                        } else if (nextSteps >= 51 && nextSteps <= 55) {
+                            // Let opponent's final token go right up to the end (51..55) so they feel they are about to win
+                            score += 45;
+                        } else if (nextSteps <= 50) {
                             int targetBlock = (p.startPosition + nextSteps) % 52;
-                            if (hasUnprotectedFavoredPieceAtBlock(targetBlock)) {
-                                score -= 50000;
+                            if (hasCriticalLateGameFavoredPieceAtBlock(targetBlock)) {
+                                score -= 25000;
                             }
                         }
                     }
                 }
 
-                candScores[cand] = score;
                 if (score > bestScore) {
                     bestScore = score;
                     bestCand = cand;
                 }
             }
 
-            if (candScores[normalizedRoll] >= 0) {
-                return normalizedRoll;
-            }
             return bestCand;
         }
     }
