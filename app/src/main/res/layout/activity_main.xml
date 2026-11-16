@@ -35,8 +35,8 @@
             android:id="@+id/p1exitbox"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_alignStart="@id/imageView"
             android:layout_alignBottom="@id/imageView"
+            android:layout_alignParentStart="true"
             android:layout_marginStart="1dp"
             android:layout_marginBottom="1dp"
             android:elevation="0dp"
@@ -48,8 +48,8 @@
             android:id="@+id/p2exitbox"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_alignStart="@id/imageView"
-            android:layout_alignTop="@id/imageView"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             android:layout_marginStart="1dp"
             android:layout_marginTop="1dp"
             android:elevation="0dp"
@@ -61,8 +61,8 @@
             android:id="@+id/p3exitbox"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_alignTop="@id/imageView"
-            android:layout_alignEnd="@id/imageView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="1dp"
             android:layout_marginEnd="1dp"
             android:elevation="0dp"
@@ -74,7 +74,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_alignBottom="@id/imageView"
-            android:layout_alignEnd="@id/imageView"
+            android:layout_alignParentEnd="true"
             android:layout_marginEnd="1dp"
             android:layout_marginBottom="1dp"
             android:elevation="0dp"
@@ -85,8 +85,8 @@
             android:id="@+id/imageView3"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_alignEnd="@id/imageView"
-            android:layout_alignBottom="@id/imageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:visibility="invisible"
             app:srcCompat="@drawable/box" />
 
@@ -859,7 +859,7 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/relativeLayout"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout"
         app:layout_constraintWidth_percent="0.4" />
 
@@ -880,7 +880,7 @@
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/relativeLayout"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout"
         app:layout_constraintWidth_percent="0.4" />
 
@@ -935,7 +935,7 @@
         android:scaleY="0.75"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintStart_toStartOf="@+id/relativeLayout"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent="0.4"
         app:srcCompat="@drawable/winnercrown" />
 
@@ -962,7 +962,7 @@
         android:scaleX="0.75"
         android:scaleY="0.75"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@+id/relativeLayout"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout"
         app:layout_constraintWidth_percent="0.4"
         app:srcCompat="@drawable/winnercrown" />

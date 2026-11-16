@@ -134,7 +134,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         initViews();
         View v = findViewById(R.id.homebackgroundview);
-        ConstraintLayout.LayoutParams bgparams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT);
+        ConstraintLayout.LayoutParams bgparams = new ConstraintLayout.LayoutParams((int)pxWidth,(int)(pxHeight+getStatusBarHeight()+60));
         v.setLayoutParams(bgparams);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         int navHeight = (int)(pxWidth*0.23518);
@@ -2229,27 +2229,24 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void setFullScreen() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            WindowManager.LayoutParams lp = getWindow().getAttributes();
-            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-            getWindow().setAttributes(lp);
-        }
-        View dview = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        dview.setSystemUiVisibility(uiOptions);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            WindowInsetsController insetsController = getWindow().getInsetsController();
-            if(insetsController !=null) {
-                insetsController.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
-                insetsController.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            View dview = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            dview.setSystemUiVisibility(uiOptions);
+        } else {
+            View dview = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            dview.setSystemUiVisibility(uiOptions);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                WindowInsetsController insetsController = getWindow().getInsetsController();
+                if(insetsController !=null) {
+                    insetsController.hide(WindowInsets.Type.navigationBars());
+                    insetsController.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+                }
             }
+
         }
     }
     public float getStatusBarHeight() {
