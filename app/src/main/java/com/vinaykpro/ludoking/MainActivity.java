@@ -1580,29 +1580,31 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     // killing the best piece max priority
-                    boolean botIsFavored = isFavoredColor(currentPlayerColor, lockedWinnerColor, gametype);
                     y = x;
                     for (int i = 0; i < players.size(); i++) {
                         String color = players.get(y).getColor();
                         if (!color.equals(currentPlayerColor)) {
-                            boolean targetIsFavored = isFavoredColor(color, lockedWinnerColor, gametype);
-                            if (gametype == 2 && isSameTeamColor(currentPlayerColor, color)) {
-                                // Teammate does not capture teammate
+                            if (gametype == 2 && ((currentPlayerColor.equals("yellow") && color.equals("red")) || (currentPlayerColor.equals("red") && color.equals("yellow")) || (currentPlayerColor.equals("blue") && color.equals("green")) || (currentPlayerColor.equals("green") && color.equals("blue")))) {
+                                //Toast.makeText(MainActivity.this, "same team", Toast.LENGTH_SHORT).show();
                             } else {
                                 List<Piece> enemypieces = getPiecesByColor(color);
                                 for (Piece tp : enemypieces) {
                                     if (tp.isAlive && !safeSpots.contains(tp.currBlock)) {
-                                        if (lockedWinnerColor != null && !botIsFavored && targetIsFavored
-                                                && !isSafeForOpponentToCutFavoredPiece(tp)) {
-                                            continue;
-                                        }
                                         for (Piece mp : movablePieces) {
                                             if (mp.isAlive && mp.numberOfSteps + ch <= 50) {
-                                                int nextBlock = (mp.startPosition + mp.numberOfSteps + ch) % 52;
-                                                if (tp.currBlock == nextBlock) {
-                                                    if (tp.numberOfSteps > bestKillingTargetSteps) {
-                                                        bestKillingTargetSteps = tp.numberOfSteps;
-                                                        bestMovablePiece = mp;
+                                                if (mp.currBlock + ch > 51) {
+                                                    if (tp.currBlock == (mp.currBlock + ch) - 52) {
+                                                        if (tp.numberOfSteps > bestKillingTargetSteps) {
+                                                            bestKillingTargetSteps = tp.numberOfSteps;
+                                                            bestMovablePiece = mp;
+                                                        }
+                                                    }
+                                                } else {
+                                                    if (tp.currBlock == mp.currBlock + ch) {
+                                                        if (tp.numberOfSteps > bestKillingTargetSteps) {
+                                                            bestKillingTargetSteps = tp.numberOfSteps;
+                                                            bestMovablePiece = mp;
+                                                        }
                                                     }
                                                 }
                                             }
@@ -1617,6 +1619,7 @@ public class MainActivity extends AppCompatActivity {
                             y++;
                         }
                     }
+                    //Toast.makeText(MainActivity.this, bestMovablePiece.colour+","+bestMovablePiece.startPosition, Toast.LENGTH_SHORT).show();
                     bestMovablePiece.onClickForBot();
                 } else if (chances == 0) {
                         diceHandler.postDelayed(() -> {
@@ -3342,21 +3345,11 @@ public class MainActivity extends AppCompatActivity {
         }
         if (gameType == 3) {
             return favoredTimesCut < 1
-                    && favoredTokenSteps <= 24
-                    && favoredRemainingSteps <= minOpponentRemainingSteps + 12;
+                    && favoredTokenSteps <= 28
+                    && favoredRemainingSteps <= minOpponentRemainingSteps + 18;
         }
-        if (favoredTimesCut == 0) {
-            return favoredRemainingSteps <= minOpponentRemainingSteps + 36;
-        }
-        if (favoredTimesCut == 1) {
-            return favoredTokenSteps <= 36
-                    && favoredActiveAndCompletedCount >= 2
-                    && favoredRemainingSteps <= minOpponentRemainingSteps + 22;
-        }
-        if (favoredTimesCut == 2) {
-            return favoredTokenSteps <= 28
-                    && favoredActiveAndCompletedCount >= 2
-                    && favoredRemainingSteps <= minOpponentRemainingSteps + 10;
+        if (favoredTimesCut < 3) {
+            return favoredRemainingSteps <= minOpponentRemainingSteps + 42;
         }
         return false;
     }
@@ -3899,27 +3892,24 @@ public class MainActivity extends AppCompatActivity {
             int[] candScores = new int[7];
             int bestCand = normalizedRoll;
             int bestScore = -1000000;
-            int safeCutFavoredCand = -1;
 
             for (int cand = 1; cand <= 6; cand++) {
                 int jitter = (int) (Math.random() * 28);
-                int score = ((cand == normalizedRoll) ? 50 : 22) + jitter;
+                int score = ((cand == normalizedRoll) ? 60 : 20) + jitter;
 
                 if (cand == 6) {
                     if (d.consecutiveSixCount >= 2) {
                         score -= 35000;
                     } else if (holdFourthTokenInBase) {
                         score -= 18000;
-                    } else if (d.consecutiveSixCount == 1 && (opponentLeadingLate || myProgress > favoredProgress + 16)) {
+                    } else if (d.consecutiveSixCount == 1 && (opponentLeadingLate || myProgress > favoredProgress + 20)) {
                         score -= 5000;
                     }
                 }
 
-                // Strong anti-repeat-loop adjustment for opponent rolls so dice never repeats suspiciously
+                // Prevent 3 identical opponent rolls in a row so dice never loops on the same number
                 if (cand == d.lastOpponentRoll && cand == d.secondLastOpponentRoll) {
-                    score -= 180;
-                } else if (cand == d.lastOpponentRoll) {
-                    score -= 40;
+                    score -= 500;
                 }
 
                 int movableForCand = 0;
@@ -3941,16 +3931,10 @@ public class MainActivity extends AppCompatActivity {
                             } else if (p.numberOfSteps <= 50 && nextSteps > 50 && favoredRemainingSteps > 6) {
                                 // Keep final token on the outer track where it has normal moves and can be cut
                                 score -= 45000;
-                            } else if (p.numberOfSteps >= 20 && p.numberOfSteps <= 50 && favoredRemainingSteps > 10) {
-                                // Smoothly pace the final token with smaller natural steps (1, 2, 3) so it never rushes to step 50
-                                score -= cand * 22;
                             }
                         } else if (opponentLeadingLate) {
                             if (p.numberOfSteps <= 50 && nextSteps > 50 && baseCount == 0 && favoredRemainingSteps > 14) {
                                 score -= 14000;
-                            } else if (opponentAheadInRace && favoredRemainingSteps > 16) {
-                                // Gently prefer smaller varied steps (1, 2, 3) when opponent is leading the race
-                                score -= cand * 12;
                             }
                         }
 
@@ -3967,24 +3951,16 @@ public class MainActivity extends AppCompatActivity {
                             if (cutFavoredStatus == -1) {
                                 // Only protect locked winner token in critical late-game states
                                 score -= 85000;
-                            } else if (cutFavoredStatus == 1) {
-                                // Safe early/mid-game cut of locked winner token!
-                                safeCutFavoredCand = cand;
-                                score += (d.favoredTimesCut == 0) ? 80 : 40;
-                            }
-
-                            if (cutFavoredStatus != 1 && opponentLeadingLate && isThreatenedByFavoredAtBlock(targetBlock)) {
-                                score += 65;
                             }
                         }
                     }
                 }
 
-                // Always prefer rolls that give the opponent at least 1 valid move on the board (prevents zero-move loops)
+                // Prefer rolls that give the opponent at least 1 valid move on the board (prevents zero-move loops)
                 if (aliveCount > 0 && movableForCand > 0) {
-                    score += 45;
+                    score += 40;
                 } else if (aliveCount > 0 && movableForCand == 0) {
-                    score -= 90;
+                    score -= 80;
                 }
 
                 candScores[cand] = score;
@@ -3994,24 +3970,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            // If an opponent token is right behind a vulnerable locked winner token in early/mid game,
-            // let the opponent get the number to cut it naturally so there is zero doubt of a fixed match.
-            if (safeCutFavoredCand != -1 && candScores[safeCutFavoredCand] >= 0) {
-                if (normalizedRoll == safeCutFavoredCand
-                        || (d.favoredTimesCut == 0 && Math.random() < 0.45)
-                        || (d.favoredTimesCut == 1 && Math.random() < 0.28)
-                        || (d.favoredTimesCut == 2 && Math.random() < 0.18)) {
-                    return recordAndReturnRoll(safeCutFavoredCand, false);
-                }
-            }
-
-            if (!opponentLeadingLate && candScores[normalizedRoll] >= 0) {
-                return recordAndReturnRoll(normalizedRoll, false);
-            }
-            if (!isFinalWinningToken && normalizedRoll <= 4 && candScores[normalizedRoll] >= 0) {
-                return recordAndReturnRoll(normalizedRoll, false);
-            }
-            if (opponentLeadingLate && !isFinalWinningToken && !opponentAheadInRace && candScores[normalizedRoll] >= 25 && bestScore < 115) {
+            // Whenever the genuine random roll is valid and does not violate endgame winner protection,
+            // return it directly so opponent dice and token cutting behave 100% like original Ludo King.
+            if (candScores[normalizedRoll] >= 0) {
                 return recordAndReturnRoll(normalizedRoll, false);
             }
             return recordAndReturnRoll(bestCand, false);
