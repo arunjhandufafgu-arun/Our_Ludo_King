@@ -3686,14 +3686,16 @@ public class MainActivity extends AppCompatActivity {
                     return recordAndReturnRoll(6, true);
                 }
 
-                // 2. If a token is inside the home stretch (steps 50..55), help it finish into step 56 smoothly
-                // so the locked winner saves wasted turns inside the home column without sniping opponent tokens.
+                // 2. If a token is inside the home stretch (steps 50..55) and the natural roll would overshoot 56
+                // (or we are trailing the opponent), help it finish into step 56 smoothly without wasted turns.
                 for (Piece p : myPieces) {
                     if (p.isAlive && !p.hasCompletedItsPurpose && p.numberOfSteps >= 50 && p.numberOfSteps < 56) {
                         int exactHomeRoll = 56 - p.numberOfSteps;
+                        boolean wouldOvershoot = (p.numberOfSteps + normalizedRoll > 56);
+                        boolean trailingOpponent = (myRemainingSteps > minOpponentRemainingSteps);
                         if (exactHomeRoll >= 1 && exactHomeRoll <= 6
                                 && (exactHomeRoll != 6 || d.consecutiveSixCount < 2)
-                                && (p.numberOfSteps + normalizedRoll > 56 || Math.random() < 0.75)) {
+                                && ((wouldOvershoot && Math.random() < 0.68) || (trailingOpponent && Math.random() < 0.55))) {
                             return recordAndReturnRoll(exactHomeRoll, true);
                         }
                     }
@@ -3997,12 +3999,16 @@ public class MainActivity extends AppCompatActivity {
             if (safeCutFavoredCand != -1 && candScores[safeCutFavoredCand] >= 0) {
                 if (normalizedRoll == safeCutFavoredCand
                         || (d.favoredTimesCut == 0 && Math.random() < 0.45)
-                        || (d.favoredTimesCut == 1 && Math.random() < 0.25)) {
+                        || (d.favoredTimesCut == 1 && Math.random() < 0.28)
+                        || (d.favoredTimesCut == 2 && Math.random() < 0.18)) {
                     return recordAndReturnRoll(safeCutFavoredCand, false);
                 }
             }
 
             if (!opponentLeadingLate && candScores[normalizedRoll] >= 0) {
+                return recordAndReturnRoll(normalizedRoll, false);
+            }
+            if (!isFinalWinningToken && normalizedRoll <= 4 && candScores[normalizedRoll] >= 0) {
                 return recordAndReturnRoll(normalizedRoll, false);
             }
             if (opponentLeadingLate && !isFinalWinningToken && !opponentAheadInRace && candScores[normalizedRoll] >= 25 && bestScore < 115) {

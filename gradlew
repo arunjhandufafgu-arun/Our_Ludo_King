@@ -117,6 +117,34 @@ esac
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 
+# Automatically switch to JDK 17+ if current JAVA_HOME or java is older than Java 17 (e.g. JDK 11 in GitHub Actions)
+if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+    _java_ver=$("$JAVA_HOME/bin/java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d'.' -f1)
+else
+    _java_ver=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d'.' -f1)
+fi
+if [ "$_java_ver" = "1" ] || [ "${_java_ver:-0}" -lt 17 ] 2>/dev/null; then
+    for _candidate_jdk in \
+        "$JAVA_HOME_17_X64" \
+        "$JAVA_HOME_21_X64" \
+        /usr/lib/jvm/temurin-17-jdk* \
+        /usr/lib/jvm/java-17-openjdk* \
+        /usr/lib/jvm/temurin-21-jdk* \
+        /usr/lib/jvm/java-21-openjdk* \
+        /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17*/* \
+        /opt/hostedtoolcache/Java_Adopt_jdk/17*/* \
+        /opt/hostedtoolcache/jdk/17*/*
+    do
+        if [ -n "$_candidate_jdk" ] && [ -x "$_candidate_jdk/bin/java" ]; then
+            JAVA_HOME="$_candidate_jdk"
+            export JAVA_HOME
+            PATH="$JAVA_HOME/bin:$PATH"
+            export PATH
+            break
+        fi
+    done
+fi
+
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
@@ -137,6 +165,15 @@ else
 
 Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."
+fi
+
+# Ensure debug.keystore exists for signingConfigs.debugConfig in fresh CI checkouts
+if [ ! -f "$APP_HOME/debug.keystore" ]; then
+    _keytool="keytool"
+    if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/keytool" ]; then
+        _keytool="$JAVA_HOME/bin/keytool"
+    fi
+    "$_keytool" -genkeypair -v -keystore "$APP_HOME/debug.keystore" -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" >/dev/null 2>&1 || true
 fi
 
 # Increase the maximum file descriptors if we can.
