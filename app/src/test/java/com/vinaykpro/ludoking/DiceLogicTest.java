@@ -92,19 +92,22 @@ public class DiceLogicTest {
 
     @Test
     public void naturalTokenCuts_allowsOpponentToCutLockedWinnerEarlyAndMidGame_butProtectsInCriticalEndgame() {
-        // Early/mid game (0 cuts so far, token at step 18, 2 tokens out): opponent IS allowed to cut locked winner token
+        // Early/mid game (0 cuts so far, token at step 18, 1 token out): opponent IS allowed to cut locked winner token
         assertTrue(MainActivity.canAllowFavoredTokenCut(
-                1, 0, 18, 2, 180, 190, false, false
+                1, 0, 18, 1, 180, 190, false, false
         ));
 
-        // Second cut in mid-game (1 cut so far, token at step 24, 2 tokens out/completed, balanced race) is also allowed
+        // Second and third cuts in mid-game (1 or 2 cuts so far, token at step 34, balanced race) are also allowed
         assertTrue(MainActivity.canAllowFavoredTokenCut(
-                1, 1, 24, 2, 140, 145, false, false
+                1, 1, 34, 2, 140, 145, false, false
+        ));
+        assertTrue(MainActivity.canAllowFavoredTokenCut(
+                1, 2, 28, 2, 140, 145, false, false
         ));
 
-        // Protected after 2 cuts or when token is deep near home entrance (step 45) or when opponent is near win
+        // Protected after 3 cuts or when token is deep near home entrance (step 45) or when opponent is near win
         assertFalse(MainActivity.canAllowFavoredTokenCut(
-                1, 2, 20, 2, 140, 145, false, false
+                1, 3, 20, 2, 140, 145, false, false
         ));
         assertFalse(MainActivity.canAllowFavoredTokenCut(
                 1, 0, 45, 2, 100, 120, false, false

@@ -1979,11 +1979,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void giveClickSound() {
-        if(isSoundOn && clickSoundEffect != null) {
-            try {
-                clickSoundEffect.seekTo(0);
-                clickSoundEffect.start();
-            } catch (Exception ignored) {}
+        if(isSoundOn) {
+            clickSoundEffect.seekTo(0);
+            clickSoundEffect.start();
         }
     }
 
@@ -2278,12 +2276,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPause() {
         super.onPause();
-        if (isMusicOn && m != null) {
-            try {
-                if (m.isPlaying()) {
-                    m.pause();
-                }
-            } catch (Exception ignored) {}
+        if (isMusicOn) {
+            m.pause();
         }
     }
 
