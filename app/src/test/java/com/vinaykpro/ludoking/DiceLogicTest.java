@@ -91,49 +91,49 @@ public class DiceLogicTest {
     }
 
     @Test
-    public void naturalTokenCuts_allowsOpponentToCutLockedWinnerEarlyAndMidGame_butProtectsInCriticalEndgame() {
+    public void naturalTokenCuts_allowsOpponentToCutLockedWinnerThroughoutMatch_butProtectsInCriticalEndgame() {
         // Early/mid game (0 cuts so far, token at step 18, even when locked winner has 3 tokens in base and higher remaining steps):
         // opponent IS allowed to cut locked winner token!
         assertTrue(MainActivity.canAllowFavoredTokenCut(
                 1, 0, 18, 1, 224, 150, false, false
         ));
 
-        // Second, third, and fourth cuts in Classic/TeamUp (token at step 34 or 46) are also allowed
+        // Mid and late game cuts in Classic (including step 50 right before home entry and after 6+ previous cuts)
         assertTrue(MainActivity.canAllowFavoredTokenCut(
                 1, 1, 34, 2, 160, 145, false, false
         ));
         assertTrue(MainActivity.canAllowFavoredTokenCut(
-                1, 2, 46, 2, 140, 145, false, false
+                1, 5, 50, 2, 140, 145, false, false
         ));
         assertTrue(MainActivity.canAllowFavoredTokenCut(
-                1, 3, 28, 2, 140, 145, false, false
+                1, 8, 44, 3, 95, 45, true, false
         ));
 
-        // Quick mode (gameType == 3): opponent IS allowed to cut locked winner token (0 or 1 cuts, up to step 44)
+        // Quick mode (gameType == 3): opponent IS allowed to cut locked winner token (0..2 cuts, up to step 50)
         assertTrue(MainActivity.canAllowFavoredTokenCut(
                 3, 0, 24, 1, 32, 28, false, false
         ));
         assertTrue(MainActivity.canAllowFavoredTokenCut(
-                3, 1, 38, 1, 18, 25, false, false
+                3, 2, 48, 1, 18, 25, false, false
         ));
 
-        // Team Up mode (gameType == 2): allows up to 6 natural cuts across the 2 teammates (up to step 49)
+        // Team Up mode (gameType == 2): allows up to 14 natural cuts across the 2 teammates (all outer track steps 0..50)
         assertTrue(MainActivity.canAllowFavoredTokenCut(
                 2, 0, 22, 1, 210, 180, false, false
         ));
         assertTrue(MainActivity.canAllowFavoredTokenCut(
-                2, 4, 49, 2, 140, 145, false, false
+                2, 7, 50, 3, 140, 145, false, false
         ));
         assertTrue(MainActivity.canAllowFavoredTokenCut(
-                2, 5, 36, 2, 130, 140, false, false
+                2, 12, 46, 4, 110, 48, true, false
         ));
         assertFalse(MainActivity.canAllowFavoredTokenCut(
-                2, 6, 20, 2, 130, 140, false, false
+                2, 14, 20, 3, 130, 140, false, false
         ));
 
-        // Protected after 4 cuts in Classic, or when opponent is near win and locked winner has only 1 active token at step >= 40
+        // Protected after 10 cuts in Classic, or when opponent is near win and locked winner is in a final-token crisis
         assertFalse(MainActivity.canAllowFavoredTokenCut(
-                1, 4, 20, 2, 140, 145, false, false
+                1, 10, 20, 2, 140, 145, false, false
         ));
         assertFalse(MainActivity.canAllowFavoredTokenCut(
                 1, 0, 42, 1, 120, 40, true, false

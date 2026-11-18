@@ -680,16 +680,26 @@
                 app:srcCompat="@drawable/helpround" />
 
             <ImageView
+                android:id="@+id/teamup_team1_header"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/team1header" />
+
+            <ImageView
                 android:id="@+id/t1bp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="10dp"
                 app:layout_constraintEnd_toStartOf="@+id/t1p1name"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teamup_team1_header"
                 app:srcCompat="@drawable/bluepiece" />
 
             <TextView
@@ -717,7 +727,7 @@
                 android:id="@+id/t1gp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="12dp"
                 app:layout_constraintEnd_toEndOf="@+id/t1bp"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="@+id/t1bp"
@@ -745,23 +755,32 @@
             <ImageView
                 android:id="@+id/imageView109"
                 android:layout_width="wrap_content"
-                android:layout_height="85dp"
+                android:layout_height="68dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/t1p2name"
                 app:srcCompat="@drawable/teamupvslinebg" />
 
             <ImageView
+                android:id="@+id/teamup_team2_header"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView109"
+                app:srcCompat="@drawable/team2header" />
+
+            <ImageView
                 android:id="@+id/t2rp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="0dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="10dp"
                 app:layout_constraintEnd_toEndOf="@+id/t1gp"
                 app:layout_constraintEnd_toStartOf="@+id/t1p1name"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="@+id/t1gp"
-                app:layout_constraintTop_toBottomOf="@id/imageView109"
+                app:layout_constraintTop_toBottomOf="@+id/teamup_team2_header"
                 app:srcCompat="@drawable/redpiece" />
 
             <TextView

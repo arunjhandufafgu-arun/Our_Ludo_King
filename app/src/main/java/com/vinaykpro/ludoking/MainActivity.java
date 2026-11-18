@@ -343,6 +343,8 @@ public class MainActivity extends AppCompatActivity {
                 if (isFavoredColor(this.colour, d.lockedWinnerColor, gametype)) {
                     d.favoredTimesCut++;
                     d.favoredNeedsReopenAfterCut = true;
+                    d.turnsSinceFavoredCut = 0;
+                    d.opponentTurnsSinceCutFavored = 0;
                 } else {
                     d.opponentTimesCut++;
                 }
@@ -538,27 +540,49 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         }, 50);
                                     }
-                                    redHomeBlink.clearAnimation();
-                                    redHomeBlink.setVisibility(GONE);
-                                    mainDiceImageView.setVisibility(GONE);
-                                    players.remove(x);
                                     if(gametype==2) {
-                                        for(Piece p: pieces) { p.piece.setVisibility(GONE); }
                                         if(colour.equals("red") || colour.equals("yellow")) {
-                                            setRedYellowTeamAsWinners();
+                                            if(isredyellowreadytowin) {
+                                                redHomeBlink.clearAnimation();
+                                                redHomeBlink.setVisibility(GONE);
+                                                mainDiceImageView.setVisibility(GONE);
+                                                players.remove(x);
+                                                setRedYellowTeamAsWinners();
+                                                return;
+                                            } else {
+                                                isredyellowreadytowin = true;
+                                            }
                                         } else {
-                                            stopEverything();
-                                            setBlueGreenTeamAsWinners();
-                                            ((TextView)findViewById(R.id.team1name1)).setText(player3name);
-                                            ((TextView)findViewById(R.id.team1name2)).setText(player2name);
-                                            ((TextView)findViewById(R.id.team2name1)).setText(player1name);
-                                            ((TextView)findViewById(R.id.team2name2)).setText(player4name);
-                                            showGameOverScreen();
-                                            mainDiceImageView.setVisibility(GONE);
-                                            hintArrow.setVisibility(GONE);
+                                            if(isbluegreenreadytowin) {
+                                                redHomeBlink.clearAnimation();
+                                                redHomeBlink.setVisibility(GONE);
+                                                mainDiceImageView.setVisibility(GONE);
+                                                players.remove(x);
+                                                stopEverything();
+                                                setBlueGreenTeamAsWinners();
+                                                showGameOverScreen();
+                                                mainDiceImageView.setVisibility(GONE);
+                                                hintArrow.setVisibility(GONE);
+                                                return;
+                                            } else {
+                                                isbluegreenreadytowin = true;
+                                            }
                                         }
+                                        hideThisPlayerDiceBg(currentPlayerSelectedIndex + 1);
+                                        currentPlayerIndex = x;
+                                        menuremoveplayersbtn.setVisibility(GONE);
+                                        players.remove(currentPlayerIndex);
+                                        if (currentPlayerIndex == players.size()) {
+                                            currentPlayerIndex = 0;
+                                        }
+                                        switchPlayers();
+                                        d.isDiceClickable = true;
                                         return;
                                     } else {
+                                        redHomeBlink.clearAnimation();
+                                        redHomeBlink.setVisibility(GONE);
+                                        mainDiceImageView.setVisibility(GONE);
+                                        players.remove(x);
                                         setCurrentPlayerAsWinnerAtCurrentPosition(currentPlayerSelectedIndex, colour, currentPlayerName);
                                     }
                                     String name = players.get(0).name,colour = players.get(0).color;
@@ -609,25 +633,38 @@ public class MainActivity extends AppCompatActivity {
                                     currentWinnerPlayerIndex = currentPlayerIndex;
                                     //checkAdjustments(currBlock);
                                     if(gametype==2) {
-                                        for(Piece p: pieces) { p.piece.setVisibility(GONE); }
                                         if(colour.equals("red") || colour.equals("yellow")) {
                                             if(isredyellowreadytowin) {
+                                                globalHandler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        checkPantaAdjustments(colour, currBlock);
+                                                    }
+                                                }, 50);
                                                 setRedYellowTeamAsWinners();
                                                 return;
-                                            } else { isredyellowreadytowin = true; }
+                                            } else {
+                                                isredyellowreadytowin = true;
+                                                hideThisPlayerDiceBg(currentPlayerSelectedIndex + 1);
+                                            }
                                         } else {
                                             if(isbluegreenreadytowin) {
+                                                globalHandler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        checkPantaAdjustments(colour, currBlock);
+                                                    }
+                                                }, 50);
                                                 stopEverything();
                                                 setBlueGreenTeamAsWinners();
-                                                ((TextView)findViewById(R.id.team1name1)).setText(player3name);
-                                                ((TextView)findViewById(R.id.team1name2)).setText(player2name);
-                                                ((TextView)findViewById(R.id.team2name1)).setText(player1name);
-                                                ((TextView)findViewById(R.id.team2name2)).setText(player4name);
                                                 showGameOverScreen();
                                                 mainDiceImageView.setVisibility(GONE);
                                                 hintArrow.setVisibility(GONE);
                                                 return;
-                                            } else { isbluegreenreadytowin = true; }
+                                            } else {
+                                                isbluegreenreadytowin = true;
+                                                hideThisPlayerDiceBg(currentPlayerSelectedIndex + 1);
+                                            }
                                         }
                                     } else {
                                         setCurrentPlayerAsWinnerAtCurrentPosition(currentPlayerSelectedIndex, colour, currentPlayerName);
@@ -705,6 +742,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setBlueGreenTeamAsWinners() {
+        findViewById(R.id.constraintLayout8).setVisibility(GONE);
+        findViewById(R.id.imageView114).setVisibility(GONE);
+        findViewById(R.id.teamslayout).setVisibility(View.VISIBLE);
+
         ((ImageView)findViewById(R.id.imageView132)).setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.team1header,null));
 
         ((ImageView)findViewById(R.id.imageView137)).setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.team2header,null));
@@ -722,6 +763,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setRedYellowTeamAsWinners() {
         stopEverything();
+        findViewById(R.id.constraintLayout8).setVisibility(GONE);
+        findViewById(R.id.imageView114).setVisibility(GONE);
+        findViewById(R.id.teamslayout).setVisibility(View.VISIBLE);
         showGameOverScreen();
         mainDiceImageView.setVisibility(GONE);
         hintArrow.setVisibility(GONE);
@@ -1139,6 +1183,10 @@ public class MainActivity extends AppCompatActivity {
         int favoredTimesCut = 0;
         int opponentTimesCut = 0;
         boolean favoredNeedsReopenAfterCut = false;
+        int turnsSinceFavoredCut = 99;
+        int turnsSinceLastFavoredSix = 99;
+        int turnsSinceLastOpponentSix = 99;
+        int opponentTurnsSinceCutFavored = 99;
         int lastFavoredRoll = 0;
         int secondLastFavoredRoll = 0;
         int lastOpponentRoll = 0;
@@ -2374,6 +2422,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if(gametype==2) {
+            menuremoveplayersbtn.setVisibility(GONE);
             findViewById(R.id.constraintLayout8).setVisibility(GONE);
             findViewById(R.id.imageView114).setVisibility(View.GONE);
             findViewById(R.id.teamslayout).setVisibility(View.VISIBLE);
@@ -3347,8 +3396,9 @@ public class MainActivity extends AppCompatActivity {
         if (favoredTokenSteps < 0 || favoredTokenSteps > 50) {
             return false;
         }
-        // Only protect a locked winner token in true last-piece endgame crisis
-        if (opponentNearWin && isFinalWinningToken && favoredRemainingSteps > minOpponentRemainingSteps + 36) {
+        // Only protect a locked winner token in a genuine final-piece endgame crisis:
+        // when the opponent is on their final winning token and cutting would leave the locked winner far behind.
+        if (opponentNearWin && isFinalWinningToken && favoredRemainingSteps > minOpponentRemainingSteps + 24) {
             return false;
         }
         int minSafeActive = (gameType == 2) ? 2 : 1;
@@ -3356,20 +3406,15 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         if (gameType == 3) {
-            if (opponentNearWin && favoredTokenSteps >= 36) {
+            if (opponentNearWin && favoredTokenSteps >= 38) {
                 return false;
             }
-            return favoredTimesCut < 2 && favoredTokenSteps <= 44;
+            return favoredTimesCut < 3 && favoredTokenSteps <= 50;
         }
-        int maxAllowedCuts = (gameType == 2) ? 6 : 4;
-        int maxCuttableStep = (gameType == 2) ? 49 : 48;
-        if (favoredTimesCut < maxAllowedCuts && favoredTokenSteps <= maxCuttableStep) {
-            if (opponentNearWin && favoredTimesCut >= (maxAllowedCuts - 2) && favoredTokenSteps >= 38) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+        // Allow cuts throughout the entire match (early, mid, and late game on all outer track steps 0..50)
+        // so opponents never feel blocked from cutting locked winner tokens even after multiple cuts.
+        int maxAllowedCuts = (gameType == 2) ? 14 : 10;
+        return favoredTimesCut < maxAllowedCuts;
     }
 
     private boolean isSafeForOpponentToCutFavoredPiece(Piece fp) {
@@ -3580,9 +3625,21 @@ public class MainActivity extends AppCompatActivity {
             if (isFavored) {
                 d.secondLastFavoredRoll = d.lastFavoredRoll;
                 d.lastFavoredRoll = chosenRoll;
+                d.turnsSinceFavoredCut++;
+                if (chosenRoll == 6) {
+                    d.turnsSinceLastFavoredSix = 0;
+                } else {
+                    d.turnsSinceLastFavoredSix++;
+                }
             } else {
                 d.secondLastOpponentRoll = d.lastOpponentRoll;
                 d.lastOpponentRoll = chosenRoll;
+                d.opponentTurnsSinceCutFavored++;
+                if (chosenRoll == 6) {
+                    d.turnsSinceLastOpponentSix = 0;
+                } else {
+                    d.turnsSinceLastOpponentSix++;
+                }
             }
         }
         return chosenRoll;
@@ -3590,6 +3647,14 @@ public class MainActivity extends AppCompatActivity {
 
     private int selectSmartBoardDiceRoll(int randomRoll, Player currentPlayer) {
         int normalizedRoll = (randomRoll >= 1 && randomRoll <= 6) ? randomRoll : 1;
+        if (d != null && normalizedRoll == 6) {
+            if (d.consecutiveSixCount >= 2) {
+                normalizedRoll = 3 + (int) (Math.random() * 3); // 3, 4, or 5 — never allow 3 sixes in a row
+            } else if (d.consecutiveSixCount == 1 && Math.random() < 0.75) {
+                // Keep natural double-6 rare so players don't get repeated multiple-6 streaks
+                normalizedRoll = 2 + (int) (Math.random() * 4); // 2, 3, 4, or 5
+            }
+        }
         if (d == null || d.lockedWinnerColor == null || d.lockedWinnerColor.isEmpty() || currentWinnerPosition > 1) {
             return normalizedRoll;
         }
@@ -3781,27 +3846,35 @@ public class MainActivity extends AppCompatActivity {
             if (aliveCount == 0 && baseCount > 0) {
                 boolean shouldOpenNow = (normalizedRoll == 6)
                         || opponentNearWin
-                        || d.favoredNeedsReopenAfterCut
                         || (d.favoredTurnsWithoutOpen >= 2)
-                        || (d.favoredTurnsWithoutOpen >= 1 && anyOpponentAlive && Math.random() < 0.72);
-                if (d.consecutiveSixCount < 2 && shouldOpenNow) {
+                        || (d.favoredTurnsWithoutOpen >= 1 && (anyOpponentAlive || d.favoredNeedsReopenAfterCut) && Math.random() < 0.55);
+                if (d.consecutiveSixCount == 0 && shouldOpenNow) {
                     d.favoredTurnsWithoutOpen = 0;
                     d.favoredNeedsReopenAfterCut = false;
                     return recordAndReturnRoll(6, true);
                 }
                 d.favoredTurnsWithoutOpen++;
-                int fallback = (normalizedRoll == 6 && d.consecutiveSixCount >= 2) ? 4 : normalizedRoll;
+                int fallback = (normalizedRoll == 6 && d.consecutiveSixCount >= 1) ? 4 : normalizedRoll;
                 return recordAndReturnRoll(fallback, true);
             }
             d.favoredTurnsWithoutOpen = 0;
 
             // Normal early & mid-game play: use original repo random roll (with smooth home-entry completion
-            // and reopen recovery after being cut so the locked winner recovers naturally from cuts).
+            // and reopen recovery after a natural cooldown so a cut token doesn't immediately roll 6 on the next turn).
             if (!isEmergencyCatchUp) {
-                // 1. If a token was recently cut by the opponent and is waiting in base, naturally reopen with a 6
-                if (d.favoredNeedsReopenAfterCut && baseCount > 0 && d.consecutiveSixCount == 0 && Math.random() < 0.68) {
+                // 1. If a token was cut by the opponent and is waiting in base, wait at least 2 turns and ensure
+                // we haven't rolled a 6 recently before softly assisting a 6 (prevents suspicious instant-6 after cut).
+                if (d.favoredNeedsReopenAfterCut
+                        && baseCount > 0
+                        && d.consecutiveSixCount == 0
+                        && d.turnsSinceFavoredCut >= 2
+                        && d.turnsSinceLastFavoredSix >= 2
+                        && Math.random() < 0.36) {
                     d.favoredNeedsReopenAfterCut = false;
                     return recordAndReturnRoll(6, true);
+                }
+                if (normalizedRoll == 6 && baseCount > 0) {
+                    d.favoredNeedsReopenAfterCut = false;
                 }
 
                 // 2. If a token is inside the home stretch (steps 50..55) and the natural roll would overshoot 56
@@ -3812,7 +3885,7 @@ public class MainActivity extends AppCompatActivity {
                         boolean wouldOvershoot = (p.numberOfSteps + normalizedRoll > 56);
                         boolean trailingOpponent = (effectiveFavoredRem > minOpponentRemainingSteps);
                         if (exactHomeRoll >= 1 && exactHomeRoll <= 6
-                                && (exactHomeRoll != 6 || d.consecutiveSixCount < 2)
+                                && (exactHomeRoll != 6 || d.consecutiveSixCount == 0)
                                 && ((wouldOvershoot && Math.random() < 0.72) || (trailingOpponent && Math.random() < 0.58))) {
                             return recordAndReturnRoll(exactHomeRoll, true);
                         }
@@ -3820,7 +3893,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // 3. Smooth pace keeper: if behind the leading opponent (or recovering from being cut) and rolled a 1 or 2,
-                // pick a natural non-cutting forward stride (4, 5, or 3) so we recover steps smoothly without sniping.
+                // pick a natural non-cutting forward stride (4, 5, or 3) so we recover steps smoothly without sniping or rolling 6s.
                 int naturalRoll = normalizedRoll;
                 boolean needsPaceRecovery = (effectiveFavoredRem > minOpponentRemainingSteps + 12)
                         || (d.favoredTimesCut > 0 && effectiveFavoredRem > minOpponentRemainingSteps - 6);
@@ -3850,13 +3923,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if (naturalRoll == 6 && d.consecutiveSixCount >= 2) {
+                if (naturalRoll == 6 && d.consecutiveSixCount >= 1) {
                     naturalRoll = 4;
                 } else if (naturalRoll == d.lastFavoredRoll && naturalRoll == d.secondLastFavoredRoll) {
-                    naturalRoll = (naturalRoll % 6) + 1;
-                    if (naturalRoll == 6 && d.consecutiveSixCount >= 2) {
-                        naturalRoll = 3;
-                    }
+                    naturalRoll = (naturalRoll % 5) + 1; // 1..5 so we never force a 6
                 }
 
                 boolean naturalCanMove = false;
@@ -3875,13 +3945,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // Emergency late-game comeback mode: only active when opponent is near win or locked winner is far behind.
-            // Focuses purely on fast forward travel and home completion — NEVER artificial token sniping.
+            // Focuses purely on fast forward travel (4, 5, 3) and home completion — NEVER artificial token sniping or multiple 6s.
             int[] candScores = new int[7];
             int bestCand = normalizedRoll;
             int bestScore = -100000;
 
             for (int cand = 1; cand <= 6; cand++) {
-                if (cand == 6 && d.consecutiveSixCount >= 2) {
+                if (cand == 6 && d.consecutiveSixCount >= 1) {
                     candScores[cand] = -50000;
                     continue;
                 }
@@ -3901,10 +3971,10 @@ public class MainActivity extends AppCompatActivity {
                     int pScore = 0;
 
                     if (!p.isAlive && cand == 6) {
-                        if (d.consecutiveSixCount == 0 && (aliveCount <= 1 || d.favoredNeedsReopenAfterCut || baseCount >= 2)) {
-                            pScore = 185 + jitter;
+                        if (d.consecutiveSixCount == 0 && d.turnsSinceLastFavoredSix >= 2 && (aliveCount <= 1 || baseCount >= 2)) {
+                            pScore = 165 + jitter;
                         } else {
-                            pScore = 95 + jitter;
+                            pScore = 75 + jitter;
                         }
                     } else if (p.isAlive) {
                         int nextSteps = p.numberOfSteps + cand;
@@ -3929,8 +3999,9 @@ public class MainActivity extends AppCompatActivity {
                             } else if (landsInDanger && p.numberOfSteps >= 36 && d.favoredTimesCut >= 2) {
                                 pScore = -60 + cand;
                             } else {
-                                // Pure forward stride to overtake by speed
-                                pScore = 105 + cand * 8 + (landsSafe ? 18 : 0) + (cand == normalizedRoll ? 25 : 0) + jitter;
+                                // Prefer fast non-6 strides (4 and 5) over 6 so comeback looks completely organic
+                                int strideBonus = (cand == 5) ? 44 : ((cand == 4) ? 38 : (cand * 6));
+                                pScore = 105 + strideBonus + (landsSafe ? 18 : 0) + (cand == normalizedRoll ? 25 : 0) + jitter;
                             }
                         }
                     }
@@ -3941,15 +4012,15 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (movableCount == 0) {
-                    if (baseCount > 0 && cand == 6 && d.consecutiveSixCount < 2) {
+                    if (baseCount > 0 && cand == 6 && d.consecutiveSixCount == 0) {
                         maxPieceScore = 195;
                     } else {
                         maxPieceScore = -5000;
                     }
                 }
 
-                if (cand == 6 && d.consecutiveSixCount == 1 && !opponentNearWin) {
-                    maxPieceScore -= 95;
+                if (cand == 6 && d.turnsSinceLastFavoredSix < 2 && movableCount > 0 && aliveCount > 0) {
+                    maxPieceScore -= 85;
                 }
 
                 if (maxPieceScore < 260) {
@@ -3972,8 +4043,8 @@ public class MainActivity extends AppCompatActivity {
             }
             return recordAndReturnRoll(bestCand, true);
         } else {
-            // Opponent turn: 100% authentic Ludo feel, actively allows & assists natural cuts on locked winner tokens,
-            // unrestricted home completion for non-final tokens, and zero loops in base or home column.
+            // Opponent turn: 100% authentic Ludo feel, actively allows & assists natural cuts on locked winner tokens
+            // throughout early, mid, and late game, unrestricted home completion for non-final tokens, and zero loops.
             boolean opponentTeamReady = false;
             if (gametype == 2) {
                 if (currentColor.equals("red") || currentColor.equals("yellow")) {
@@ -4026,8 +4097,10 @@ public class MainActivity extends AppCompatActivity {
                 int jitter = (int) (Math.random() * 28);
                 int score = ((cand == normalizedRoll) ? 60 : 20) + jitter;
 
-                if (cand == 6 && d.consecutiveSixCount >= 2) {
+                if (cand == 6 && d.consecutiveSixCount >= 1) {
                     score -= 35000;
+                } else if (cand == 6 && d.turnsSinceLastOpponentSix < 2 && aliveCount > 0) {
+                    score -= 90;
                 }
 
                 // Prevent 3 identical opponent rolls in a row so dice never loops on the same number
@@ -4092,15 +4165,11 @@ public class MainActivity extends AppCompatActivity {
                     score -= softHomeEntryPenalty;
                 }
 
-                if (cand == 6 && d.consecutiveSixCount < 2 && !candCutsFavoredSafely) {
-                    if (holdFourthTokenInBase) {
-                        score -= 18000;
-                    } else if (d.consecutiveSixCount == 1 && isFinalWinningTokenForWinGate) {
-                        score -= 5000;
-                    }
+                if (cand == 6 && d.consecutiveSixCount == 0 && !candCutsFavoredSafely && holdFourthTokenInBase) {
+                    score -= 18000;
                 }
 
-                if (candCutsFavoredSafely && !candHardBlocked && (cand != 6 || d.consecutiveSixCount < 2)) {
+                if (candCutsFavoredSafely && !candHardBlocked && (cand != 6 || d.consecutiveSixCount == 0)) {
                     safeCutFavoredCand = cand;
                 }
 
@@ -4119,14 +4188,17 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // If an opponent token is 1..6 blocks behind a locked winner token that is safe to cut,
-            // give the opponent a natural, high-frequency cut roll so the locked winner's tokens
-            // are regularly cut in normal play and opponents never have any doubt!
+            // always allow the natural cut roll and provide a steady, natural cut assist throughout the entire game
+            // (early, mid, and late game) so opponents never feel blocked from cutting locked winner tokens!
             if (safeCutFavoredCand != -1 && candScores[safeCutFavoredCand] >= 0) {
-                int lowCutThreshold = (gametype == 2) ? 1 : 0;
-                int midCutThreshold = (gametype == 2) ? 3 : 1;
-                double cutProb = (d.favoredTimesCut <= lowCutThreshold)
-                        ? 0.68
-                        : ((d.favoredTimesCut <= midCutThreshold) ? 0.52 : 0.38);
+                double cutProb;
+                if (d.opponentTurnsSinceCutFavored >= 5 || d.favoredTimesCut <= 1) {
+                    cutProb = 0.56;
+                } else if (d.favoredTimesCut <= ((gametype == 2) ? 5 : 3)) {
+                    cutProb = 0.44;
+                } else {
+                    cutProb = 0.36;
+                }
                 if (normalizedRoll == safeCutFavoredCand || Math.random() < cutProb) {
                     return recordAndReturnRoll(safeCutFavoredCand, false);
                 }
