@@ -142,4 +142,16 @@ public class DiceLogicTest {
                 1, 0, 25, 2, 120, 40, true, true
         ));
     }
+
+    @Test
+    public void teamUpMode_boardDisplaysTeamAAndTeamBLabels() {
+        assertEquals("Team A", MainActivity.formatTeamBoardLabel("blue", "Player 1"));
+        assertEquals("Team A", MainActivity.formatTeamBoardLabel("green", "Player 3"));
+        assertEquals("Team B", MainActivity.formatTeamBoardLabel("red", "Player 2"));
+        assertEquals("Team B", MainActivity.formatTeamBoardLabel("yellow", "Player 4"));
+        assertEquals("Team A", MainActivity.formatTeamBoardLabel("blue", "Player A"));
+        assertEquals("Team B", MainActivity.formatTeamBoardLabel("red", "p1"));
+        assertEquals("Team A - Rahul", MainActivity.formatTeamBoardLabel("blue", "Rahul"));
+        assertEquals("Team B - Amit", MainActivity.formatTeamBoardLabel("yellow", "Amit"));
+    }
 }

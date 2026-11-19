@@ -1911,7 +1911,7 @@ public class MainActivity extends AppCompatActivity {
         p3exitbox.getLayoutParams().width = (int) (total * 0.985);
         p4exitbox.getLayoutParams().width = (int) (total * 0.985);
 
-        if(gametype!=4) {
+        if(gametype!=4 && gametype!=2) {
             playername1.getLayoutParams().width = (int) (total);
             playername1.getLayoutParams().height = (int) (total);
             playername1.setRotation(90);
@@ -2093,6 +2093,18 @@ public class MainActivity extends AppCompatActivity {
                     player3color = "green";
                     createPieces("yellow", 4, player3name, isPLayer3Bot);
                     player4color = "yellow";
+            }
+        }
+        if (gametype == 2) {
+            for (Player pl : players) {
+                TextView nameTv = getPlayerNameByPosition(pl.getPosition());
+                if (nameTv != null) {
+                    String existingName = nameTv.getText() != null ? nameTv.getText().toString() : "";
+                    String teamLabel = formatTeamBoardLabel(pl.getColor(), existingName);
+                    nameTv.setText(teamLabel);
+                    nameTv.setVisibility(View.VISIBLE);
+                    nameTv.setRotation(0);
+                }
             }
         }
         View.OnTouchListener clickEffect = new View.OnTouchListener() {
@@ -3383,6 +3395,25 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    public static String formatTeamBoardLabel(String color, String rawName) {
+        String teamTag = ("blue".equalsIgnoreCase(color) || "green".equalsIgnoreCase(color))
+                ? "Team A"
+                : "Team B";
+        if (rawName == null) {
+            return teamTag;
+        }
+        String trimmed = rawName.trim();
+        if (trimmed.isEmpty()
+                || trimmed.matches("(?i)^p[1-4]$")
+                || trimmed.matches("(?i)^player\\s*[1-4a-d]$")) {
+            return teamTag;
+        }
+        if (trimmed.toLowerCase().startsWith("team a") || trimmed.toLowerCase().startsWith("team b")) {
+            return trimmed;
+        }
+        return teamTag + " - " + trimmed;
+    }
+
     public static boolean canAllowFavoredTokenCut(
             int gameType,
             int favoredTimesCut,
@@ -3924,7 +3955,10 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (naturalRoll == 6 && d.consecutiveSixCount >= 1) {
-                    naturalRoll = 4;
+                    naturalRoll = 2 + (int) (Math.random() * 4);
+                    if (naturalRoll == d.lastFavoredRoll) {
+                        naturalRoll = (naturalRoll % 5) + 1;
+                    }
                 } else if (naturalRoll == d.lastFavoredRoll && naturalRoll == d.secondLastFavoredRoll) {
                     naturalRoll = (naturalRoll % 5) + 1; // 1..5 so we never force a 6
                 }
@@ -4170,13 +4204,21 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (candCutsFavoredSafely && !candHardBlocked && (cand != 6 || d.consecutiveSixCount == 0)) {
-                    safeCutFavoredCand = cand;
+                    if (safeCutFavoredCand == -1
+                            || cand == normalizedRoll
+                            || (safeCutFavoredCand == 6 && cand != 6)) {
+                        safeCutFavoredCand = cand;
+                    }
                 }
 
-                // Prefer rolls that give the opponent at least 1 valid move on the board (prevents zero-move loops)
+                // Prefer rolls that give the opponent at least 1 valid move on the board (prevents zero-move loops),
+                // except when the opponent's only active piece is inside the home stretch waiting on a final win gate.
+                boolean waitingOnHomeStretchWinGate = isFinalWinningTokenForWinGate
+                        && aliveCount == 1
+                        && maxOpponentPieceSteps > 50;
                 if (aliveCount > 0 && movableForCand > 0) {
                     score += 40;
-                } else if (aliveCount > 0 && movableForCand == 0) {
+                } else if (aliveCount > 0 && movableForCand == 0 && !waitingOnHomeStretchWinGate) {
                     score -= 80;
                 }
 
