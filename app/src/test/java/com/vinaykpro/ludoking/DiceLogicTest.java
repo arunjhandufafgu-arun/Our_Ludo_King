@@ -2,6 +2,10 @@ package com.vinaykpro.ludoking;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -153,5 +157,63 @@ public class DiceLogicTest {
         assertEquals("Team B", MainActivity.formatTeamBoardLabel("red", "p1"));
         assertEquals("Team A - Rahul", MainActivity.formatTeamBoardLabel("blue", "Rahul"));
         assertEquals("Team B - Amit", MainActivity.formatTeamBoardLabel("yellow", "Amit"));
+    }
+
+    @Test
+    public void teamUpMode_captureRules_cutAllEnemyTokensOnNonSafeSquareAndProtectTeammatesAndSafeSpots() {
+        Set<Integer> safeSpots = new HashSet<>(Arrays.asList(0, 8, 13, 21, 26, 34, 39, 47));
+        int nonSafeBlock = 20;
+
+        // Team A (Blue + Green) share a non-safe square; Opponent Red (Team B) lands there:
+        // BOTH Blue and Green must be captured so neither stays sitting with Red like friendly tokens.
+        assertTrue(MainActivity.shouldCaptureToken(2, "red", "blue", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+        assertTrue(MainActivity.shouldCaptureToken(2, "red", "green", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+
+        // Team B (Red + Yellow) share a non-safe square; Opponent Blue (Team A) lands there:
+        // BOTH Red and Yellow must be captured.
+        assertTrue(MainActivity.shouldCaptureToken(2, "blue", "red", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+        assertTrue(MainActivity.shouldCaptureToken(2, "blue", "yellow", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+
+        // Teammates in Team Up mode must NEVER capture each other.
+        assertFalse(MainActivity.shouldCaptureToken(2, "blue", "green", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+        assertFalse(MainActivity.shouldCaptureToken(2, "green", "blue", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+        assertFalse(MainActivity.shouldCaptureToken(2, "red", "yellow", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+        assertFalse(MainActivity.shouldCaptureToken(2, "yellow", "red", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+
+        // Same-color tokens never capture each other.
+        assertFalse(MainActivity.shouldCaptureToken(2, "blue", "blue", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+
+        // Classic mode (gameType == 1): Blue and Green are opponents and capture each other.
+        assertTrue(MainActivity.shouldCaptureToken(1, "blue", "green", nonSafeBlock, true, false, nonSafeBlock, safeSpots));
+
+        // Safe spots protect all tokens from capture.
+        assertFalse(MainActivity.shouldCaptureToken(2, "red", "blue", 8, true, false, 8, safeSpots));
+        assertFalse(MainActivity.shouldCaptureToken(2, "red", "green", 0, true, false, 0, safeSpots));
+
+        // Dead or completed tokens are never captured.
+        assertFalse(MainActivity.shouldCaptureToken(2, "red", "blue", nonSafeBlock, false, false, nonSafeBlock, safeSpots));
+        assertFalse(MainActivity.shouldCaptureToken(2, "red", "blue", nonSafeBlock, true, true, nonSafeBlock, safeSpots));
+    }
+
+    @Test
+    public void teamUpMode_finishedTeammateDelegatesDiceControlToPartnerTokens() {
+        // Teammate color pairs: Blue <-> Green, Red <-> Yellow
+        assertEquals("green", MainActivity.getTeammateColor("blue"));
+        assertEquals("blue", MainActivity.getTeammateColor("green"));
+        assertEquals("yellow", MainActivity.getTeammateColor("red"));
+        assertEquals("red", MainActivity.getTeammateColor("yellow"));
+
+        // While own tokens are still active, player controls own color
+        assertEquals("blue", MainActivity.resolveControllablePieceColor(2, "blue", false, false));
+        assertEquals("red", MainActivity.resolveControllablePieceColor(2, "red", false, false));
+
+        // Once one teammate completes all 4 tokens in Team Up (gameType == 2), their dice rolls move partner's tokens
+        assertEquals("green", MainActivity.resolveControllablePieceColor(2, "blue", true, false));
+        assertEquals("blue", MainActivity.resolveControllablePieceColor(2, "green", true, false));
+        assertEquals("yellow", MainActivity.resolveControllablePieceColor(2, "red", true, false));
+        assertEquals("red", MainActivity.resolveControllablePieceColor(2, "yellow", true, false));
+
+        // In Classic mode (gameType == 1), never delegates to another color
+        assertEquals("blue", MainActivity.resolveControllablePieceColor(1, "blue", true, false));
     }
 }

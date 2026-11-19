@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     DisplayMetrics displayMetrics;
@@ -235,7 +236,8 @@ public class MainActivity extends AppCompatActivity {
             this.endPosition = startPosition!=0?startPosition-2:50;
             if(!isBotPiece) {
                 this.piece.setOnClickListener(view -> {
-                    if (isAlive && isClickable && currentPlayerColor.equals(colour)) {
+                    String controlColor = getActivePieceControlColor(currentPlayerColor);
+                    if (isAlive && isClickable && controlColor.equals(colour)) {
                         diceValue = currentPlayerDice;
                         currentPlayerDice = -1;
                         for (Piece p : getPiecesByColor(colour)) {
@@ -244,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                         checkAdjustments(currBlock);
                         move(diceValue);
                         //Toast.makeText(MainActivity.this, x+"", Toast.LENGTH_SHORT).show();
-                    } else if (!isAlive && currentPlayerColor.equals(colour) && currentPlayerDice == 6) {
+                    } else if (!isAlive && controlColor.equals(colour) && currentPlayerDice == 6) {
                         currentPlayerDice = -1;
                         for (Piece p : getPiecesByColor(colour)) {
                             p.inactiveState();
@@ -283,7 +285,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         void onClickForBot() {
-            if (isAlive && isClickable && currentPlayerColor.equals(colour)) {
+            String controlColor = getActivePieceControlColor(currentPlayerColor);
+            if (isAlive && isClickable && controlColor.equals(colour)) {
                 diceValue = currentPlayerDice;
                 currentPlayerDice = -1;
                 for (Piece p : getPiecesByColor(colour)) {
@@ -292,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
                 checkAdjustments(currBlock);
                 move(diceValue);
                 //Toast.makeText(MainActivity.this, x+"", Toast.LENGTH_SHORT).show();
-            } else if (!isAlive && currentPlayerColor.equals(colour) && currentPlayerDice == 6) {
+            } else if (!isAlive && controlColor.equals(colour) && currentPlayerDice == 6) {
                 currentPlayerDice = -1;
                 for (Piece p : getPiecesByColor(colour)) {
                     p.inactiveState();
@@ -333,6 +336,11 @@ public class MainActivity extends AppCompatActivity {
 
         void die()
         {
+            die(true);
+        }
+
+        void die(boolean playSound)
+        {
             isAlive = false;
             isClickable = false;
             isReadyToEnterWinnerZone = false;
@@ -349,15 +357,18 @@ public class MainActivity extends AppCompatActivity {
                     d.opponentTimesCut++;
                 }
             }
-            if(isSoundOn) {
-                deathSound = MediaPlayer.create(MainActivity.this, R.raw.death);
-                deathSound.start();
-                deathSound.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mediaPlayer) {
-                        deathSound.release();
-                    }
-                });
+            if(isSoundOn && playSound) {
+                final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.death);
+                if (mp != null) {
+                    deathSound = mp;
+                    mp.start();
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            mediaPlayer.release();
+                        }
+                    });
+                }
             }
 
 
@@ -371,6 +382,9 @@ public class MainActivity extends AppCompatActivity {
                         piece.setTranslationY(y[currBlock]-pushYForPieces);
                         globalHandler.postDelayed(this,20);
                     } else {
+                        if (!isAlive) {
+                            currBlock = -1;
+                        }
                         if(piece.getScaleX()<1.0f) {
                             piece.setScaleX(1.0f);
                             piece.setScaleY(1.0f);
@@ -527,6 +541,77 @@ public class MainActivity extends AppCompatActivity {
                             if(gametype==3) { pantaValue = 1; }
 
                             if(temp>=pantaValue) { //4
+                                if (gametype == 2) {
+                                    String teammateColor = getTeammateColor(this.colour);
+                                    boolean teamComplete = isColorAllPiecesCompleted(teammateColor);
+                                    if (this.colour.equals("red") || this.colour.equals("yellow")) {
+                                        if (isredyellowreadytowin || teamComplete) {
+                                            isThisPlayerWon = true;
+                                            isDeadChanceAvailable = isDiceMovableExtraChance = false;
+                                            redHomeBlink.clearAnimation();
+                                            redHomeBlink.setVisibility(GONE);
+                                            mainDiceImageView.setVisibility(GONE);
+                                            hintArrow.setVisibility(GONE);
+                                            globalHandler.postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    checkPantaAdjustments(colour, currBlock);
+                                                }
+                                            }, 50);
+                                            setRedYellowTeamAsWinners();
+                                            return;
+                                        } else {
+                                            isredyellowreadytowin = true;
+                                        }
+                                    } else {
+                                        if (isbluegreenreadytowin || teamComplete) {
+                                            isThisPlayerWon = true;
+                                            isDeadChanceAvailable = isDiceMovableExtraChance = false;
+                                            redHomeBlink.clearAnimation();
+                                            redHomeBlink.setVisibility(GONE);
+                                            mainDiceImageView.setVisibility(GONE);
+                                            hintArrow.setVisibility(GONE);
+                                            globalHandler.postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    checkPantaAdjustments(colour, currBlock);
+                                                }
+                                            }, 50);
+                                            stopEverything();
+                                            setBlueGreenTeamAsWinners();
+                                            showGameOverScreen();
+                                            mainDiceImageView.setVisibility(GONE);
+                                            hintArrow.setVisibility(GONE);
+                                            return;
+                                        } else {
+                                            isbluegreenreadytowin = true;
+                                        }
+                                    }
+                                    // Real Ludo King Team Up rule: when one teammate completes all 4 tokens,
+                                    // keep them in the turn order with their dice visible so they continue rolling
+                                    // to move their partner's remaining tokens (including the bonus roll for reaching home).
+                                    isThisPlayerWon = false;
+                                    globalHandler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            checkPantaAdjustments(colour, currBlock);
+                                        }
+                                    }, 50);
+                                    isDiceMovableExtraChance = true;
+                                    d.isDiceClickable = true;
+                                    if (!isBotPiece) {
+                                        hintArrow.setVisibility(View.VISIBLE);
+                                    } else {
+                                        globalHandler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                d.roll();
+                                            }
+                                        }, 150);
+                                    }
+                                    return;
+                                }
+
                                 isThisPlayerWon = true;
                                 isDeadChanceAvailable = isDiceMovableExtraChance = false;
                                 if(players.size()==2) {
@@ -540,51 +625,11 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         }, 50);
                                     }
-                                    if(gametype==2) {
-                                        if(colour.equals("red") || colour.equals("yellow")) {
-                                            if(isredyellowreadytowin) {
-                                                redHomeBlink.clearAnimation();
-                                                redHomeBlink.setVisibility(GONE);
-                                                mainDiceImageView.setVisibility(GONE);
-                                                players.remove(x);
-                                                setRedYellowTeamAsWinners();
-                                                return;
-                                            } else {
-                                                isredyellowreadytowin = true;
-                                            }
-                                        } else {
-                                            if(isbluegreenreadytowin) {
-                                                redHomeBlink.clearAnimation();
-                                                redHomeBlink.setVisibility(GONE);
-                                                mainDiceImageView.setVisibility(GONE);
-                                                players.remove(x);
-                                                stopEverything();
-                                                setBlueGreenTeamAsWinners();
-                                                showGameOverScreen();
-                                                mainDiceImageView.setVisibility(GONE);
-                                                hintArrow.setVisibility(GONE);
-                                                return;
-                                            } else {
-                                                isbluegreenreadytowin = true;
-                                            }
-                                        }
-                                        hideThisPlayerDiceBg(currentPlayerSelectedIndex + 1);
-                                        currentPlayerIndex = x;
-                                        menuremoveplayersbtn.setVisibility(GONE);
-                                        players.remove(currentPlayerIndex);
-                                        if (currentPlayerIndex == players.size()) {
-                                            currentPlayerIndex = 0;
-                                        }
-                                        switchPlayers();
-                                        d.isDiceClickable = true;
-                                        return;
-                                    } else {
-                                        redHomeBlink.clearAnimation();
-                                        redHomeBlink.setVisibility(GONE);
-                                        mainDiceImageView.setVisibility(GONE);
-                                        players.remove(x);
-                                        setCurrentPlayerAsWinnerAtCurrentPosition(currentPlayerSelectedIndex, colour, currentPlayerName);
-                                    }
+                                    redHomeBlink.clearAnimation();
+                                    redHomeBlink.setVisibility(GONE);
+                                    mainDiceImageView.setVisibility(GONE);
+                                    players.remove(x);
+                                    setCurrentPlayerAsWinnerAtCurrentPosition(currentPlayerSelectedIndex, colour, currentPlayerName);
                                     String name = players.get(0).name,colour = players.get(0).color;
                                     int loserplayerselectedindex = players.get(0).index;
 
@@ -632,43 +677,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                     currentWinnerPlayerIndex = currentPlayerIndex;
                                     //checkAdjustments(currBlock);
-                                    if(gametype==2) {
-                                        if(colour.equals("red") || colour.equals("yellow")) {
-                                            if(isredyellowreadytowin) {
-                                                globalHandler.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        checkPantaAdjustments(colour, currBlock);
-                                                    }
-                                                }, 50);
-                                                setRedYellowTeamAsWinners();
-                                                return;
-                                            } else {
-                                                isredyellowreadytowin = true;
-                                                hideThisPlayerDiceBg(currentPlayerSelectedIndex + 1);
-                                            }
-                                        } else {
-                                            if(isbluegreenreadytowin) {
-                                                globalHandler.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        checkPantaAdjustments(colour, currBlock);
-                                                    }
-                                                }, 50);
-                                                stopEverything();
-                                                setBlueGreenTeamAsWinners();
-                                                showGameOverScreen();
-                                                mainDiceImageView.setVisibility(GONE);
-                                                hintArrow.setVisibility(GONE);
-                                                return;
-                                            } else {
-                                                isbluegreenreadytowin = true;
-                                                hideThisPlayerDiceBg(currentPlayerSelectedIndex + 1);
-                                            }
-                                        }
-                                    } else {
-                                        setCurrentPlayerAsWinnerAtCurrentPosition(currentPlayerSelectedIndex, colour, currentPlayerName);
-                                    }
+                                    setCurrentPlayerAsWinnerAtCurrentPosition(currentPlayerSelectedIndex, colour, currentPlayerName);
 
                                     currentPlayerIndex = x;
                                     menuremoveplayersbtn.setVisibility(GONE);
@@ -724,14 +733,20 @@ public class MainActivity extends AppCompatActivity {
 
 
         public boolean check(int diceValue) {
+            if (hasCompletedItsPurpose || isThisPlayerWon) {
+                inactiveState();
+                return false;
+            }
             if(diceValue == 6)
             {
                 if(!isAlive || (numberOfSteps+diceValue)<57)
                 {
                     activeState();
                     return true;
-                } return false;
-            } else if(isAlive && (numberOfSteps+diceValue)<57 && !hasCompletedItsPurpose && !isThisPlayerWon) {
+                }
+                inactiveState();
+                return false;
+            } else if(isAlive && (numberOfSteps+diceValue)<57) {
                 activeState();
                 return true;
             } else {
@@ -1130,33 +1145,126 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public static boolean shouldCaptureToken(
+            int gameType,
+            String killerColor,
+            String targetColor,
+            int targetBlock,
+            boolean targetAlive,
+            boolean targetCompleted,
+            int killerBlock,
+            Set<Integer> safeBlocks
+    ) {
+        if (killerColor == null || targetColor == null) {
+            return false;
+        }
+        if (!targetAlive || targetCompleted) {
+            return false;
+        }
+        if (killerBlock < 0 || killerBlock > 51 || targetBlock != killerBlock) {
+            return false;
+        }
+        if (safeBlocks != null && safeBlocks.contains(killerBlock)) {
+            return false;
+        }
+        if (killerColor.equalsIgnoreCase(targetColor)) {
+            return false;
+        }
+        if (gameType == 2 && isSameTeamColor(killerColor, targetColor)) {
+            return false;
+        }
+        return true;
+    }
+
+    public static String getTeammateColor(String color) {
+        if (color == null) {
+            return "";
+        }
+        switch (color.toLowerCase()) {
+            case "blue":
+                return "green";
+            case "green":
+                return "blue";
+            case "red":
+                return "yellow";
+            case "yellow":
+                return "red";
+            default:
+                return color;
+        }
+    }
+
+    public static String resolveControllablePieceColor(
+            int gameType,
+            String turnColor,
+            boolean ownColorAllCompleted,
+            boolean teammateAllCompleted
+    ) {
+        if (turnColor == null) {
+            return "";
+        }
+        if (gameType == 2 && ownColorAllCompleted && !teammateAllCompleted) {
+            return getTeammateColor(turnColor);
+        }
+        return turnColor;
+    }
+
+    private boolean isColorAllPiecesCompleted(String color) {
+        List<Piece> list = getPiecesByColor(color);
+        if (list == null || list.isEmpty()) {
+            return false;
+        }
+        int pantaValue = (gametype == 3) ? 1 : 4;
+        int completed = 0;
+        for (Piece p : list) {
+            if (p.hasCompletedItsPurpose) {
+                completed++;
+            }
+        }
+        return completed >= pantaValue;
+    }
+
+    private String getActivePieceControlColor(String turnColor) {
+        if (gametype != 2 || turnColor == null || turnColor.isEmpty()) {
+            return turnColor;
+        }
+        boolean ownDone = isColorAllPiecesCompleted(turnColor);
+        String teammateColor = getTeammateColor(turnColor);
+        boolean teammateDone = isColorAllPiecesCompleted(teammateColor);
+        return resolveControllablePieceColor(gametype, turnColor, ownDone, teammateDone);
+    }
+
     private boolean checkDeath(Piece killer, int targetBox) {
-        int x = currentPlayerIndex;
-        if(x>players.size()-1) { x = players.size()-1; }
-        for(int i=0;i<players.size();i++)
-        {
-            String colour = players.get(x).getColor();
-            if(!colour.equals(killer.colour))
-            {
-                List<Piece> pieces = getPiecesByColor(colour);
-                for(Piece p : pieces)
-                {
-                    if(p.currBlock==targetBox)
-                    {
-                        if(gametype==2) {
-                            if((killer.colour.equals("yellow") && p.colour.equals("red")) || (killer.colour.equals("red") && p.colour.equals("yellow")) || (killer.colour.equals("blue") && p.colour.equals("green")) || (killer.colour.equals("green") && p.colour.equals("blue")))
-                            { continue; }
-                        }
-                        if(!safeSpots.contains(targetBox)) {
-                            p.die();
-                            return true;
-                        }
-                    }
+        if (killer == null || targetBox < 0 || targetBox > 51 || safeSpots.contains(targetBox)) {
+            return false;
+        }
+        List<Piece> victims = new ArrayList<>();
+        String[] allColors = {"red", "green", "blue", "yellow"};
+        for (String colour : allColors) {
+            if (colour.equals(killer.colour)) {
+                continue;
+            }
+            List<Piece> pieces = getPiecesByColor(colour);
+            if (pieces == null) {
+                continue;
+            }
+            for (Piece p : pieces) {
+                if (shouldCaptureToken(gametype, killer.colour, p.colour, p.currBlock, p.isAlive, p.hasCompletedItsPurpose, targetBox, safeSpots)) {
+                    victims.add(p);
                 }
             }
-            if(x>=players.size()-1) { x = 0; } else { x++; }
         }
-        return false;
+        if (victims.isEmpty()) {
+            return false;
+        }
+        // Mark all captured enemy tokens dead first so layout adjustments immediately exclude every victim.
+        for (Piece v : victims) {
+            v.isAlive = false;
+        }
+        for (int i = 0; i < victims.size(); i++) {
+            victims.get(i).die(i == 0);
+        }
+        return true;
     }
 
     class Dice
@@ -1480,13 +1588,15 @@ public class MainActivity extends AppCompatActivity {
 
                 currentPlayerDice = ch;
 
-                List<Piece> pieces = getPiecesByColor(currentPlayerColor);
+                String controlColor = getActivePieceControlColor(currentPlayerColor);
+                List<Piece> pieces = getPiecesByColor(controlColor);
                 //Toast.makeText(MainActivity.this, currentPlayer.color+"", Toast.LENGTH_SHORT).show();
 
-                 int chances = 0;
-                 int autoMoveBlock = -1;
+                autoMove = null;
+                int chances = 0;
+                int autoMoveBlock = -1;
 
-                 List<Piece> movablePieces = new ArrayList<>();
+                List<Piece> movablePieces = new ArrayList<>();
 
                 for(Piece p : pieces)
                 {
@@ -1524,6 +1634,7 @@ public class MainActivity extends AppCompatActivity {
                         currentPlayerDice = -1;
                         for(Piece p : pieces) { p.inactiveState(); }
                         autoMove.makeAlive();
+                        autoMove=null;
                     }
                 } else if(currentPlayer.isBot && chances>0) {
                     Piece bestMovablePiece = movablePieces.get(0);
@@ -1580,7 +1691,7 @@ public class MainActivity extends AppCompatActivity {
                     y = x;
                     for (int i = 0; i < players.size(); i++) {
                         String colour = players.get(y).getColor();
-                        if (!colour.equals(currentPlayerColor)) {
+                        if (!colour.equals(controlColor) && !(gametype == 2 && isSameTeamColor(controlColor, colour))) {
                             List<Piece> enemypieces = getPiecesByColor(colour);
                             for (Piece tp : enemypieces) {
                                 if (tp.isAlive) {
@@ -1638,8 +1749,8 @@ public class MainActivity extends AppCompatActivity {
                     y = x;
                     for (int i = 0; i < players.size(); i++) {
                         String color = players.get(y).getColor();
-                        if (!color.equals(currentPlayerColor)) {
-                            if (gametype == 2 && ((currentPlayerColor.equals("yellow") && color.equals("red")) || (currentPlayerColor.equals("red") && color.equals("yellow")) || (currentPlayerColor.equals("blue") && color.equals("green")) || (currentPlayerColor.equals("green") && color.equals("blue")))) {
+                        if (!color.equals(controlColor)) {
+                            if (gametype == 2 && isSameTeamColor(controlColor, color)) {
                                 //Toast.makeText(MainActivity.this, "same team", Toast.LENGTH_SHORT).show();
                             } else {
                                 List<Piece> enemypieces = getPiecesByColor(color);
@@ -3690,7 +3801,7 @@ public class MainActivity extends AppCompatActivity {
             return normalizedRoll;
         }
 
-        String currentColor = currentPlayer.getColor();
+        String currentColor = getActivePieceControlColor(currentPlayer.getColor());
         boolean isFavored = isFavoredColor(currentColor, d.lockedWinnerColor, gametype);
         int pantaValue = (gametype == 3) ? 1 : 4;
 
