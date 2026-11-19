@@ -234,8 +234,11 @@ public class MainActivity extends AppCompatActivity {
             this.readyToPick.setVisibility(View.INVISIBLE);
             this.piece.setVisibility(View.VISIBLE);
             this.endPosition = startPosition!=0?startPosition-2:50;
-            if(!isBotPiece) {
+            if (!isBotPiece || gametype == 2) {
                 this.piece.setOnClickListener(view -> {
+                    if (isActiveTurnBot(isBotPiece)) {
+                        return;
+                    }
                     String controlColor = getActivePieceControlColor(currentPlayerColor);
                     if (isAlive && isClickable && controlColor.equals(colour)) {
                         diceValue = currentPlayerDice;
@@ -314,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
             piece.animate().translationX(x[startPosition]+pushXForPieces).translationY(y[startPosition]-pushYForPieces).setDuration(400).start(); // 16 75
             globalHandler.postDelayed(() -> {
                 isDiceMovableExtraChance = true;
-                if(!isBotPiece) { hintArrow.setVisibility(View.VISIBLE); }
+                if(!isActiveTurnBot(isBotPiece)) { hintArrow.setVisibility(View.VISIBLE); }
                 checkAdjustments(currBlock);
                 if(currBlock>=24 && currBlock<=51) {
                     piece.setElevation(51-currBlock);
@@ -327,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
             globalHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(isBotPiece) {
+                    if(isActiveTurnBot(isBotPiece)) {
                         d.roll();
                     }
                 }
@@ -604,7 +607,7 @@ public class MainActivity extends AppCompatActivity {
                                     }, 50);
                                     isDiceMovableExtraChance = true;
                                     d.isDiceClickable = true;
-                                    if (!isBotPiece) {
+                                    if (!isActiveTurnBot(isBotPiece)) {
                                         hintArrow.setVisibility(View.VISIBLE);
                                     } else {
                                         globalHandler.postDelayed(new Runnable() {
@@ -717,9 +720,9 @@ public class MainActivity extends AppCompatActivity {
                     },10);
                     //checkAdjustments(currBlock);
 
-                    if(diceValue == 6 || currWinnerBlock>5 || isDeadChanceAvailable && !isThisPlayerWon) {
+                    if((diceValue == 6 || currWinnerBlock>5 || isDeadChanceAvailable) && !isThisPlayerWon) {
                         isDiceMovableExtraChance = true;
-                        if(!isBotPiece) { hintArrow.setVisibility(View.VISIBLE); } else {
+                        if(!isActiveTurnBot(isBotPiece)) { hintArrow.setVisibility(View.VISIBLE); } else {
                             globalHandler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -1227,6 +1230,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return completed >= pantaValue;
+    }
+
+    public static boolean resolveEffectiveTurnIsBot(int gameType, boolean turnPlayerIsBot, boolean pieceOwnerIsBot) {
+        if (gameType == 2) {
+            return turnPlayerIsBot;
+        }
+        return pieceOwnerIsBot;
+    }
+
+    private boolean isActiveTurnBot(boolean fallbackPieceIsBot) {
+        if (gametype != 2 || players == null || players.isEmpty()) {
+            return fallbackPieceIsBot;
+        }
+        int activeIdx = (currentPlayerIndex == 0) ? (players.size() - 1) : (currentPlayerIndex - 1);
+        if (activeIdx < 0 || activeIdx >= players.size()) {
+            return fallbackPieceIsBot;
+        }
+        return resolveEffectiveTurnIsBot(gametype, players.get(activeIdx).isBot, fallbackPieceIsBot);
     }
 
     private String getActivePieceControlColor(String turnColor) {
@@ -1832,7 +1853,12 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 List<Piece> enemypieces = getPiecesByColor(color);
                                 for (Piece tp : enemypieces) {
-                                    if (tp.isAlive && !safeSpots.contains(tp.currBlock)) {
+                                    if (tp.isAlive && !tp.hasCompletedItsPurpose && !safeSpots.contains(tp.currBlock)) {
+                                        int attackerAfterLanding = countLiveTokensOfSideOnBlock(tp.currBlock, controlColor) + 1;
+                                        int defenderCount = countLiveTokensOfSideOnBlock(tp.currBlock, color);
+                                        if (!canSideCaptureEnemySide(attackerAfterLanding, defenderCount)) {
+                                            continue;
+                                        }
                                         for (Piece mp : movablePieces) {
                                             if (mp.isAlive && mp.numberOfSteps + ch <= 50) {
                                                 if (mp.currBlock + ch > 51) {
@@ -3542,10 +3568,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isThreatenedByEnemyAtBlock(int block, String pieceColor) {
+        return isThreatenedByEnemyAtBlock(block, pieceColor, false);
+    }
+
+    private boolean isThreatenedByEnemyAtBlock(int block, String pieceColor, boolean includeArrivingOwnToken) {
         if (block < 0 || block > 51 || safeSpots.contains(block)) {
             return false;
         }
-        int mySideCount = Math.max(1, countLiveTokensOfSideOnBlock(block, pieceColor));
+        int existingOwn = countLiveTokensOfSideOnBlock(block, pieceColor);
+        int mySideCount = includeArrivingOwnToken ? (existingOwn + 1) : Math.max(1, existingOwn);
         for (Player pl : players) {
             String enemyColor = pl.getColor();
             if (enemyColor.equals(pieceColor) || (gametype == 2 && isSameTeamColor(enemyColor, pieceColor))) {
@@ -4232,7 +4263,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             int targetBlock = (p.startPosition + nextSteps) % 52;
                             boolean landsSafe = safeSpots.contains(targetBlock);
-                            boolean landsInDanger = isThreatenedByEnemyAtBlock(targetBlock, currentColor);
+                            boolean landsInDanger = isThreatenedByEnemyAtBlock(targetBlock, currentColor, true);
                             boolean cutsEnemyOnNonNaturalRoll = (cand != normalizedRoll)
                                     && (getMaxUnprotectedEnemyStepsAtBlock(targetBlock, currentColor, false) >= 0);
 

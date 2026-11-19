@@ -237,4 +237,15 @@ public class DiceLogicTest {
         assertFalse(MainActivity.canSideCaptureEnemySide(0, 1));
         assertFalse(MainActivity.canSideCaptureEnemySide(1, 0));
     }
+
+    @Test
+    public void teamUpMode_mixedHumanBotTurnUsesActiveTurnPlayerControl() {
+        // Human finished teammate rolling for Bot partner's pieces -> remains Human-controlled
+        assertFalse(MainActivity.resolveEffectiveTurnIsBot(2, false, true));
+        // Bot finished teammate rolling for Human partner's pieces -> remains Bot-controlled
+        assertTrue(MainActivity.resolveEffectiveTurnIsBot(2, true, false));
+        // Classic mode keeps the piece owner's bot flag
+        assertTrue(MainActivity.resolveEffectiveTurnIsBot(1, false, true));
+        assertFalse(MainActivity.resolveEffectiveTurnIsBot(1, true, false));
+    }
 }
