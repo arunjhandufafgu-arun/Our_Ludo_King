@@ -375,6 +375,10 @@ public class MainActivity extends AppCompatActivity {
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
+                    if (isAlive) {
+                        globalHandler.removeCallbacks(this);
+                        return;
+                    }
                     if(currBlock!=startPosition)
                     {
                         if(currBlock==0) currBlock=51; else --currBlock;
@@ -588,9 +592,10 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                     }
                                     // Real Ludo King Team Up rule: when one teammate completes all 4 tokens,
-                                    // keep them in the turn order with their dice visible so they continue rolling
-                                    // to move their partner's remaining tokens (including the bonus roll for reaching home).
+                                    // keep them in the turn order with their dice visible (showing partner's token icon)
+                                    // so they continue rolling to move their partner's remaining tokens.
                                     isThisPlayerWon = false;
+                                    updateDicePadIconForPosition(currentPlayerPosition, teammateColor);
                                     globalHandler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
@@ -1234,14 +1239,86 @@ public class MainActivity extends AppCompatActivity {
         return resolveControllablePieceColor(gametype, turnColor, ownDone, teammateDone);
     }
 
+    private void updateDicePadIconForPosition(int position, String pieceColor) {
+        if (d == null || pieceColor == null || pieceColor.isEmpty()) {
+            return;
+        }
+        Drawable icon = getPieceDrawableByColor(pieceColor);
+        switch (position) {
+            case 1:
+                if (d.tLeftImgColor != null) {
+                    d.tLeftImgColor.setImageDrawable(icon);
+                }
+                break;
+            case 2:
+                if (d.tRightImgColor != null) {
+                    d.tRightImgColor.setImageDrawable(icon);
+                }
+                break;
+            case 3:
+                if (d.bLeftImgColor != null) {
+                    d.bLeftImgColor.setImageDrawable(icon);
+                }
+                break;
+            case 4:
+                if (d.bRightImgColor != null) {
+                    d.bRightImgColor.setImageDrawable(icon);
+                }
+                break;
+        }
+    }
+
+    public static boolean canSideCaptureEnemySide(int attackerSideCountOnBlock, int defenderSideCountOnBlock) {
+        if (attackerSideCountOnBlock <= 0 || defenderSideCountOnBlock <= 0) {
+            return false;
+        }
+        // Real Ludo King double-token / safe-pair rule:
+        // A single token cannot cut 2+ defending tokens of the same color/team on one square;
+        // cutting happens only when the attacking color/team brings matching or greater count (e.g., 2 vs 2).
+        return attackerSideCountOnBlock >= defenderSideCountOnBlock;
+    }
+
+    private int countLiveTokensOfSideOnBlock(int block, String sideColor) {
+        if (block < 0 || block > 51 || sideColor == null || sideColor.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+        String[] allColors = {"red", "green", "blue", "yellow"};
+        for (String col : allColors) {
+            boolean sameSide = col.equalsIgnoreCase(sideColor)
+                    || (gametype == 2 && isSameTeamColor(col, sideColor));
+            if (!sameSide) {
+                continue;
+            }
+            List<Piece> pieces = getPiecesByColor(col);
+            if (pieces == null) {
+                continue;
+            }
+            for (Piece p : pieces) {
+                if (p.isAlive && !p.hasCompletedItsPurpose && p.currBlock == block) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     private boolean checkDeath(Piece killer, int targetBox) {
         if (killer == null || targetBox < 0 || targetBox > 51 || safeSpots.contains(targetBox)) {
             return false;
         }
+        int killerSideCount = countLiveTokensOfSideOnBlock(targetBox, killer.colour);
+        if (killerSideCount <= 0) {
+            killerSideCount = 1;
+        }
         List<Piece> victims = new ArrayList<>();
         String[] allColors = {"red", "green", "blue", "yellow"};
         for (String colour : allColors) {
-            if (colour.equals(killer.colour)) {
+            if (colour.equals(killer.colour) || (gametype == 2 && isSameTeamColor(killer.colour, colour))) {
+                continue;
+            }
+            int enemySideCount = countLiveTokensOfSideOnBlock(targetBox, colour);
+            if (!canSideCaptureEnemySide(killerSideCount, enemySideCount)) {
                 continue;
             }
             List<Piece> pieces = getPiecesByColor(colour);
@@ -3468,9 +3545,14 @@ public class MainActivity extends AppCompatActivity {
         if (block < 0 || block > 51 || safeSpots.contains(block)) {
             return false;
         }
+        int mySideCount = Math.max(1, countLiveTokensOfSideOnBlock(block, pieceColor));
         for (Player pl : players) {
             String enemyColor = pl.getColor();
             if (enemyColor.equals(pieceColor) || (gametype == 2 && isSameTeamColor(enemyColor, pieceColor))) {
+                continue;
+            }
+            int enemySideCountAfterArrival = countLiveTokensOfSideOnBlock(block, enemyColor) + 1;
+            if (!canSideCaptureEnemySide(enemySideCountAfterArrival, mySideCount)) {
                 continue;
             }
             for (Piece ep : getPiecesByColor(enemyColor)) {
@@ -3489,12 +3571,17 @@ public class MainActivity extends AppCompatActivity {
         if (block < 0 || block > 51 || safeSpots.contains(block)) {
             return false;
         }
+        int moverSideCountAfterArrival = countLiveTokensOfSideOnBlock(block, moverColor) + 1;
         for (Player pl : players) {
             String otherColor = pl.getColor();
             if (otherColor.equals(moverColor) || (gametype == 2 && isSameTeamColor(otherColor, moverColor))) {
                 continue;
             }
             if (onlyNonFavoredTargets && d != null && isFavoredColor(otherColor, d.lockedWinnerColor, gametype)) {
+                continue;
+            }
+            int enemySideCount = countLiveTokensOfSideOnBlock(block, otherColor);
+            if (!canSideCaptureEnemySide(moverSideCountAfterArrival, enemySideCount)) {
                 continue;
             }
             for (Piece ep : getPiecesByColor(otherColor)) {
@@ -3678,6 +3765,7 @@ public class MainActivity extends AppCompatActivity {
         if (block < 0 || block > 51 || safeSpots.contains(block)) {
             return -1;
         }
+        int moverSideCountAfterArrival = countLiveTokensOfSideOnBlock(block, moverColor) + 1;
         int maxEnemySteps = -1;
         for (Player pl : players) {
             String otherColor = pl.getColor();
@@ -3685,6 +3773,10 @@ public class MainActivity extends AppCompatActivity {
                 continue;
             }
             if (onlyNonFavoredTargets && d != null && isFavoredColor(otherColor, d.lockedWinnerColor, gametype)) {
+                continue;
+            }
+            int enemySideCount = countLiveTokensOfSideOnBlock(block, otherColor);
+            if (!canSideCaptureEnemySide(moverSideCountAfterArrival, enemySideCount)) {
                 continue;
             }
             for (Piece ep : getPiecesByColor(otherColor)) {
@@ -3700,6 +3792,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int evaluateFavoredPieceAtBlockForOpponentCut(
             int block,
+            String attackerColor,
             boolean opponentNearWin,
             boolean isFinalWinningToken,
             int favoredActiveAndCompletedCount,
@@ -3707,6 +3800,11 @@ public class MainActivity extends AppCompatActivity {
             int minOpponentRemainingSteps
     ) {
         if (d == null || d.lockedWinnerColor == null || block < 0 || block > 51 || safeSpots.contains(block)) {
+            return 0;
+        }
+        int attackerSideCountAfterArrival = countLiveTokensOfSideOnBlock(block, attackerColor) + 1;
+        int favoredSideCount = countLiveTokensOfSideOnBlock(block, d.lockedWinnerColor);
+        if (!canSideCaptureEnemySide(attackerSideCountAfterArrival, favoredSideCount)) {
             return 0;
         }
         int status = 0;
@@ -4288,6 +4386,7 @@ public class MainActivity extends AppCompatActivity {
                             int targetBlock = (p.startPosition + nextSteps) % 52;
                             int cutFavoredStatus = evaluateFavoredPieceAtBlockForOpponentCut(
                                     targetBlock,
+                                    currentColor,
                                     opponentNearWin,
                                     isFinalWinningTokenForCutCheck,
                                     favoredActiveAndCompleted,

@@ -216,4 +216,25 @@ public class DiceLogicTest {
         // In Classic mode (gameType == 1), never delegates to another color
         assertEquals("blue", MainActivity.resolveControllablePieceColor(1, "blue", true, false));
     }
+
+    @Test
+    public void safePairCapture_requiresMatchingOrGreaterAttackerCount() {
+        // Normal 1v1 cut succeeds
+        assertTrue(MainActivity.canSideCaptureEnemySide(1, 1));
+
+        // 1 attacker landing on 2 defending tokens (same color or Team Up pair) does NOT cut either token
+        assertFalse(MainActivity.canSideCaptureEnemySide(1, 2));
+
+        // Once a 2nd token from the attacking color/team also lands on the same square (2 vs 2), cuts BOTH
+        assertTrue(MainActivity.canSideCaptureEnemySide(2, 2));
+        assertTrue(MainActivity.canSideCaptureEnemySide(2, 1));
+
+        // Larger stacks follow the same rule (3 defenders require 3+ attackers)
+        assertFalse(MainActivity.canSideCaptureEnemySide(2, 3));
+        assertTrue(MainActivity.canSideCaptureEnemySide(3, 3));
+
+        // Zero counts never capture
+        assertFalse(MainActivity.canSideCaptureEnemySide(0, 1));
+        assertFalse(MainActivity.canSideCaptureEnemySide(1, 0));
+    }
 }
