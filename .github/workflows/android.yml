@@ -24,6 +24,27 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    - name: Deduplicate drawable resources
+      run: |
+        python3 - <<'PY'
+        import os
+        d = "app/src/main/res/drawable"
+        priority = {".png": 1, ".jpeg": 2, ".jpg": 3, ".gif": 4, ".xml": 5, ".webp": 6}
+        groups = {}
+        for fn in sorted(os.listdir(d)):
+            stem, ext = os.path.splitext(fn)
+            if ext.lower() in priority:
+                groups.setdefault(stem, []).append((priority[ext.lower()], fn))
+        removed = 0
+        for stem, items in groups.items():
+            if len(items) > 1:
+                items.sort()
+                for _, dup_fn in items[1:]:
+                    os.remove(os.path.join(d, dup_fn))
+                    removed += 1
+        print(f"Removed {removed} duplicate drawable files")
+        PY
+
     - name: Build with Gradle
       run: ./gradlew testDebugUnitTest assembleDebug -x lint -x lintDebug -x lintAnalyzeDebug --no-daemon
 
