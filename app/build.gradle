@@ -8,10 +8,16 @@ android {
 
     defaultConfig {
         applicationId "com.vinaykpro.ludoking"
-        minSdk 21
+        minSdk 19
         targetSdk 33
         versionCode 1562
         versionName "8.0.0.278"
+        resourceConfigurations += ["en"]
+    }
+
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 
     packaging {
@@ -23,7 +29,11 @@ android {
                 'META-INF/*.version',
                 'META-INF/androidx.*',
                 'META-INF/PROGUARD/*',
-                'META-INF/services/*',
+                'META-INF/services/**',
+                'META-INF/com/**',
+                'META-INF/LICENSE*',
+                'META-INF/NOTICE*',
+                'kotlin/**',
                 'DebugProbesKt.bin'
             ]
         }
@@ -54,20 +64,23 @@ android {
     buildTypes {
         debug {
             crunchPngs false
+            minifyEnabled true
+            shrinkResources true
             signingConfig signingConfigs.debugConfig
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
             crunchPngs false
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
             signingConfig signingConfigs.debugConfig
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     testOptions {

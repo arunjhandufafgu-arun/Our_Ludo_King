@@ -287,4 +287,63 @@ public class DiceLogicTest {
         assertFalse(MainActivity.shouldCutRemainingAlliesOnDeparture(8, 1, 1, safeSpots));
         assertFalse(MainActivity.shouldCutRemainingAlliesOnDeparture(0, 1, 1, safeSpots));
     }
+
+    @Test
+    public void threeConsecutiveSixes_forfeitsTurnOnlyOnThirdSix() {
+        assertFalse(MainActivity.shouldForfeitTurnOnConsecutiveSixes(0));
+        assertFalse(MainActivity.shouldForfeitTurnOnConsecutiveSixes(1));
+        assertFalse(MainActivity.shouldForfeitTurnOnConsecutiveSixes(2));
+        assertTrue(MainActivity.shouldForfeitTurnOnConsecutiveSixes(3));
+        assertTrue(MainActivity.shouldForfeitTurnOnConsecutiveSixes(4));
+    }
+
+    @Test
+    public void teamUpWinGate_allowsFirstOpponentTeammateToFinishAllFourTokens_andOnlyGatesEighthToken() {
+        // Team Up (gameType == 2): first teammate (teammateAlreadyCompleted == false) can finish all 4 tokens freely
+        assertFalse(MainActivity.isFinalMatchWinningToken(2, false, 0, 4));
+        assertFalse(MainActivity.isFinalMatchWinningToken(2, false, 3, 4));
+
+        // Second teammate (teammateAlreadyCompleted == true): tokens 1..3 finish freely; only 8th token (ownCompleted == 3) is match-winning
+        assertFalse(MainActivity.isFinalMatchWinningToken(2, true, 2, 4));
+        assertTrue(MainActivity.isFinalMatchWinningToken(2, true, 3, 4));
+
+        // Classic (gameType == 1): only 4th token is match-winning
+        assertFalse(MainActivity.isFinalMatchWinningToken(1, false, 2, 4));
+        assertTrue(MainActivity.isFinalMatchWinningToken(1, false, 3, 4));
+
+        // Quick (gameType == 3): 1st token is match-winning
+        assertTrue(MainActivity.isFinalMatchWinningToken(3, false, 0, 1));
+    }
+
+    @Test
+    public void lockedMatch_preventsOpponentDoubleSix_whileUnlockedAndFavoredRemainAuthentic() {
+        // Locked match + opponent already rolled one 6 -> second 6 is prevented
+        assertTrue(MainActivity.shouldPreventOpponentConsecutiveSix(true, false, 1, 6));
+        assertTrue(MainActivity.shouldPreventOpponentConsecutiveSix(true, false, 2, 6));
+
+        // First 6 for opponent is allowed freely; 1..5 after a 6 are allowed freely
+        assertFalse(MainActivity.shouldPreventOpponentConsecutiveSix(true, false, 0, 6));
+        assertFalse(MainActivity.shouldPreventOpponentConsecutiveSix(true, false, 1, 4));
+
+        // Favored side and unlocked matches are never blocked by opponent double-6 rule
+        assertFalse(MainActivity.shouldPreventOpponentConsecutiveSix(true, true, 1, 6));
+        assertFalse(MainActivity.shouldPreventOpponentConsecutiveSix(false, false, 1, 6));
+    }
+
+    @Test
+    public void zeroDoubtPacing_trimsOpponentFinalTokenSurgeAndNudgesTrailingLockedWinner() {
+        // Opponent final winning token while locked winner trails -> trims 5/6 rush into home column, keeps 1..4 natural
+        assertTrue(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 46, 5));
+        assertTrue(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 45, 6));
+        assertFalse(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 46, 3));
+        assertFalse(MainActivity.shouldTrimOpponentFinalTokenSurge(false, true, 46, 6));
+        assertFalse(MainActivity.shouldTrimOpponentFinalTokenSurge(true, false, 46, 6));
+
+        // Mid-game pace nudge activates smoothly when locked winner trails by >14 steps on a natural 1 or 2
+        assertTrue(MainActivity.shouldApplyMidGamePaceNudge(130, 110, 0, 1));
+        assertTrue(MainActivity.shouldApplyMidGamePaceNudge(130, 110, 0, 2));
+        assertFalse(MainActivity.shouldApplyMidGamePaceNudge(130, 110, 0, 4));
+        assertFalse(MainActivity.shouldApplyMidGamePaceNudge(115, 110, 0, 1));
+        assertTrue(MainActivity.shouldApplyMidGamePaceNudge(120, 110, 2, 2));
+    }
 }
