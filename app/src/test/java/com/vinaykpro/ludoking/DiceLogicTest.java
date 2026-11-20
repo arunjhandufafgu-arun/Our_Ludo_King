@@ -248,4 +248,43 @@ public class DiceLogicTest {
         assertTrue(MainActivity.resolveEffectiveTurnIsBot(1, false, true));
         assertFalse(MainActivity.resolveEffectiveTurnIsBot(1, true, false));
     }
+
+    @Test
+    public void sameColorTokens_cannotStackOnNonSafeOuterSquare_butAllowedOnSafeSpotsAndHomeStretch() {
+        Set<Integer> safeSpots = new HashSet<>(Arrays.asList(0, 8, 13, 21, 26, 34, 39, 47));
+
+        // Non-safe outer square already occupied by another token of the same color -> BLOCKED
+        assertTrue(MainActivity.isSameColorLandingBlocked(20, false, true, safeSpots));
+
+        // Non-safe outer square empty (or occupied only by teammate/enemy, not same color) -> ALLOWED
+        assertFalse(MainActivity.isSameColorLandingBlocked(20, false, false, safeSpots));
+
+        // Safe spots (stars and starting squares) -> ALLOWED even if same color is already there
+        assertFalse(MainActivity.isSameColorLandingBlocked(0, false, true, safeSpots));
+        assertFalse(MainActivity.isSameColorLandingBlocked(8, false, true, safeSpots));
+        assertFalse(MainActivity.isSameColorLandingBlocked(26, false, true, safeSpots));
+
+        // Home stretch / finish -> ALLOWED even if same color is already there
+        assertFalse(MainActivity.isSameColorLandingBlocked(64, true, true, safeSpots));
+    }
+
+    @Test
+    public void teamUpMode_departureExposureCut_cutsRemainingAllyWhenTeammateLeavesSquareWithEnemy() {
+        Set<Integer> safeSpots = new HashSet<>(Arrays.asList(0, 8, 13, 21, 26, 34, 39, 47));
+        int nonSafeBlock = 20;
+
+        // Team A (Blue + Green) + Opponent Red share non-safe square 20.
+        // Blue moves away -> remaining Team A count = 1, waiting Red count = 1 -> Green MUST be cut immediately!
+        assertTrue(MainActivity.shouldCutRemainingAlliesOnDeparture(nonSafeBlock, 1, 1, safeSpots));
+
+        // If Red leaves instead -> remaining Team B count = 0 -> nothing cut
+        assertFalse(MainActivity.shouldCutRemainingAlliesOnDeparture(nonSafeBlock, 0, 2, safeSpots));
+
+        // If no enemy was standing on the square when Blue leaves -> Green stays safe
+        assertFalse(MainActivity.shouldCutRemainingAlliesOnDeparture(nonSafeBlock, 1, 0, safeSpots));
+
+        // On safe squares (star / start), leaving NEVER triggers a capture
+        assertFalse(MainActivity.shouldCutRemainingAlliesOnDeparture(8, 1, 1, safeSpots));
+        assertFalse(MainActivity.shouldCutRemainingAlliesOnDeparture(0, 1, 1, safeSpots));
+    }
 }

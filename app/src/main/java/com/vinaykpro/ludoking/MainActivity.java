@@ -450,17 +450,24 @@ public class MainActivity extends AppCompatActivity {
                 currBlock = startPosition;
             }
 
+            int departureBlock = currBlock;
+
             if(currBlock>=51)
                 currBlock = 0;
             else
                 currBlock++;
 
-            if(currBlock==0) { checkAdjustments(51); } else { checkAdjustments(currBlock-1); }
-
             if(isReadyToEnterWinnerZone)
             {
                 currBlock = winnerBlocks[currWinnerBlock];
                 currWinnerBlock++;
+            }
+
+            if (n == diceValue) {
+                checkDepartureExposureCapture(departureBlock, this.colour);
+            }
+            if (departureBlock >= 0) {
+                checkAdjustments(departureBlock);
             }
 
             if(currBlock==endPosition) { winnerBlocks = getWinnerBlocks(endPosition); isReadyToEnterWinnerZone = true; }
@@ -741,26 +748,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         public boolean check(int diceValue) {
-            if (hasCompletedItsPurpose || isThisPlayerWon) {
-                inactiveState();
-                return false;
-            }
-            if(diceValue == 6)
-            {
-                if(!isAlive || (numberOfSteps+diceValue)<57)
-                {
-                    activeState();
-                    return true;
-                }
-                inactiveState();
-                return false;
-            } else if(isAlive && (numberOfSteps+diceValue)<57) {
+            if (canPieceLegallyAdvance(this, diceValue)) {
                 activeState();
                 return true;
-            } else {
-                inactiveState();
-                return false;
             }
+            inactiveState();
+            return false;
         }
     }
 
@@ -1289,14 +1282,87 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public static boolean isSameColorLandingBlocked(
+            int targetOuterBlock,
+            boolean targetInHomeStretch,
+            boolean hasAnotherSameColorTokenOnTarget,
+            Set<Integer> safeBlocks
+    ) {
+        if (targetInHomeStretch || targetOuterBlock < 0 || targetOuterBlock > 51) {
+            return false;
+        }
+        if (safeBlocks != null && safeBlocks.contains(targetOuterBlock)) {
+            return false;
+        }
+        // Real Ludo King rule: two tokens of the exact same color cannot stand together
+        // on the same non-safe outer track square (safe spots and home stretch remain allowed).
+        return hasAnotherSameColorTokenOnTarget;
+    }
+
+    public static boolean shouldCutRemainingAlliesOnDeparture(
+            int fromBlock,
+            int remainingAllySideCountOnBlock,
+            int enemySideCountOnBlock,
+            Set<Integer> safeBlocks
+    ) {
+        if (fromBlock < 0 || fromBlock > 51) {
+            return false;
+        }
+        if (safeBlocks != null && safeBlocks.contains(fromBlock)) {
+            return false;
+        }
+        if (remainingAllySideCountOnBlock <= 0 || enemySideCountOnBlock <= 0) {
+            return false;
+        }
+        // When a team/side pair breaks because one token moves away while an opposing token
+        // is already waiting on that non-safe square, the waiting opponent immediately cuts
+        // the remaining exposed ally token(s) so opposing tokens never sit together like friends.
+        return canSideCaptureEnemySide(enemySideCountOnBlock, remainingAllySideCountOnBlock);
+    }
+
     public static boolean canSideCaptureEnemySide(int attackerSideCountOnBlock, int defenderSideCountOnBlock) {
         if (attackerSideCountOnBlock <= 0 || defenderSideCountOnBlock <= 0) {
             return false;
         }
-        // Real Ludo King double-token / safe-pair rule:
-        // A single token cannot cut 2+ defending tokens of the same color/team on one square;
-        // cutting happens only when the attacking color/team brings matching or greater count (e.g., 2 vs 2).
+        // Real Ludo King Team Up safe-pair rule:
+        // A single opponent token cannot cut 2 defending team tokens on one square;
+        // cutting happens when the attacking side brings matching or greater count (e.g., 2 vs 2).
         return attackerSideCountOnBlock >= defenderSideCountOnBlock;
+    }
+
+    private boolean hasLiveTokenOfExactColorOnBlock(int block, String exactColor, Piece excludePiece) {
+        if (block < 0 || block > 51 || exactColor == null || exactColor.isEmpty()) {
+            return false;
+        }
+        List<Piece> pieces = getPiecesByColor(exactColor);
+        if (pieces == null) {
+            return false;
+        }
+        for (Piece p : pieces) {
+            if (p != excludePiece && p.isAlive && !p.hasCompletedItsPurpose && p.currBlock == block) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canPieceLegallyAdvance(Piece p, int diceVal) {
+        if (p == null || p.hasCompletedItsPurpose || p.isThisPlayerWon) {
+            return false;
+        }
+        if (!p.isAlive) {
+            return diceVal == 6;
+        }
+        int nextSteps = p.numberOfSteps + diceVal;
+        if (nextSteps >= 57) {
+            return false;
+        }
+        if (nextSteps > 50) {
+            return true;
+        }
+        int targetBlock = (p.startPosition + nextSteps) % 52;
+        boolean sameColorPresent = hasLiveTokenOfExactColorOnBlock(targetBlock, p.colour, p);
+        return !isSameColorLandingBlocked(targetBlock, false, sameColorPresent, safeSpots);
     }
 
     private int countLiveTokensOfSideOnBlock(int block, String sideColor) {
@@ -1322,6 +1388,59 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return count;
+    }
+
+    private boolean checkDepartureExposureCapture(int fromBlock, String departedColor) {
+        if (fromBlock < 0 || fromBlock > 51 || safeSpots.contains(fromBlock)
+                || departedColor == null || departedColor.isEmpty()) {
+            return false;
+        }
+        int remainingAllySideCount = countLiveTokensOfSideOnBlock(fromBlock, departedColor);
+        if (remainingAllySideCount <= 0) {
+            return false;
+        }
+        String[] allColors = {"red", "green", "blue", "yellow"};
+        boolean exposedToEnemy = false;
+        for (String enemyColor : allColors) {
+            if (enemyColor.equals(departedColor) || (gametype == 2 && isSameTeamColor(departedColor, enemyColor))) {
+                continue;
+            }
+            int enemySideCount = countLiveTokensOfSideOnBlock(fromBlock, enemyColor);
+            if (shouldCutRemainingAlliesOnDeparture(fromBlock, remainingAllySideCount, enemySideCount, safeSpots)) {
+                exposedToEnemy = true;
+                break;
+            }
+        }
+        if (!exposedToEnemy) {
+            return false;
+        }
+        List<Piece> exposedVictims = new ArrayList<>();
+        for (String allyColor : allColors) {
+            boolean sameSide = allyColor.equals(departedColor)
+                    || (gametype == 2 && isSameTeamColor(departedColor, allyColor));
+            if (!sameSide) {
+                continue;
+            }
+            List<Piece> allyPieces = getPiecesByColor(allyColor);
+            if (allyPieces == null) {
+                continue;
+            }
+            for (Piece p : allyPieces) {
+                if (p.isAlive && !p.hasCompletedItsPurpose && p.currBlock == fromBlock) {
+                    exposedVictims.add(p);
+                }
+            }
+        }
+        if (exposedVictims.isEmpty()) {
+            return false;
+        }
+        for (Piece v : exposedVictims) {
+            v.isAlive = false;
+        }
+        for (int i = 0; i < exposedVictims.size(); i++) {
+            exposedVictims.get(i).die(i == 0);
+        }
+        return true;
     }
 
     private boolean checkDeath(Piece killer, int targetBox) {
@@ -3582,6 +3701,9 @@ public class MainActivity extends AppCompatActivity {
             if (enemyColor.equals(pieceColor) || (gametype == 2 && isSameTeamColor(enemyColor, pieceColor))) {
                 continue;
             }
+            if (hasLiveTokenOfExactColorOnBlock(block, enemyColor, null)) {
+                continue;
+            }
             int enemySideCountAfterArrival = countLiveTokensOfSideOnBlock(block, enemyColor) + 1;
             if (!canSideCaptureEnemySide(enemySideCountAfterArrival, mySideCount)) {
                 continue;
@@ -3600,6 +3722,9 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean hasUnprotectedEnemyAtBlock(int block, String moverColor, boolean onlyNonFavoredTargets) {
         if (block < 0 || block > 51 || safeSpots.contains(block)) {
+            return false;
+        }
+        if (hasLiveTokenOfExactColorOnBlock(block, moverColor, null)) {
             return false;
         }
         int moverSideCountAfterArrival = countLiveTokensOfSideOnBlock(block, moverColor) + 1;
@@ -3796,6 +3921,9 @@ public class MainActivity extends AppCompatActivity {
         if (block < 0 || block > 51 || safeSpots.contains(block)) {
             return -1;
         }
+        if (hasLiveTokenOfExactColorOnBlock(block, moverColor, null)) {
+            return -1;
+        }
         int moverSideCountAfterArrival = countLiveTokensOfSideOnBlock(block, moverColor) + 1;
         int maxEnemySteps = -1;
         for (Player pl : players) {
@@ -3831,6 +3959,9 @@ public class MainActivity extends AppCompatActivity {
             int minOpponentRemainingSteps
     ) {
         if (d == null || d.lockedWinnerColor == null || block < 0 || block > 51 || safeSpots.contains(block)) {
+            return 0;
+        }
+        if (hasLiveTokenOfExactColorOnBlock(block, attackerColor, null)) {
             return 0;
         }
         int attackerSideCountAfterArrival = countLiveTokensOfSideOnBlock(block, attackerColor) + 1;
@@ -4177,7 +4308,7 @@ public class MainActivity extends AppCompatActivity {
                         boolean validNonCuttingMove = false;
                         boolean cutsAnyEnemy = false;
                         for (Piece p : myPieces) {
-                            if (p.isAlive && !p.hasCompletedItsPurpose && !p.isThisPlayerWon && p.numberOfSteps + sc < 57) {
+                            if (p.isAlive && canPieceLegallyAdvance(p, sc)) {
                                 validNonCuttingMove = true;
                                 if (p.numberOfSteps + sc <= 50) {
                                     int tBlock = (p.startPosition + p.numberOfSteps + sc) % 52;
@@ -4205,10 +4336,7 @@ public class MainActivity extends AppCompatActivity {
 
                 boolean naturalCanMove = false;
                 for (Piece p : myPieces) {
-                    boolean canMove = (naturalRoll == 6)
-                            ? (!p.isAlive || (p.numberOfSteps + 6 < 57 && !p.hasCompletedItsPurpose && !p.isThisPlayerWon))
-                            : (p.isAlive && (p.numberOfSteps + naturalRoll < 57) && !p.hasCompletedItsPurpose && !p.isThisPlayerWon);
-                    if (canMove) {
+                    if (canPieceLegallyAdvance(p, naturalRoll)) {
                         naturalCanMove = true;
                         break;
                     }
@@ -4235,10 +4363,7 @@ public class MainActivity extends AppCompatActivity {
                 int jitter = (int) (Math.random() * 28);
 
                 for (Piece p : myPieces) {
-                    boolean canMove = (cand == 6)
-                            ? (!p.isAlive || (p.numberOfSteps + 6 < 57 && !p.hasCompletedItsPurpose && !p.isThisPlayerWon))
-                            : (p.isAlive && (p.numberOfSteps + cand < 57) && !p.hasCompletedItsPurpose && !p.isThisPlayerWon);
-                    if (!canMove) {
+                    if (!canPieceLegallyAdvance(p, cand)) {
                         continue;
                     }
                     movableCount++;
@@ -4388,10 +4513,7 @@ public class MainActivity extends AppCompatActivity {
                 int softHomeEntryPenalty = 0;
 
                 for (Piece p : myPieces) {
-                    boolean canMove = (cand == 6)
-                            ? (!p.isAlive || (p.numberOfSteps + 6 < 57 && !p.hasCompletedItsPurpose && !p.isThisPlayerWon))
-                            : (p.isAlive && (p.numberOfSteps + cand < 57) && !p.hasCompletedItsPurpose && !p.isThisPlayerWon);
-                    if (!canMove) {
+                    if (!canPieceLegallyAdvance(p, cand)) {
                         continue;
                     }
                     movableForCand++;
