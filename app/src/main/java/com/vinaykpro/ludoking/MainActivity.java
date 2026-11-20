@@ -434,16 +434,14 @@ public class MainActivity extends AppCompatActivity {
 
         void move(int n) {
             isClickable = false;
-            if(stepSound!=null) {
-                if(isSoundOn) {
-                    if (!stepSound.isPlaying()) {
-                        stepSound.seekTo(120);
-                        stepSound.start();
-                    } else if (stepSound.isPlaying()) {
+            if(stepSound!=null && isSoundOn) {
+                try {
+                    if (stepSound.isPlaying()) {
                         stepSound.pause();
-                        stepSound.seekTo(120);
-                        stepSound.start();
                     }
+                    stepSound.seekTo(120);
+                    stepSound.start();
+                } catch (Throwable ignored) {
                 }
             }
 
@@ -520,35 +518,54 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         ViewCompat.setElevation(piece, currBlock);
                     }
-                    stepSound.pause();
+                    if (stepSound != null) {
+                        try {
+                            if (stepSound.isPlaying()) {
+                                stepSound.pause();
+                            }
+                        } catch (Throwable ignored) {
+                        }
+                    }
                     numberOfSteps++;
 
                     boolean isDeadChanceAvailable = false;
 
                     if(safeSpots.contains(currBlock) && isSoundOn)
                     {
-                        safeSound = MediaPlayer.create(MainActivity.this,R.raw.safe);
-                        safeSound.start();
-                        safeSound.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mediaPlayer) {
-                                safeSound.release();
+                        try {
+                            final MediaPlayer sp = MediaPlayer.create(MainActivity.this, R.raw.safe);
+                            if (sp != null) {
+                                safeSound = sp;
+                                sp.start();
+                                sp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mediaPlayer) {
+                                        try { mediaPlayer.release(); } catch (Throwable ignored) {}
+                                    }
+                                });
                             }
-                        });
+                        } catch (Throwable ignored) {
+                        }
                     } else if(currWinnerBlock>0) {
                         int temp = 0;
                         if(currWinnerBlock>5)
                         {
                             hasCompletedItsPurpose = true;
                             if(isSoundOn) {
-                                pantaSound = MediaPlayer.create(MainActivity.this, R.raw.panta);
-                                pantaSound.start();
-                                pantaSound.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mediaPlayer) {
-                                        pantaSound.release();
+                                try {
+                                    final MediaPlayer pp = MediaPlayer.create(MainActivity.this, R.raw.panta);
+                                    if (pp != null) {
+                                        pantaSound = pp;
+                                        pp.start();
+                                        pp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                            @Override
+                                            public void onCompletion(MediaPlayer mediaPlayer) {
+                                                try { mediaPlayer.release(); } catch (Throwable ignored) {}
+                                            }
+                                        });
                                     }
-                                });
+                                } catch (Throwable ignored) {
+                                }
                             }
 
                             List<Piece> pieces = getPiecesByColor(this.colour);
@@ -2236,8 +2253,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setFullScreen();
         setContentView(R.layout.activity_main);
+        setFullScreen();
         //setContentView(new GameCanvas(this));
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
@@ -2949,19 +2966,48 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-    private void stopEverything() {
-        globalHandler.removeCallbacksAndMessages(null);
-        d.diceHandler.removeCallbacksAndMessages(null);
-        if(congratulationSound!=null) {
-            if(congratulationSound.isPlaying()) {
-                congratulationSound.stop();
-            }
-            try { congratulationSound.release(); } catch (Exception e) {}
+    private void releasePlayer(MediaPlayer player) {
+        if (player == null) {
+            return;
         }
+        try {
+            if (player.isPlaying()) {
+                player.stop();
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            player.release();
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private void stopEverything() {
+        if (globalHandler != null) {
+            globalHandler.removeCallbacksAndMessages(null);
+        }
+        if (d != null && d.diceHandler != null) {
+            d.diceHandler.removeCallbacksAndMessages(null);
+        }
+        releasePlayer(congratulationSound);
+        congratulationSound = null;
+        releasePlayer(diceRollSound);
+        diceRollSound = null;
+        releasePlayer(stepSound);
+        stepSound = null;
+        releasePlayer(gameStartSound);
+        gameStartSound = null;
+        releasePlayer(safeSound);
+        safeSound = null;
+        releasePlayer(pantaSound);
+        pantaSound = null;
+        releasePlayer(deathSound);
+        deathSound = null;
     }
 
     @Override
     protected void onDestroy() {
+        stopEverything();
         super.onDestroy();
     }
 
@@ -3501,24 +3547,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setFullScreen() {
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            View dview = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            dview.setSystemUiVisibility(uiOptions);
-        } else {
-            View dview = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            dview.setSystemUiVisibility(uiOptions);
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 WindowInsetsController insetsController = getWindow().getInsetsController();
-                if(insetsController !=null) {
-                    insetsController.hide(WindowInsets.Type.navigationBars());
+                if (insetsController != null) {
+                    insetsController.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
                     insetsController.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
                 }
+            } else {
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                View dview = getWindow().getDecorView();
+                int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                dview.setSystemUiVisibility(uiOptions);
             }
-
+        } catch (Throwable ignored) {
         }
     }
 
@@ -3544,9 +3586,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        View dview = getWindow().getDecorView();
-        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        dview.setSystemUiVisibility(uiOptions);
+        setFullScreen();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            setFullScreen();
+        }
     }
 
     void moveToTopLeft()

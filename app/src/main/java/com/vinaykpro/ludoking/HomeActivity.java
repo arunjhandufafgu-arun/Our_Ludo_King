@@ -50,6 +50,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     MediaPlayer m,clickSoundEffect;
     ConstraintLayout topNavBar,coinAndDiamondBG,settingspopupbg,guestprofilecreateoreditlayout,statisticslayout, passnplaylayout,passnplayclassiclayout,p2layout,p3layout,p4layout,pnpteamuplayout,computerlayout,computerclassiclayout,computerrushmode;
     ObjectAnimator rotateAnimator;
+    AnimationDrawable adAnimationDrawable;
     ImageView nointernet;
 
     Handler nointernethandler;
@@ -127,8 +128,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setFullScreen();
         setContentView(R.layout.activity_home);
+        setFullScreen();
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
@@ -168,9 +169,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         passnplay.setLayoutParams(params);
 
         if(isMusicOn) {
-            m = MediaPlayer.create(this, R.raw.music);
-            m.setLooping(true);
-            m.start();
+            try {
+                m = MediaPlayer.create(this, R.raw.music);
+                if (m != null) {
+                    m.setLooping(true);
+                    m.start();
+                }
+            } catch (Throwable ignored) {
+                m = null;
+            }
             stgsmusiconoffbtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.musicon,null));
         } else { stgsmusiconoffbtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.musicoff,null)); }
 
@@ -178,23 +185,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             stgssoundonoffbtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.soundon,null));
         } else { stgssoundonoffbtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.soundoff,null)); }
 
-        clickSoundEffect = MediaPlayer.create(this,R.raw.click);
-        clickSoundEffect.seekTo(0);
+        try {
+            clickSoundEffect = MediaPlayer.create(this,R.raw.click);
+            if (clickSoundEffect != null) {
+                clickSoundEffect.seekTo(0);
+            }
+        } catch (Throwable ignored) {
+            clickSoundEffect = null;
+        }
 
         ImageView imageView = findViewById(R.id.imageView15);
-        Glide.with(this)
-                .asGif()
-                .load(R.raw.ludotopmainicon)
-                .into(new DrawableImageViewTarget(imageView) {
-                    @Override
-                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                        if (resource instanceof GifDrawable) {
-                            GifDrawable gifDrawable = (GifDrawable) resource;
-                            gifDrawable.setLoopCount(GifDrawable.LOOP_FOREVER);
-                            gifDrawable.start();
-                        }
-                    }
-                }.getView());
+        if (imageView != null) {
+            try {
+                Glide.with(this)
+                        .asGif()
+                        .load(R.raw.ludotopmainicon)
+                        .override(220, 220)
+                        .into(imageView);
+            } catch (Throwable ignored) {
+            }
+        }
         rotateAnimator = ObjectAnimator.ofFloat(findViewById(R.id.imageView21),"rotation",0,360);
         rotateAnimator.setDuration(900);
         rotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
@@ -232,10 +242,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         ImageView ad1 = findViewById(R.id.imageView142);
-        AnimationDrawable animationDrawable = (AnimationDrawable) ad1.getDrawable();
-        ad1.setImageDrawable(animationDrawable);
-        animationDrawable.setOneShot(false); // Set to true if you want to run the animation only once
-        animationDrawable.start();
+        if (ad1 != null && ad1.getDrawable() instanceof AnimationDrawable) {
+            adAnimationDrawable = (AnimationDrawable) ad1.getDrawable();
+            adAnimationDrawable.setOneShot(false);
+            adAnimationDrawable.start();
+        }
 
 
 
@@ -544,15 +555,30 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     sharedPreferences.edit().putBoolean("music",false).apply();
                     isMusicOn = false;
-                    m.stop();
-                    m.release();
+                    if (m != null) {
+                        try {
+                            if (m.isPlaying()) {
+                                m.stop();
+                            }
+                            m.release();
+                        } catch (Throwable ignored) {
+                        }
+                        m = null;
+                    }
                     stgsmusiconoffbtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.musicoff,null));
                 } else {
                     giveClickSound();
                     sharedPreferences.edit().putBoolean("music",true).apply();
                     isMusicOn = true;
-                    m = MediaPlayer.create(HomeActivity.this,R.raw.music);
-                    m.start();
+                    try {
+                        m = MediaPlayer.create(HomeActivity.this,R.raw.music);
+                        if (m != null) {
+                            m.setLooping(true);
+                            m.start();
+                        }
+                    } catch (Throwable ignored) {
+                        m = null;
+                    }
                     stgsmusiconoffbtn.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.musicon,null));
                 }
             }
@@ -1979,9 +2005,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void giveClickSound() {
-        if(isSoundOn) {
-            clickSoundEffect.seekTo(0);
-            clickSoundEffect.start();
+        if(isSoundOn && clickSoundEffect != null) {
+            try {
+                clickSoundEffect.seekTo(0);
+                clickSoundEffect.start();
+            } catch (Throwable ignored) {
+            }
         }
     }
 
@@ -2227,24 +2256,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void setFullScreen() {
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            View dview = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            dview.setSystemUiVisibility(uiOptions);
-        } else {
-            View dview = getWindow().getDecorView();
-            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            dview.setSystemUiVisibility(uiOptions);
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 WindowInsetsController insetsController = getWindow().getInsetsController();
-                if(insetsController !=null) {
-                    insetsController.hide(WindowInsets.Type.navigationBars());
+                if (insetsController != null) {
+                    insetsController.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
                     insetsController.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
                 }
+            } else {
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                View dview = getWindow().getDecorView();
+                int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                dview.setSystemUiVisibility(uiOptions);
             }
-
+        } catch (Throwable ignored) {
         }
     }
     public float getStatusBarHeight() {
@@ -2276,8 +2301,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPause() {
         super.onPause();
-        if (isMusicOn) {
-            m.pause();
+        if (isMusicOn && m != null) {
+            try {
+                if (m.isPlaying()) {
+                    m.pause();
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        if (adAnimationDrawable != null && adAnimationDrawable.isRunning()) {
+            adAnimationDrawable.stop();
         }
     }
 
@@ -2644,10 +2677,62 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
+        setFullScreen();
+        if (adAnimationDrawable != null && !adAnimationDrawable.isRunning()) {
+            adAnimationDrawable.start();
+        }
         if(isMusicOn) {
-            if(!m.isPlaying()) {
-                m.start();
+            try {
+                if (m == null) {
+                    m = MediaPlayer.create(this, R.raw.music);
+                    if (m != null) {
+                        m.setLooping(true);
+                    }
+                }
+                if (m != null && !m.isPlaying()) {
+                    m.start();
+                }
+            } catch (Throwable ignored) {
             }
         }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            setFullScreen();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (nointernethandler != null) {
+            nointernethandler.removeCallbacksAndMessages(null);
+        }
+        if (rotateAnimator != null) {
+            rotateAnimator.cancel();
+        }
+        if (adAnimationDrawable != null && adAnimationDrawable.isRunning()) {
+            adAnimationDrawable.stop();
+        }
+        if (m != null) {
+            try {
+                if (m.isPlaying()) {
+                    m.stop();
+                }
+                m.release();
+            } catch (Throwable ignored) {
+            }
+            m = null;
+        }
+        if (clickSoundEffect != null) {
+            try {
+                clickSoundEffect.release();
+            } catch (Throwable ignored) {
+            }
+            clickSoundEffect = null;
+        }
+        super.onDestroy();
     }
 }

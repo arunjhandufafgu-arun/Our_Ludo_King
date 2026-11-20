@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.vinaykpro.ludoking"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 1562
         versionName "8.0.0.278"
         resourceConfigurations += ["en"]
