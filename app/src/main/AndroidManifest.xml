@@ -3,6 +3,7 @@
     android:installLocation="auto">
 
     <application
+        android:name="androidx.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:extractNativeLibs="true"
         android:hardwareAccelerated="true"

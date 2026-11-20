@@ -12,6 +12,7 @@ android {
         targetSdk 33
         versionCode 1562
         versionName "8.0.0.278"
+        multiDexEnabled true
         resourceConfigurations += ["en"]
     }
 
@@ -64,15 +65,14 @@ android {
     buildTypes {
         debug {
             crunchPngs false
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             signingConfig signingConfigs.debugConfig
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
             crunchPngs false
             minifyEnabled true
-            shrinkResources true
+            shrinkResources false
             signingConfig signingConfigs.debugConfig
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -98,6 +98,7 @@ tasks.matching { it.name.startsWith("lint") || it.name.contains("Lint") }.config
 }
 
 dependencies {
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.6.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
