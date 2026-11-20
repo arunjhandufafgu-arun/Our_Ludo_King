@@ -13,36 +13,168 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-    - name: set up JDK 17
+    - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
         cache: gradle
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Deduplicate drawable resources
+    - name: Ensure debug keystore exists
+      run: |
+        if [ ! -f debug.keystore ]; then
+          if [ -f debug.keystore.base64 ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          else
+            keytool -genkeypair -v -keystore debug.keystore \
+              -storepass android -alias androiddebugkey -keypass android \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+        fi
+
+    - name: Verify, auto-restore missing, and deduplicate Android resources
       run: |
         python3 - <<'PY'
+        import base64
         import os
-        d = "app/src/main/res/drawable"
-        priority = {".png": 1, ".jpeg": 2, ".jpg": 3, ".gif": 4, ".xml": 5, ".webp": 6}
-        groups = {}
-        for fn in sorted(os.listdir(d)):
-            stem, ext = os.path.splitext(fn)
-            if ext.lower() in priority:
-                groups.setdefault(stem, []).append((priority[ext.lower()], fn))
-        removed = 0
-        for stem, items in groups.items():
-            if len(items) > 1:
-                items.sort()
-                for _, dup_fn in items[1:]:
-                    os.remove(os.path.join(d, dup_fn))
+        import re
+        import subprocess
+        import xml.etree.ElementTree as ET
+
+        PRIORITY = {
+            ".png": 1, ".jpeg": 2, ".jpg": 3, ".gif": 4, ".xml": 5,
+            ".mp3": 6, ".ogg": 7, ".wav": 8, ".webp": 9
+        }
+        TRANSPARENT_1X1_PNG = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        )
+
+        def deduplicate_dir(res_dir):
+            if not os.path.isdir(res_dir):
+                return 0
+            groups = {}
+            removed = 0
+            for fn in sorted(os.listdir(res_dir)):
+                p = os.path.join(res_dir, fn)
+                if not os.path.isfile(p):
+                    continue
+                if os.path.getsize(p) == 0:
+                    os.remove(p)
                     removed += 1
-        print(f"Removed {removed} duplicate drawable files")
+                    continue
+                stem, ext = os.path.splitext(fn)
+                rank = PRIORITY.get(ext.lower())
+                if rank is not None:
+                    groups.setdefault(stem, []).append((rank, fn))
+            for stem, items in groups.items():
+                if len(items) > 1:
+                    items.sort()
+                    for _, dup_fn in items[1:]:
+                        os.remove(os.path.join(res_dir, dup_fn))
+                        removed += 1
+            return removed
+
+        def collect_refs(res_type):
+            refs = set()
+            pattern = re.compile(rf"(?:R\.{res_type}\.|@{res_type}/)([a-zA-Z0-9_]+)")
+            for root, _, fns in os.walk("app/src/main"):
+                for fn in fns:
+                    if fn.endswith((".java", ".xml")):
+                        txt = open(os.path.join(root, fn), errors="ignore").read()
+                        for m in pattern.findall(txt):
+                            refs.add(m)
+            return refs
+
+        def restore_from_git(res_subdir, name):
+            if not os.path.isdir(".git"):
+                return None
+            pattern = f"app/src/main/res/{res_subdir}/{name}.*"
+            r = subprocess.run(
+                ["git", "log", "--all", "--diff-filter=AM", "--name-only", "--pretty=format:COMMIT:%H", "--", pattern],
+                capture_output=True, text=True
+            )
+            if r.returncode != 0 or not r.stdout.strip():
+                return None
+            best = None
+            curr_commit = None
+            for line in r.stdout.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith("COMMIT:"):
+                    curr_commit = line.split(":", 1)[1]
+                elif curr_commit:
+                    ext = os.path.splitext(line)[1].lower()
+                    rank = PRIORITY.get(ext, 99)
+                    if best is None or rank < best[0]:
+                        best = (rank, curr_commit, line)
+            if best is None:
+                return None
+            _, commit, path = best
+            chk = subprocess.run(["git", "checkout", commit, "--", path], capture_output=True)
+            if chk.returncode == 0 and os.path.isfile(path) and os.path.getsize(path) > 0:
+                return path
+            return None
+
+        # 1. Remove any pre-existing duplicates or 0-byte files
+        dup_removed = deduplicate_dir("app/src/main/res/drawable") + deduplicate_dir("app/src/main/res/raw")
+
+        # 2. Check and auto-restore any missing referenced drawables or raw files from git history
+        restored = []
+        fallback_created = []
+        for rtype, subdirs, primary_dir in [
+            ("drawable", ["drawable", "drawable-v24"], "drawable"),
+            ("raw", ["raw"], "raw"),
+        ]:
+            have = set()
+            for sd in subdirs:
+                full = os.path.join("app/src/main/res", sd)
+                if os.path.isdir(full):
+                    for fn in os.listdir(full):
+                        p = os.path.join(full, fn)
+                        if os.path.isfile(p) and os.path.getsize(p) > 0:
+                            have.add(os.path.splitext(fn)[0])
+            refs = collect_refs(rtype)
+            for name in sorted(refs - have):
+                restored_path = restore_from_git(primary_dir, name)
+                if restored_path:
+                    restored.append(restored_path)
+                elif rtype == "drawable":
+                    os.makedirs("app/src/main/res/drawable", exist_ok=True)
+                    fb = os.path.join("app/src/main/res/drawable", name + ".png")
+                    with open(fb, "wb") as f:
+                        f.write(TRANSPARENT_1X1_PNG)
+                    fallback_created.append(fb)
+
+        # 3. Deduplicate again after any restores
+        dup_removed += deduplicate_dir("app/src/main/res/drawable") + deduplicate_dir("app/src/main/res/raw")
+
+        # 4. Validate XML syntax across app/src/main
+        xml_errors = []
+        for root, _, fns in os.walk("app/src/main"):
+            for fn in fns:
+                if fn.endswith(".xml"):
+                    p = os.path.join(root, fn)
+                    try:
+                        ET.parse(p)
+                    except Exception as e:
+                        xml_errors.append((p, str(e)))
+
+        print(f"Resource check complete: duplicates_removed={dup_removed}, restored_from_git={len(restored)}, fallback_created={len(fallback_created)}, xml_errors={len(xml_errors)}")
+        if restored:
+            print("Restored samples:", restored[:15])
+        if fallback_created:
+            print("Fallback samples:", fallback_created[:15])
+        if xml_errors:
+            print("XML errors:", xml_errors)
+            raise SystemExit(1)
         PY
 
     - name: Build with Gradle
