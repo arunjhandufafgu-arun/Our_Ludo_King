@@ -800,7 +800,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         p2l2piece2.setScaleX(0.8f);
                         p2l2piece2.setScaleY(0.8f);
                         // 3p pieces
-                        int dp3ppadding = (int) onedp * 9;
+                        int dp3ppadding = (int) (onedp * 5);
                         p3l1pb.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bluepiecestylish, null));
                         p3l1pr.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.redpiecestylish, null));
                         p3l1pg.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.greenpiecestylish, null));
@@ -852,10 +852,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
-        // setting listeners for pnp classic layout
-        ConstraintLayout.LayoutParams thisparams = (ConstraintLayout.LayoutParams) passnplayclassiclayout.getLayoutParams();
-        thisparams.height = (int)(pxHeight+getStatusBarHeight()+60);
-
+        // setting listeners for pnp classic layout (keep XML match_parent/0dp bounds so bottom Play button is never pushed off-screen)
         //passnplayclassiclayout.setOnTouchListener(opaqueLayout);
         passnplayclassiclayout.setOnClickListener(hideEditTextOnClick);
         pnpclassicbackbtn.setOnTouchListener(clickEffect);
@@ -1603,10 +1600,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         p4pname5.setOnClickListener(editTextOnClick);
         p4pname6.setOnClickListener(editTextOnClick);
 
-        // setting listeners for pnpteamup layout views
-        thisparams = (ConstraintLayout.LayoutParams) pnpteamuplayout.getLayoutParams();
-        thisparams.height = (int)(pxHeight+getStatusBarHeight()+60);
-
+        // setting listeners for pnpteamup layout views (keep XML match_parent/0dp bounds so bottom Play button is never pushed off-screen)
         pnpteamuplayout.setOnTouchListener(opaqueLayout);
         pnpteamuplayout.setOnClickListener(hideEditTextOnClick);
         pnpt2backbtn.setOnTouchListener(clickEffect);

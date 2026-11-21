@@ -306,7 +306,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/computerclassiclayout"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:background="#C9000000"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -317,11 +317,16 @@
         <ImageView
             android:id="@+id/compl2topthemes"
             android:layout_width="0dp"
-            android:layout_height="70dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="6dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@+id/computerclassicselecturcolorlayout"
-            app:layout_constraintEnd_toEndOf="@+id/computerclassicselecturcolorlayout"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="@+id/computerclassicselecturcolorlayout"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             app:srcCompat="@drawable/passnplaytoplogo" />
@@ -330,22 +335,35 @@
             android:id="@+id/computerclassicselecturcolorlayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/settingsbg"
-            android:paddingBottom="27dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="8dp"
+            android:paddingBottom="18dp"
             app:layout_constraintBottom_toTopOf="@+id/computerselecturplayerslayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/compl2topthemes"
-            app:layout_constraintVertical_bias="0.501">
+            app:layout_constraintTop_toBottomOf="@+id/compl2topthemes">
+
+            <ImageView
+                android:id="@+id/compcolorcardbg"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/settingsbg" />
 
             <ImageView
                 android:id="@+id/imageView1073"
-                android:layout_width="wrap_content"
-                android:layout_height="23dp"
-                android:layout_marginTop="22dp"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -353,10 +371,11 @@
 
             <ImageView
                 android:id="@+id/imageView116"
-                android:layout_width="wrap_content"
-                android:layout_height="75dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="18dp"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toStartOf="@+id/imageView117"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -365,8 +384,9 @@
 
             <ImageView
                 android:id="@+id/imageView117"
-                android:layout_width="wrap_content"
-                android:layout_height="75dp"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView116"
                 app:layout_constraintEnd_toStartOf="@+id/imageView120"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -376,8 +396,9 @@
 
             <ImageView
                 android:id="@+id/imageView120"
-                android:layout_width="wrap_content"
-                android:layout_height="75dp"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView117"
                 app:layout_constraintEnd_toStartOf="@+id/imageView121"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -387,9 +408,10 @@
 
             <ImageView
                 android:id="@+id/imageView121"
-                android:layout_width="wrap_content"
-                android:layout_height="75dp"
-                android:layout_marginEnd="10dp"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginEnd="16dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView120"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -399,9 +421,10 @@
 
             <ImageView
                 android:id="@+id/imageView122"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_marginTop="15dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginTop="10dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="@+id/imageView116"
                 app:layout_constraintStart_toStartOf="@+id/imageView116"
                 app:layout_constraintTop_toBottomOf="@+id/imageView116"
@@ -409,8 +432,9 @@
 
             <ImageView
                 android:id="@+id/imageView123"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView122"
                 app:layout_constraintEnd_toEndOf="@+id/imageView117"
                 app:layout_constraintStart_toStartOf="@+id/imageView117"
@@ -419,8 +443,9 @@
 
             <ImageView
                 android:id="@+id/imageView124"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView123"
                 app:layout_constraintEnd_toEndOf="@+id/imageView120"
                 app:layout_constraintStart_toStartOf="@+id/imageView120"
@@ -429,8 +454,9 @@
 
             <ImageView
                 android:id="@+id/imageView125"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView124"
                 app:layout_constraintEnd_toEndOf="@+id/imageView121"
                 app:layout_constraintStart_toStartOf="@+id/imageView121"
@@ -443,8 +469,8 @@
             android:id="@+id/computerselecturplayerslayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/settingsbg"
-            android:paddingBottom="18dp"
+            android:layout_marginBottom="10dp"
+            android:paddingBottom="16dp"
             android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/computermainplaybtn"
             app:layout_constraintEnd_toEndOf="@+id/computerclassicselecturcolorlayout"
@@ -453,10 +479,24 @@
             app:layout_constraintTop_toBottomOf="@+id/computerclassicselecturcolorlayout">
 
             <ImageView
+                android:id="@+id/compplayerscardbg"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/settingsbg" />
+
+            <ImageView
                 android:id="@+id/imageView126"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_marginTop="22dp"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -464,10 +504,11 @@
 
             <ImageView
                 android:id="@+id/imageView127"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="5dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toStartOf="@+id/comp2playerstxtviewnouse"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="packed"
@@ -482,7 +523,7 @@
                 android:fontFamily="@font/rcbold"
                 android:text="2 PLAYERS"
                 android:textColor="#F1F1F1"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView127"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -492,10 +533,10 @@
 
             <ImageView
                 android:id="@+id/imageView128"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_marginTop="10dp"
-                app:layout_constraintHorizontal_chainStyle="packed"
+                android:scaleType="fitCenter"
                 app:layout_constraintStart_toStartOf="@+id/imageView127"
                 app:layout_constraintTop_toBottomOf="@+id/imageView127"
                 app:srcCompat="@drawable/selectblank" />
@@ -507,32 +548,32 @@
                 android:fontFamily="@font/rcbold"
                 android:text="4 PLAYERS"
                 android:textColor="#F1F1F1"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView128"
                 app:layout_constraintEnd_toEndOf="@+id/comp2playerstxtviewnouse"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/imageView127"
                 app:layout_constraintStart_toStartOf="@+id/comp2playerstxtviewnouse"
                 app:layout_constraintTop_toTopOf="@+id/imageView128" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
             android:id="@+id/computermainplaybtn"
-            android:layout_width="130dp"
-            android:layout_height="60dp"
+            android:layout_width="148dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/computerselecturplayerslayout"
             app:srcCompat="@drawable/gamemainplaybtn" />
 
         <ImageView
             android:id="@+id/compl2backbtn2"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="20dp"
+            android:layout_width="50dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="16dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/computermainplaybtn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/computermainplaybtn"
@@ -552,53 +593,53 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/computerselectgamebackbtn"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="22dp"
-            app:layout_constraintBottom_toBottomOf="@+id/computernxtbtn"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/computernxtbtn"
-            app:srcCompat="@drawable/backbuttonmain" />
-
-        <ImageView
-            android:id="@+id/computernxtbtn"
-            android:layout_width="140dp"
-            android:layout_height="60dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/computerurcolorlayout"
-            app:srcCompat="@drawable/nextbtn" />
-
-        <ImageView
             android:id="@+id/compl1topthemes"
             android:layout_width="0dp"
-            android:layout_height="70dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="8dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@+id/computerurcolorlayout"
-            app:layout_constraintEnd_toEndOf="@+id/computerurcolorlayout"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/computerurcolorlayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
             app:srcCompat="@drawable/passnplaytoplogo" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/computerurcolorlayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:background="@drawable/settingsbg2"
-            android:paddingBottom="27dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="14dp"
+            android:paddingBottom="22dp"
+            app:layout_constraintBottom_toTopOf="@+id/computernxtbtn"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/compl1topthemes">
+
+            <ImageView
+                android:id="@+id/compmodecardbg"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/settingsbg2" />
 
             <ImageView
                 android:id="@+id/imageView107"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_marginTop="20dp"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="24dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -606,9 +647,12 @@
 
             <ImageView
                 android:id="@+id/computerclassicbtn"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_marginTop="25dp"
+                android:layout_width="0dp"
+                android:layout_height="62dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="20dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView107"
@@ -616,9 +660,12 @@
 
             <ImageView
                 android:id="@+id/computerrushmodebtn"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_marginTop="15dp"
+                android:layout_width="0dp"
+                android:layout_height="62dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="20dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/computerclassicbtn"
@@ -626,64 +673,111 @@
 
             <ImageView
                 android:id="@+id/computerhelpbtn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="-2dp"
-                android:layout_marginEnd="42dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="14dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/computerrushmodebtn"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/computerrushmodebtn"
                 app:layout_constraintTop_toTopOf="@+id/computerrushmodebtn"
                 app:srcCompat="@drawable/helpround" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/computernxtbtn"
+            android:layout_width="148dp"
+            android:layout_height="54dp"
+            android:layout_marginBottom="18dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/nextbtn" />
+
+        <ImageView
+            android:id="@+id/computerselectgamebackbtn"
+            android:layout_width="50dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="16dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@+id/computernxtbtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/computernxtbtn"
+            app:srcCompat="@drawable/backbuttonmain" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pnpteamuplayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="#C9000000"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imageView110"
-            android:layout_width="wrap_content"
-            android:layout_height="22dp"
-            android:layout_marginBottom="5dp"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="6dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout7"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
             app:srcCompat="@drawable/choosecolornnametxt" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout7"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/selectgamebg2"
-            android:paddingBottom="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="10dp"
+            android:paddingBottom="18dp"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toTopOf="@+id/teamupplaybtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/imageView110">
+
+            <ImageView
+                android:id="@+id/teamupcardbg"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/selectgamebg2" />
 
             <ImageView
                 android:id="@+id/teamuphelpbtn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginEnd="5dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
                 android:alpha="0.9"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/helpround" />
 
             <ImageView
                 android:id="@+id/teamup_team1_header"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_width="0dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="48dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="48dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -691,80 +785,84 @@
 
             <ImageView
                 android:id="@+id/t1bp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="10dp"
-                app:layout_constraintEnd_toStartOf="@+id/t1p1name"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="packed"
+                android:scaleType="fitCenter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/teamup_team1_header"
                 app:srcCompat="@drawable/bluepiece" />
 
             <TextView
                 android:id="@+id/t1p1name"
-                android:layout_width="220dp"
-                android:layout_height="35dp"
-                android:layout_marginEnd="20dp"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="26dp"
                 android:background="@drawable/usernamebg"
                 android:fontFamily="@font/rcbold"
                 android:gravity="center"
+                android:singleLine="true"
                 android:text="Player 1"
                 android:textAlignment="center"
                 android:textColor="#191919"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                app:flow_horizontalAlign="center"
                 app:layout_constraintBottom_toBottomOf="@+id/t1bp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/t1bp"
                 app:layout_constraintTop_toTopOf="@+id/t1bp" />
 
-
             <ImageView
                 android:id="@+id/t1gp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="12dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="10dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="@+id/t1bp"
-                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="@+id/t1bp"
                 app:layout_constraintTop_toBottomOf="@+id/t1bp"
                 app:srcCompat="@drawable/greenpiece" />
 
             <TextView
                 android:id="@+id/t1p2name"
-                android:layout_width="220dp"
-                android:layout_height="35dp"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
                 android:background="@drawable/usernamebg"
                 android:fontFamily="@font/rcbold"
                 android:gravity="center"
+                android:singleLine="true"
                 android:text="Player 3"
                 android:textAlignment="center"
                 android:textColor="#191919"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                app:flow_horizontalAlign="center"
                 app:layout_constraintBottom_toBottomOf="@+id/t1gp"
-                app:layout_constraintEnd_toEndOf="@id/t1p1name"
+                app:layout_constraintEnd_toEndOf="@+id/t1p1name"
                 app:layout_constraintStart_toStartOf="@+id/t1p1name"
                 app:layout_constraintTop_toTopOf="@+id/t1gp" />
 
             <ImageView
                 android:id="@+id/imageView109"
-                android:layout_width="wrap_content"
-                android:layout_height="68dp"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="18dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/t1p2name"
+                app:layout_constraintTop_toBottomOf="@+id/t1gp"
                 app:srcCompat="@drawable/teamupvslinebg" />
 
             <ImageView
                 android:id="@+id/teamup_team2_header"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_width="0dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="48dp"
+                android:layout_marginEnd="48dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView109"
@@ -772,63 +870,59 @@
 
             <ImageView
                 android:id="@+id/t2rp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="10dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="@+id/t1gp"
-                app:layout_constraintEnd_toStartOf="@+id/t1p1name"
-                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="@+id/t1gp"
                 app:layout_constraintTop_toBottomOf="@+id/teamup_team2_header"
                 app:srcCompat="@drawable/redpiece" />
 
             <TextView
                 android:id="@+id/t2p1name"
-                android:layout_width="220dp"
-                android:layout_height="35dp"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
                 android:background="@drawable/usernamebg"
                 android:fontFamily="@font/rcbold"
                 android:gravity="center"
+                android:singleLine="true"
                 android:text="Player 2"
                 android:textAlignment="center"
                 android:textColor="#191919"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                app:flow_horizontalAlign="center"
                 app:layout_constraintBottom_toBottomOf="@+id/t2rp"
-                app:layout_constraintEnd_toEndOf="@id/t1p2name"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="@id/t1p2name"
+                app:layout_constraintEnd_toEndOf="@+id/t1p2name"
+                app:layout_constraintStart_toStartOf="@+id/t1p2name"
                 app:layout_constraintTop_toTopOf="@+id/t2rp" />
-
 
             <ImageView
                 android:id="@+id/t2yp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="10dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="@+id/t2rp"
-                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="@+id/t2rp"
                 app:layout_constraintTop_toBottomOf="@+id/t2rp"
                 app:srcCompat="@drawable/yellowpiece" />
 
             <TextView
                 android:id="@+id/t2p2name"
-                android:layout_width="220dp"
-                android:layout_height="35dp"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
                 android:background="@drawable/usernamebg"
                 android:fontFamily="@font/rcbold"
                 android:gravity="center"
+                android:singleLine="true"
                 android:text="Player 4"
                 android:textAlignment="center"
                 android:textColor="#191919"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                app:flow_horizontalAlign="center"
                 app:layout_constraintBottom_toBottomOf="@+id/t2yp"
-                app:layout_constraintEnd_toEndOf="@id/t2p1name"
+                app:layout_constraintEnd_toEndOf="@+id/t2p1name"
                 app:layout_constraintStart_toStartOf="@+id/t2p1name"
                 app:layout_constraintTop_toTopOf="@+id/t2yp" />
 
@@ -836,18 +930,21 @@
 
         <ImageView
             android:id="@+id/teamupplaybtn"
-            android:layout_width="130dp"
-            android:layout_height="60dp"
+            android:layout_width="148dp"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout7"
             app:srcCompat="@drawable/gamemainplaybtn" />
 
         <ImageView
             android:id="@+id/teamupbackbtn"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="22dp"
+            android:layout_width="50dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="16dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/teamupplaybtn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/teamupplaybtn"
@@ -856,43 +953,62 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pnpclassiclayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="#C9000000"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/choosecolornnamemainlayout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-50dp"
-            android:background="@drawable/selectgamebg2"
-            android:paddingBottom="17dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toTopOf="@+id/passnplaymainplaybtn"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5">
+
+            <ImageView
+                android:id="@+id/pnpclassiccardbg"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/selectgamebg2" />
 
             <ImageView
                 android:id="@+id/imageView95"
-                android:layout_width="wrap_content"
-                android:layout_height="21dp"
-                android:layout_marginTop="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="0dp"
+                android:layout_height="18dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="6dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toStartOf="@+id/imageView96"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/choosecolornnametxt" />
 
             <ImageView
                 android:id="@+id/imageView96"
-                android:layout_width="70dp"
+                android:layout_width="60dp"
                 android:layout_height="24dp"
+                android:layout_marginEnd="14dp"
+                android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView95"
-                app:layout_constraintEnd_toEndOf="@+id/imageView95"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imageView95"
                 app:srcCompat="@drawable/botsbg" />
 
@@ -900,11 +1016,11 @@
                 android:id="@+id/textView11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="14dp"
+                android:layout_marginEnd="10dp"
                 android:fontFamily="@font/rcbold"
                 android:text="0/0"
                 android:textColor="#EDFFFFFF"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView96"
                 app:layout_constraintEnd_toEndOf="@+id/imageView96"
@@ -914,17 +1030,20 @@
                 android:id="@+id/playerdetailsselctiontab"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toTopOf="@+id/npbg2p"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView95">
+                app:layout_constraintTop_toBottomOf="@+id/imageView96">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/classicp4layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="34dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="8dp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -932,26 +1051,24 @@
 
                     <ImageView
                         android:id="@+id/p4p1p"
-                        android:layout_width="33dp"
-                        android:layout_height="33dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="17dp"
-                        app:layout_constraintEnd_toStartOf="@+id/p4p1name"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintHorizontal_chainStyle="packed"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="6dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/bluepiece" />
 
                     <RelativeLayout
                         android:id="@+id/p4p1name"
-                        android:layout_width="110dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="3dp"
+                        android:layout_width="0dp"
+                        android:layout_height="26dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
                         android:background="@drawable/usernamebg"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p1p"
                         app:layout_constraintEnd_toStartOf="@+id/p4botp1"
-                        app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/p4p1p"
                         app:layout_constraintTop_toTopOf="@+id/p4p1p">
 
@@ -960,9 +1077,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginTop="-1dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:fontFamily="@font/rcbold"
+                            android:singleLine="true"
                             android:text="Player 1"
                             android:textColor="@color/black"
                             android:textSize="13sp"
@@ -971,31 +1089,29 @@
 
                     <ImageView
                         android:id="@+id/p4botp1"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_marginEnd="24dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p1name"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/p4p1name"
                         app:layout_constraintTop_toTopOf="@+id/p4p1name"
                         app:srcCompat="@drawable/botbtn" />
 
-
                     <ImageView
                         android:id="@+id/p4p2p"
-                        android:layout_width="33dp"
-                        android:layout_height="33dp"
-                        android:layout_marginTop="3dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintStart_toStartOf="@+id/p4p1p"
                         app:layout_constraintTop_toBottomOf="@+id/p4p1p"
                         app:srcCompat="@drawable/redpiece" />
 
                     <RelativeLayout
                         android:id="@+id/p4p2name"
-                        android:layout_width="110dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="3dp"
+                        android:layout_width="0dp"
+                        android:layout_height="26dp"
                         android:background="@drawable/usernamebg"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p2p"
                         app:layout_constraintEnd_toEndOf="@+id/p4p1name"
@@ -1007,9 +1123,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginTop="-1dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:fontFamily="@font/rcbold"
+                            android:singleLine="true"
                             android:text="Player 2"
                             android:textColor="@color/black"
                             android:textSize="13sp"
@@ -1018,29 +1135,29 @@
 
                     <ImageView
                         android:id="@+id/p4botp2"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p2name"
                         app:layout_constraintEnd_toEndOf="@+id/p4botp1"
                         app:layout_constraintStart_toStartOf="@+id/p4botp1"
                         app:layout_constraintTop_toTopOf="@+id/p4p2name"
                         app:srcCompat="@drawable/botbtn" />
 
-
                     <ImageView
                         android:id="@+id/p4p3p"
-                        android:layout_width="33dp"
-                        android:layout_height="33dp"
-                        android:layout_marginTop="3dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintStart_toStartOf="@+id/p4p2p"
                         app:layout_constraintTop_toBottomOf="@+id/p4p2p"
                         app:srcCompat="@drawable/greenpiece" />
 
                     <RelativeLayout
                         android:id="@+id/p4p3name"
-                        android:layout_width="110dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="3dp"
+                        android:layout_width="0dp"
+                        android:layout_height="26dp"
                         android:background="@drawable/usernamebg"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p3p"
                         app:layout_constraintEnd_toEndOf="@+id/p4p2name"
@@ -1052,9 +1169,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginTop="-1dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:fontFamily="@font/rcbold"
+                            android:singleLine="true"
                             android:text="Player 3"
                             android:textColor="@color/black"
                             android:textSize="13sp"
@@ -1063,29 +1181,29 @@
 
                     <ImageView
                         android:id="@+id/p4botp3"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p3name"
                         app:layout_constraintEnd_toEndOf="@+id/p4botp2"
                         app:layout_constraintStart_toStartOf="@+id/p4botp2"
                         app:layout_constraintTop_toTopOf="@+id/p4p3name"
                         app:srcCompat="@drawable/botbtn" />
 
-
                     <ImageView
                         android:id="@+id/p4p4p"
-                        android:layout_width="33dp"
-                        android:layout_height="33dp"
-                        android:layout_marginTop="3dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintStart_toStartOf="@+id/p4p3p"
                         app:layout_constraintTop_toBottomOf="@+id/p4p3p"
                         app:srcCompat="@drawable/yellowpiece" />
 
                     <RelativeLayout
                         android:id="@+id/p4p4name"
-                        android:layout_width="110dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="3dp"
+                        android:layout_width="0dp"
+                        android:layout_height="26dp"
                         android:background="@drawable/usernamebg"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p4p"
                         app:layout_constraintEnd_toEndOf="@+id/p4p3name"
@@ -1097,9 +1215,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginTop="-1dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:fontFamily="@font/rcbold"
+                            android:singleLine="true"
                             android:text="Player 4"
                             android:textColor="@color/black"
                             android:textSize="13sp"
@@ -1108,29 +1227,29 @@
 
                     <ImageView
                         android:id="@+id/p4botp4"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p4name"
                         app:layout_constraintEnd_toEndOf="@+id/p4botp3"
                         app:layout_constraintStart_toStartOf="@+id/p4botp3"
                         app:layout_constraintTop_toTopOf="@+id/p4p4name"
                         app:srcCompat="@drawable/botbtn" />
 
-
                     <ImageView
                         android:id="@+id/p4p5p"
-                        android:layout_width="33dp"
-                        android:layout_height="33dp"
-                        android:layout_marginTop="3dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintStart_toStartOf="@+id/p4p4p"
                         app:layout_constraintTop_toBottomOf="@+id/p4p4p"
                         app:srcCompat="@drawable/orangepiece" />
 
                     <RelativeLayout
                         android:id="@+id/p4p5name"
-                        android:layout_width="110dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="3dp"
+                        android:layout_width="0dp"
+                        android:layout_height="26dp"
                         android:background="@drawable/usernamebg"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p5p"
                         app:layout_constraintEnd_toEndOf="@+id/p4p4name"
@@ -1142,9 +1261,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginTop="-1dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:fontFamily="@font/rcbold"
+                            android:singleLine="true"
                             android:text="Player 5"
                             android:textColor="@color/black"
                             android:textSize="13sp"
@@ -1153,29 +1273,29 @@
 
                     <ImageView
                         android:id="@+id/p4botp5"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p5name"
                         app:layout_constraintEnd_toEndOf="@+id/p4botp4"
                         app:layout_constraintStart_toStartOf="@+id/p4botp4"
                         app:layout_constraintTop_toTopOf="@+id/p4p5name"
                         app:srcCompat="@drawable/botbtn" />
 
-
                     <ImageView
                         android:id="@+id/p4p6p"
-                        android:layout_width="33dp"
-                        android:layout_height="33dp"
-                        android:layout_marginTop="3dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintStart_toStartOf="@+id/p4p5p"
                         app:layout_constraintTop_toBottomOf="@+id/p4p5p"
                         app:srcCompat="@drawable/purplepiece" />
 
                     <RelativeLayout
                         android:id="@+id/p4p6name"
-                        android:layout_width="110dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="3dp"
+                        android:layout_width="0dp"
+                        android:layout_height="26dp"
                         android:background="@drawable/usernamebg"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p6p"
                         app:layout_constraintEnd_toEndOf="@+id/p4p5name"
@@ -1187,9 +1307,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginTop="-1dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:fontFamily="@font/rcbold"
+                            android:singleLine="true"
                             android:text="Player 6"
                             android:textColor="@color/black"
                             android:textSize="13sp"
@@ -1198,14 +1319,14 @@
 
                     <ImageView
                         android:id="@+id/p4botp6"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="@+id/p4p6name"
                         app:layout_constraintEnd_toEndOf="@+id/p4botp5"
                         app:layout_constraintStart_toStartOf="@+id/p4botp5"
                         app:layout_constraintTop_toTopOf="@+id/p4p6name"
                         app:srcCompat="@drawable/botbtn" />
-
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -1213,8 +1334,8 @@
                     android:id="@+id/classicp3layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="20dp"
-                    android:paddingBottom="34dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="12dp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -1224,53 +1345,55 @@
                         android:id="@+id/p3pl1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
                         android:orientation="horizontal"
                         android:weightSum="4"
-                        app:layout_constraintEnd_toStartOf="@+id/p3p1name"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
                             android:id="@+id/p3pl1b"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:background="@drawable/greenunselectedcircle"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/bluepiece" />
 
                         <ImageView
                             android:id="@+id/p3pl1r"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/redpiece" />
 
                         <ImageView
                             android:id="@+id/p3pl1g"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/greenpiece" />
 
                         <ImageView
                             android:id="@+id/p3pl1y"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/yellowpiece" />
                     </LinearLayout>
 
                     <RelativeLayout
                         android:id="@+id/p3p1name"
-                        android:layout_width="110dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="3dp"
+                        android:layout_width="0dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="6dp"
                         android:background="@drawable/usernamebg"
                         app:layout_constraintBottom_toBottomOf="@+id/p3pl1"
                         app:layout_constraintEnd_toStartOf="@+id/p3botp1"
-                        app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/p3pl1"
                         app:layout_constraintTop_toTopOf="@+id/p3pl1">
 
@@ -1280,8 +1403,9 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginStart="6dp"
-                            android:layout_marginTop="-1dp"
+                            android:layout_marginEnd="6dp"
                             android:fontFamily="@font/rcbold"
+                            android:singleLine="true"
                             android:text="Player 1"
                             android:textColor="@color/black"
                             android:textSize="13sp"
@@ -1290,13 +1414,12 @@
 
                     <ImageView
                         android:id="@+id/p3botp1"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:layout_marginStart="5dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="14dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="@+id/p3p1name"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/p3p1name"
                         app:layout_constraintTop_toTopOf="@+id/p3p1name"
                         app:srcCompat="@drawable/botbtn" />
 
@@ -1304,50 +1427,54 @@
                         android:id="@+id/p3pl2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="12dp"
                         android:orientation="horizontal"
                         android:weightSum="4"
                         app:layout_constraintStart_toStartOf="@+id/p3pl1"
-                        app:layout_constraintTop_toBottomOf="@id/p3pl1">
+                        app:layout_constraintTop_toBottomOf="@+id/p3pl1">
 
                         <ImageView
                             android:id="@+id/p3pl2b"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/bluepiece" />
 
                         <ImageView
                             android:id="@+id/p3pl2r"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:background="@drawable/greenunselectedcircle"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/redpiece" />
 
                         <ImageView
                             android:id="@+id/p3pl2g"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/greenpiece" />
 
                         <ImageView
                             android:id="@+id/p3pl2y"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/yellowpiece" />
                     </LinearLayout>
 
                     <RelativeLayout
                         android:id="@+id/p3p2name"
-                        android:layout_width="110dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="3dp"
+                        android:layout_width="0dp"
+                        android:layout_height="28dp"
                         android:background="@drawable/usernamebg"
                         app:layout_constraintBottom_toBottomOf="@+id/p3pl2"
-                        app:layout_constraintStart_toEndOf="@+id/p3pl2"
+                        app:layout_constraintEnd_toEndOf="@+id/p3p1name"
+                        app:layout_constraintStart_toStartOf="@+id/p3p1name"
                         app:layout_constraintTop_toTopOf="@+id/p3pl2">
 
                         <TextView
@@ -1356,8 +1483,9 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginStart="6dp"
-                            android:layout_marginTop="-1dp"
+                            android:layout_marginEnd="6dp"
                             android:fontFamily="@font/rcbold"
+                            android:singleLine="true"
                             android:text="Player 2"
                             android:textColor="@color/black"
                             android:textSize="13sp"
@@ -1366,11 +1494,12 @@
 
                     <ImageView
                         android:id="@+id/p3botp2"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:layout_marginStart="5dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="@+id/p3p2name"
-                        app:layout_constraintStart_toEndOf="@+id/p3p2name"
+                        app:layout_constraintEnd_toEndOf="@+id/p3botp1"
+                        app:layout_constraintStart_toStartOf="@+id/p3botp1"
                         app:layout_constraintTop_toTopOf="@+id/p3p2name"
                         app:srcCompat="@drawable/botbtn" />
 
@@ -1378,50 +1507,54 @@
                         android:id="@+id/p3pl3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="12dp"
                         android:orientation="horizontal"
                         android:weightSum="4"
                         app:layout_constraintStart_toStartOf="@+id/p3pl2"
-                        app:layout_constraintTop_toBottomOf="@id/p3pl2">
+                        app:layout_constraintTop_toBottomOf="@+id/p3pl2">
 
                         <ImageView
                             android:id="@+id/p3pl3b"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/bluepiece" />
 
                         <ImageView
                             android:id="@+id/p3pl3r"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/redpiece" />
 
                         <ImageView
                             android:id="@+id/p3pl3g"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:background="@drawable/greenunselectedcircle"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/greenpiece" />
 
                         <ImageView
                             android:id="@+id/p3pl3y"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:padding="2dp"
+                            android:scaleType="fitCenter"
                             app:srcCompat="@drawable/yellowpiece" />
                     </LinearLayout>
 
                     <RelativeLayout
                         android:id="@+id/p3p3name"
-                        android:layout_width="110dp"
-                        android:layout_height="24dp"
-                        android:layout_margin="3dp"
+                        android:layout_width="0dp"
+                        android:layout_height="28dp"
                         android:background="@drawable/usernamebg"
                         app:layout_constraintBottom_toBottomOf="@+id/p3pl3"
-                        app:layout_constraintStart_toEndOf="@+id/p3pl3"
+                        app:layout_constraintEnd_toEndOf="@+id/p3p2name"
+                        app:layout_constraintStart_toStartOf="@+id/p3p2name"
                         app:layout_constraintTop_toTopOf="@+id/p3pl3">
 
                         <TextView
@@ -1430,8 +1563,9 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_marginStart="6dp"
-                            android:layout_marginTop="-1dp"
+                            android:layout_marginEnd="6dp"
                             android:fontFamily="@font/rcbold"
+                            android:singleLine="true"
                             android:text="Player 3"
                             android:textColor="@color/black"
                             android:textSize="13sp"
@@ -1440,11 +1574,12 @@
 
                     <ImageView
                         android:id="@+id/p3botp3"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:layout_marginStart="5dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="@+id/p3p3name"
-                        app:layout_constraintStart_toEndOf="@+id/p3p3name"
+                        app:layout_constraintEnd_toEndOf="@+id/p3botp2"
+                        app:layout_constraintStart_toStartOf="@+id/p3botp2"
                         app:layout_constraintTop_toTopOf="@+id/p3p3name"
                         app:srcCompat="@drawable/botbtn" />
 
@@ -1454,7 +1589,7 @@
                     android:id="@+id/classicp2layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="40dp"
+                    android:paddingBottom="10dp"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -1464,45 +1599,43 @@
                         android:id="@+id/bluegreentype"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="2dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
                             android:id="@+id/imageView105"
-                            android:layout_width="47dp"
-                            android:layout_height="47dp"
-                            android:layout_marginEnd="15dp"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:layout_marginStart="24dp"
+                            android:scaleType="fitCenter"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@+id/imageView97"
-                            app:layout_constraintHorizontal_chainStyle="packed"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:srcCompat="@drawable/greenselectedcircle" />
 
                         <ImageView
                             android:id="@+id/imageView97"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_marginStart="35dp"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginStart="14dp"
+                            android:scaleType="fitCenter"
                             app:layout_constraintBottom_toTopOf="@+id/imageView98"
-                            app:layout_constraintEnd_toStartOf="@+id/t1name1"
-                            app:layout_constraintHorizontal_bias="0.5"
-                            app:layout_constraintHorizontal_chainStyle="packed"
-                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imageView105"
                             app:layout_constraintTop_toTopOf="parent"
                             app:srcCompat="@drawable/bluepiece" />
 
                         <RelativeLayout
                             android:id="@+id/t1name1"
-                            android:layout_width="110dp"
-                            android:layout_height="24dp"
-                            android:layout_margin="3dp"
+                            android:layout_width="0dp"
+                            android:layout_height="28dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="26dp"
                             android:background="@drawable/usernamebg"
                             app:layout_constraintBottom_toBottomOf="@+id/imageView97"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.5"
                             app:layout_constraintStart_toEndOf="@+id/imageView97"
                             app:layout_constraintTop_toTopOf="@+id/imageView97">
 
@@ -1511,9 +1644,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:layout_marginStart="6dp"
-                                android:layout_marginTop="-1dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
                                 android:fontFamily="@font/rcbold"
+                                android:singleLine="true"
                                 android:text="Player 1"
                                 android:textColor="@color/black"
                                 android:textSize="13sp"
@@ -1522,8 +1656,10 @@
 
                         <ImageView
                             android:id="@+id/imageView98"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginTop="4dp"
+                            android:scaleType="fitCenter"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/imageView97"
                             app:layout_constraintTop_toBottomOf="@+id/imageView97"
@@ -1531,12 +1667,12 @@
 
                         <RelativeLayout
                             android:id="@+id/t1name2"
-                            android:layout_width="110dp"
-                            android:layout_height="24dp"
-                            android:layout_margin="3dp"
+                            android:layout_width="0dp"
+                            android:layout_height="28dp"
                             android:background="@drawable/usernamebg"
                             app:layout_constraintBottom_toBottomOf="@+id/imageView98"
-                            app:layout_constraintStart_toEndOf="@+id/imageView98"
+                            app:layout_constraintEnd_toEndOf="@+id/t1name1"
+                            app:layout_constraintStart_toStartOf="@+id/t1name1"
                             app:layout_constraintTop_toTopOf="@+id/imageView98">
 
                             <TextView
@@ -1544,9 +1680,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:layout_marginStart="6dp"
-                                android:layout_marginTop="-1dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
                                 android:fontFamily="@font/rcbold"
+                                android:singleLine="true"
                                 android:text="Player 2"
                                 android:textColor="@color/black"
                                 android:textSize="13sp"
@@ -1558,6 +1695,8 @@
                         android:id="@+id/view2"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:layout_marginStart="14dp"
+                        android:layout_marginEnd="14dp"
                         android:background="@color/inactivetabcolor2p"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/bluegreentype"
@@ -1569,46 +1708,44 @@
                         android:id="@+id/redyellowtype"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="2dp"
+                        android:layout_marginTop="10dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/bluegreentype">
 
                         <ImageView
                             android:id="@+id/imageView106"
-                            android:layout_width="47dp"
-                            android:layout_height="47dp"
-                            android:layout_marginEnd="15dp"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:layout_marginStart="24dp"
+                            android:scaleType="fitCenter"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@+id/imageView99"
-                            app:layout_constraintHorizontal_chainStyle="packed"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:srcCompat="@drawable/greenunselectedcircle" />
 
                         <ImageView
                             android:id="@+id/imageView99"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_marginStart="30dp"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginStart="14dp"
+                            android:scaleType="fitCenter"
                             app:layout_constraintBottom_toTopOf="@+id/imageView100"
-                            app:layout_constraintEnd_toStartOf="@+id/t2name1"
-                            app:layout_constraintHorizontal_bias="0.5"
-                            app:layout_constraintHorizontal_chainStyle="packed"
-                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imageView106"
                             app:layout_constraintTop_toTopOf="parent"
                             app:srcCompat="@drawable/redpiece" />
 
                         <RelativeLayout
                             android:id="@+id/t2name1"
-                            android:layout_width="110dp"
-                            android:layout_height="24dp"
-                            android:layout_margin="3dp"
+                            android:layout_width="0dp"
+                            android:layout_height="28dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="26dp"
                             android:background="@drawable/usernamebg"
                             app:layout_constraintBottom_toBottomOf="@+id/imageView99"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.5"
                             app:layout_constraintStart_toEndOf="@+id/imageView99"
                             app:layout_constraintTop_toTopOf="@+id/imageView99">
 
@@ -1617,9 +1754,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:layout_marginStart="6dp"
-                                android:layout_marginTop="-1dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
                                 android:fontFamily="@font/rcbold"
+                                android:singleLine="true"
                                 android:text="Player 1"
                                 android:textColor="@color/black"
                                 android:textSize="13sp"
@@ -1628,8 +1766,10 @@
 
                         <ImageView
                             android:id="@+id/imageView100"
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginTop="4dp"
+                            android:scaleType="fitCenter"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/imageView99"
                             app:layout_constraintTop_toBottomOf="@+id/imageView99"
@@ -1637,12 +1777,12 @@
 
                         <RelativeLayout
                             android:id="@+id/t2name2"
-                            android:layout_width="110dp"
-                            android:layout_height="24dp"
-                            android:layout_margin="3dp"
+                            android:layout_width="0dp"
+                            android:layout_height="28dp"
                             android:background="@drawable/usernamebg"
                             app:layout_constraintBottom_toBottomOf="@+id/imageView100"
-                            app:layout_constraintStart_toEndOf="@+id/imageView100"
+                            app:layout_constraintEnd_toEndOf="@+id/t2name1"
+                            app:layout_constraintStart_toStartOf="@+id/t2name1"
                             app:layout_constraintTop_toTopOf="@+id/imageView100">
 
                             <TextView
@@ -1650,9 +1790,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:layout_marginStart="6dp"
-                                android:layout_marginTop="-1dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
                                 android:fontFamily="@font/rcbold"
+                                android:singleLine="true"
                                 android:text="Player 2"
                                 android:textColor="@color/black"
                                 android:textSize="13sp"
@@ -1664,6 +1805,8 @@
                         android:id="@+id/view3"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
+                        android:layout_marginStart="14dp"
+                        android:layout_marginEnd="14dp"
                         android:background="@color/inactivetabcolor2p"
                         android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="@+id/redyellowtype"
@@ -1676,11 +1819,14 @@
 
             <ImageView
                 android:id="@+id/npbg2p"
-                android:layout_width="80dp"
-                android:layout_height="65dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="14dp"
+                android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/npbg3p"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/playerdetailsselctiontab"
@@ -1688,10 +1834,11 @@
 
             <ImageView
                 android:id="@+id/p2ptxt"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="6dp"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/npbg2p"
                 app:layout_constraintEnd_toEndOf="@+id/npbg2p"
                 app:layout_constraintStart_toStartOf="@+id/npbg2p"
@@ -1700,21 +1847,24 @@
 
             <ImageView
                 android:id="@+id/npbg3p"
-                android:layout_width="80dp"
-                android:layout_height="65dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="@+id/npbg2p"
                 app:layout_constraintEnd_toStartOf="@+id/npbg4p"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/npbg2p"
                 app:layout_constraintTop_toTopOf="@+id/npbg2p"
                 app:srcCompat="@drawable/npbtnbg" />
 
             <ImageView
                 android:id="@+id/p3ptxt"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="6dp"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/npbg3p"
                 app:layout_constraintEnd_toEndOf="@+id/npbg3p"
                 app:layout_constraintStart_toStartOf="@+id/npbg3p"
@@ -1723,21 +1873,25 @@
 
             <ImageView
                 android:id="@+id/npbg4p"
-                android:layout_width="80dp"
-                android:layout_height="65dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:scaleType="fitXY"
+                app:layout_goneMarginEnd="12dp"
                 app:layout_constraintBottom_toBottomOf="@+id/npbg3p"
                 app:layout_constraintEnd_toStartOf="@+id/npbg5p"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/npbg3p"
                 app:layout_constraintTop_toTopOf="@+id/npbg3p"
                 app:srcCompat="@drawable/npbtnbg" />
 
             <ImageView
                 android:id="@+id/p4ptxt"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="6dp"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/npbg4p"
                 app:layout_constraintEnd_toEndOf="@+id/npbg4p"
                 app:layout_constraintStart_toStartOf="@+id/npbg4p"
@@ -1746,22 +1900,25 @@
 
             <ImageView
                 android:id="@+id/npbg5p"
-                android:layout_width="80dp"
-                android:layout_height="65dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:scaleType="fitXY"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/npbg4p"
                 app:layout_constraintEnd_toStartOf="@+id/npbg6p"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/npbg4p"
                 app:layout_constraintTop_toTopOf="@+id/npbg4p"
                 app:srcCompat="@drawable/npbtnbg" />
 
             <ImageView
                 android:id="@+id/p5ptxt"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="6dp"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/npbg5p"
                 app:layout_constraintEnd_toEndOf="@+id/npbg5p"
                 app:layout_constraintStart_toStartOf="@+id/npbg5p"
@@ -1770,22 +1927,25 @@
 
             <ImageView
                 android:id="@+id/npbg6p"
-                android:layout_width="80dp"
-                android:layout_height="65dp"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="12dp"
+                android:scaleType="fitXY"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/npbg5p"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/npbg5p"
                 app:layout_constraintTop_toTopOf="@+id/npbg5p"
                 app:srcCompat="@drawable/npbtnbg" />
 
             <ImageView
                 android:id="@+id/p6ptxt"
-                android:layout_width="wrap_content"
-                android:layout_height="22dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="6dp"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/npbg6p"
                 app:layout_constraintEnd_toEndOf="@+id/npbg6p"
                 app:layout_constraintStart_toStartOf="@+id/npbg6p"
@@ -1796,9 +1956,10 @@
 
         <ImageView
             android:id="@+id/choosecolornnamebackbtn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="-4dp"
+            android:layout_width="50dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="16dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/passnplaymainplaybtn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/passnplaymainplaybtn"
@@ -1806,22 +1967,25 @@
 
         <ImageView
             android:id="@+id/passnplaymainplaybtn"
-            android:layout_width="130dp"
-            android:layout_height="65dp"
-            android:layout_marginTop="-5dp"
+            android:layout_width="148dp"
+            android:layout_height="54dp"
+            android:layout_marginBottom="6dp"
+            android:scaleType="fitCenter"
+            app:layout_goneMarginBottom="18dp"
+            app:layout_constraintBottom_toTopOf="@+id/playonetokenoutbutton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/choosecolornnamemainlayout"
             app:srcCompat="@drawable/gamemainplaybtn" />
 
         <ImageView
             android:id="@+id/playonetokenoutbutton"
-            android:layout_width="wrap_content"
-            android:layout_height="110dp"
-            android:layout_marginTop="-10dp"
-            app:layout_constraintEnd_toEndOf="@+id/passnplaymainplaybtn"
-            app:layout_constraintStart_toStartOf="@+id/passnplaymainplaybtn"
-            app:layout_constraintTop_toBottomOf="@+id/passnplaymainplaybtn"
+            android:layout_width="160dp"
+            android:layout_height="44dp"
+            android:layout_marginBottom="10dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/playonetokenoutbtn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -1839,8 +2003,13 @@
 
         <ImageView
             android:id="@+id/imageView56"
-            android:layout_width="wrap_content"
-            android:layout_height="65dp"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="4dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@+id/choosetokenlayoutnouse"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -1853,11 +2022,10 @@
             android:id="@+id/choosetokenlayoutnouse"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="13dp"
-            android:layout_marginEnd="13dp"
-            android:background="@drawable/choosetokenbg"
-            android:paddingBottom="15dp"
-            android:scaleType="fitXY"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="6dp"
+            android:paddingBottom="12dp"
             app:layout_constraintBottom_toTopOf="@+id/selectgamelayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -1865,12 +2033,24 @@
             app:layout_constraintTop_toBottomOf="@+id/imageView56">
 
             <ImageView
+                android:id="@+id/choosetokencardbg"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/choosetokenbg" />
+
+            <ImageView
                 android:id="@+id/imageView57"
                 android:layout_width="0dp"
-                android:layout_height="26dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="18dp"
-                android:layout_marginEnd="30dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="28dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -1878,25 +2058,26 @@
 
             <ImageView
                 android:id="@+id/piecetype1layout"
-                android:layout_width="160dp"
-                android:layout_height="76dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginEnd="3dp"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toStartOf="@+id/piecetype2layout"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView57"
                 app:srcCompat="@drawable/piecetype1selected" />
 
             <ImageView
                 android:id="@+id/piecetype2layout"
-                android:layout_width="160dp"
-                android:layout_height="76dp"
-                android:layout_marginStart="3dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginEnd="10dp"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="14dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/piecetype1layout"
@@ -1906,10 +2087,12 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/selectgamelayout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/selectgamebg2"
-            android:paddingBottom="15dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="10dp"
+            android:paddingBottom="14dp"
             app:layout_constraintBottom_toTopOf="@+id/imageView89"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -1917,10 +2100,22 @@
             app:layout_constraintTop_toBottomOf="@+id/choosetokenlayoutnouse">
 
             <ImageView
+                android:id="@+id/selectgamecardbg"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/selectgamebg2" />
+
+            <ImageView
                 android:id="@+id/imageView58"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="10dp"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginEnd="12dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView55"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imageView55"
@@ -1928,9 +2123,12 @@
 
             <ImageView
                 android:id="@+id/imageView55"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:layout_marginTop="20dp"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="48dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -1938,9 +2136,12 @@
 
             <ImageView
                 android:id="@+id/imageView59"
-                android:layout_width="wrap_content"
-                android:layout_height="98dp"
-                android:layout_marginTop="16dp"
+                android:layout_width="0dp"
+                android:layout_height="68dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="18dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView55"
@@ -1948,9 +2149,12 @@
 
             <ImageView
                 android:id="@+id/imageView87"
-                android:layout_width="wrap_content"
-                android:layout_height="98dp"
-                android:layout_marginTop="16dp"
+                android:layout_width="0dp"
+                android:layout_height="68dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="18dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView59"
@@ -1958,9 +2162,12 @@
 
             <ImageView
                 android:id="@+id/imageView88"
-                android:layout_width="wrap_content"
-                android:layout_height="98dp"
-                android:layout_marginTop="16dp"
+                android:layout_width="0dp"
+                android:layout_height="68dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="18dp"
+                android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView87"
@@ -1970,25 +2177,26 @@
 
         <ImageView
             android:id="@+id/imageView89"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_width="148dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="14dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/selectgamelayout"
             app:srcCompat="@drawable/nextbtn" />
 
         <ImageView
             android:id="@+id/imageView90"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="46dp"
+            android:layout_marginStart="16dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/imageView89"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/imageView89"
-            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/backbuttonmain" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
