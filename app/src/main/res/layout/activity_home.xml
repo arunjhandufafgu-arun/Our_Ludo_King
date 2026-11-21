@@ -2473,12 +2473,14 @@
 
         <ImageView
             android:id="@+id/imageView46"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:layout_marginTop="5dp"
-            app:layout_constraintEnd_toEndOf="@+id/constraintLayout4"
-            app:layout_constraintStart_toStartOf="@+id/constraintLayout4"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
+            android:layout_width="176dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="16dp"
+            android:elevation="8dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/continuebtn" />
 
         <TextView
@@ -2486,14 +2488,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="14dp"
             android:layout_marginEnd="15dp"
             android:alpha="0.9"
             android:fontFamily="@font/rcbold"
             android:text="@string/profilenote"
             android:textAlignment="center"
             android:textColor="#F1F1F1"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -2502,9 +2504,9 @@
         <ImageView
             android:id="@+id/imageView35"
             android:layout_width="0dp"
-            android:layout_height="60dp"
+            android:layout_height="48dp"
             android:layout_marginStart="18dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="18dp"
             app:layout_constraintEnd_toEndOf="@+id/textView8"
             app:layout_constraintStart_toStartOf="@+id/textView8"
@@ -2513,9 +2515,9 @@
 
         <RelativeLayout
             android:id="@+id/profilebackgtemplyt"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginTop="5dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="6dp"
             android:background="#03A9F4"
             android:foregroundGravity="center"
             android:gravity="center"
@@ -2524,8 +2526,8 @@
 
             <ImageView
                 android:id="@+id/profilepicprofileedit"
-                android:layout_width="67dp"
-                android:layout_height="67dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="0.5dp"
@@ -2563,9 +2565,11 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
             android:layout_width="0dp"
-            android:layout_height="260dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="4dp"
             android:background="@drawable/loginbg"
+            app:layout_constraintBottom_toTopOf="@+id/imageView36"
             app:layout_constraintEnd_toEndOf="@+id/imageView35"
             app:layout_constraintStart_toStartOf="@+id/profilebackgtemplyt"
             app:layout_constraintTop_toBottomOf="@+id/profilebackgtemplyt">
@@ -2632,17 +2636,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p1" />
 
                                 <ImageView
                                     android:id="@+id/p1bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2658,17 +2664,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p2" />
 
                                 <ImageView
                                     android:id="@+id/p2bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2684,17 +2692,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p3" />
 
                                 <ImageView
                                     android:id="@+id/p3bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2710,17 +2720,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep4"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p4" />
 
                                 <ImageView
                                     android:id="@+id/p4bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2750,17 +2762,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep5"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p5" />
 
                                 <ImageView
                                     android:id="@+id/p5bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2776,17 +2790,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep6"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p6" />
 
                                 <ImageView
                                     android:id="@+id/p6bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2802,17 +2818,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep7"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p7" />
 
                                 <ImageView
                                     android:id="@+id/p7bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2828,17 +2846,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep8"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p8" />
 
                                 <ImageView
                                     android:id="@+id/p8bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2868,17 +2888,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep9"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p9" />
 
                                 <ImageView
                                     android:id="@+id/p9bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2894,17 +2916,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep10"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p10" />
 
                                 <ImageView
                                     android:id="@+id/p10bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2920,17 +2944,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep11"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p11" />
 
                                 <ImageView
                                     android:id="@+id/p11bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2946,17 +2972,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep12"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p12" />
 
                                 <ImageView
                                     android:id="@+id/p12bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -2986,17 +3014,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep13"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p13" />
 
                                 <ImageView
                                     android:id="@+id/p13bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3012,17 +3042,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep14"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p14" />
 
                                 <ImageView
                                     android:id="@+id/p14bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3038,17 +3070,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep15"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p15" />
 
                                 <ImageView
                                     android:id="@+id/p15bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3064,17 +3098,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep16"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p16" />
 
                                 <ImageView
                                     android:id="@+id/p16bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3104,17 +3140,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep17"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p17" />
 
                                 <ImageView
                                     android:id="@+id/p17bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3130,17 +3168,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep18"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p18" />
 
                                 <ImageView
                                     android:id="@+id/p18bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3156,20 +3196,22 @@
 
                                 <ImageView
                                     android:id="@+id/imagep19"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p19" />
 
                                 <ImageView
                                     android:id="@+id/p19bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_alignParentEnd="true"
                                     android:layout_alignParentBottom="true"
                                     android:layout_marginEnd="0dp"
                                     android:layout_marginBottom="0dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3185,17 +3227,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep20"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p20" />
 
                                 <ImageView
                                     android:id="@+id/p20bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3225,17 +3269,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep21"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p21" />
 
                                 <ImageView
                                     android:id="@+id/p21bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3251,17 +3297,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep22"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p22" />
 
                                 <ImageView
                                     android:id="@+id/p22bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3277,17 +3325,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep23"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p23" />
 
                                 <ImageView
                                     android:id="@+id/p23bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3303,17 +3353,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep24"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p24" />
 
                                 <ImageView
                                     android:id="@+id/p24bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3343,17 +3395,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep25"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p25" />
 
                                 <ImageView
                                     android:id="@+id/p25bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3369,17 +3423,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep26"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p26" />
 
                                 <ImageView
                                     android:id="@+id/p26bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3395,17 +3451,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep27"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p27" />
 
                                 <ImageView
                                     android:id="@+id/p27bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3421,17 +3479,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep28"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p28" />
 
                                 <ImageView
                                     android:id="@+id/p28bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3461,17 +3521,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep29"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p29" />
 
                                 <ImageView
                                     android:id="@+id/p29bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3487,17 +3549,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep30"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p30" />
 
                                 <ImageView
                                     android:id="@+id/p30bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3513,17 +3577,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep31"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p31" />
 
                                 <ImageView
                                     android:id="@+id/p31bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3539,17 +3605,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep32"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p32" />
 
                                 <ImageView
                                     android:id="@+id/p32bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3579,17 +3647,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep33"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p33" />
 
                                 <ImageView
                                     android:id="@+id/p33bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3605,17 +3675,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep34"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p34" />
 
                                 <ImageView
                                     android:id="@+id/p34bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3631,17 +3703,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep35"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p35" />
 
                                 <ImageView
                                     android:id="@+id/p35bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3657,17 +3731,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep36"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p36" />
 
                                 <ImageView
                                     android:id="@+id/p36bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3697,17 +3773,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep37"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p37" />
 
                                 <ImageView
                                     android:id="@+id/p37bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3723,17 +3801,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep38"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p38" />
 
                                 <ImageView
                                     android:id="@+id/p38bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3749,17 +3829,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep39"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p39" />
 
                                 <ImageView
                                     android:id="@+id/p39bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3775,17 +3857,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep40"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p40" />
 
                                 <ImageView
                                     android:id="@+id/p40bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3815,17 +3899,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep41"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p41" />
 
                                 <ImageView
                                     android:id="@+id/p41bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3841,17 +3927,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep42"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p42" />
 
                                 <ImageView
                                     android:id="@+id/p42bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3867,17 +3955,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep43"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p43" />
 
                                 <ImageView
                                     android:id="@+id/p43bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3893,17 +3983,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep44"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p44" />
 
                                 <ImageView
                                     android:id="@+id/p44bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3933,17 +4025,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep45"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p45" />
 
                                 <ImageView
                                     android:id="@+id/p45bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3959,17 +4053,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep46"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p46" />
 
                                 <ImageView
                                     android:id="@+id/p46bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -3985,17 +4081,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep47"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p47" />
 
                                 <ImageView
                                     android:id="@+id/p47bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -4011,17 +4109,19 @@
 
                                 <ImageView
                                     android:id="@+id/imagep48"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
                                     android:padding="3dp"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/p48" />
 
                                 <ImageView
                                     android:id="@+id/p48bg"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_width="64dp"
+                                    android:layout_height="64dp"
                                     android:layout_centerInParent="true"
+                                    android:scaleType="fitCenter"
                                     app:srcCompat="@drawable/avatarbg" />
 
                             </RelativeLayout>
@@ -4036,26 +4136,27 @@
         <ImageView
             android:id="@+id/imageView36"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="42dp"
             android:layout_marginStart="-10dp"
-            android:layout_marginTop="-8dp"
             android:layout_marginEnd="-10dp"
+            android:layout_marginBottom="-4dp"
             android:layout_weight="1"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout4"
             app:layout_constraintEnd_toEndOf="@+id/constraintLayout2"
             app:layout_constraintStart_toStartOf="@+id/constraintLayout2"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
             app:srcCompat="@drawable/loginbenefits" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout4"
             android:layout_width="0dp"
-            android:layout_height="110dp"
+            android:layout_height="96dp"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/loginbg2"
+            app:layout_constraintBottom_toTopOf="@+id/imageView46"
             app:layout_constraintEnd_toEndOf="@+id/constraintLayout2"
-            app:layout_constraintStart_toStartOf="@+id/constraintLayout2"
-            app:layout_constraintTop_toBottomOf="@+id/imageView36">
+            app:layout_constraintStart_toStartOf="@+id/constraintLayout2">
 
             <ImageView
                 android:id="@+id/imageView37"
@@ -4136,6 +4237,7 @@
             android:id="@+id/imageView48"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -4242,17 +4344,19 @@
 
                 <ImageView
                     android:id="@+id/imageprofilestatisticstab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_centerInParent="true"
-                    android:padding="3.5dp"
+                    android:padding="4dp"
+                    android:scaleType="fitCenter"
                     app:srcCompat="@drawable/dpdefault" />
 
                 <ImageView
                     android:id="@+id/statisticsprofilebg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_centerInParent="true"
+                    android:scaleType="fitCenter"
                     app:srcCompat="@drawable/avatarbg" />
 
             </RelativeLayout>
@@ -4813,18 +4917,19 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:layout_marginBottom="120dp"
+            android:layout_marginBottom="90dp"
             android:background="@drawable/startingloginbg"
             android:paddingBottom="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.42">
 
             <ImageView
                 android:id="@+id/imageView26"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="56dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="20dp"
@@ -4838,7 +4943,7 @@
             <ImageView
                 android:id="@+id/imageView27"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="56dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:scaleType="fitXY"
@@ -4856,7 +4961,7 @@
                 android:fontFamily="@font/rcbold"
                 android:text="This doesn't let the app post to facebook"
                 android:textColor="#F1F1F1"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -4891,8 +4996,9 @@
         <ImageView
             android:id="@+id/imageView24"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-10dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="2dp"
+            android:scaleType="fitXY"
             app:layout_constraintEnd_toEndOf="@id/constraintLayout"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/constraintLayout"
@@ -4902,7 +5008,7 @@
         <ImageView
             android:id="@+id/imageView28"
             android:layout_width="wrap_content"
-            android:layout_height="58dp"
+            android:layout_height="52dp"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -4910,8 +5016,8 @@
 
         <ImageView
             android:id="@+id/imageView30"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
             app:layout_constraintStart_toStartOf="@+id/constraintLayout"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
@@ -4921,7 +5027,10 @@
             android:id="@+id/imageView25"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="23dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/imageView24"
             app:layout_constraintEnd_toEndOf="@+id/imageView24"
             app:layout_constraintStart_toStartOf="@+id/imageView24"
@@ -4932,12 +5041,12 @@
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="20dp"
             android:alpha="0.9"
             android:fontFamily="@font/rcbold"
             android:text="Privacy Policy"
             android:textColor="#949494"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -4947,7 +5056,7 @@
             android:id="@+id/view"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:alpha="0.9"
             android:background="#949494"
             app:layout_constraintEnd_toEndOf="@+id/textView6"
@@ -4962,6 +5071,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="35dp"
+        android:adjustViewBounds="true"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

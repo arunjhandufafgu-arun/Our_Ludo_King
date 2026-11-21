@@ -124,13 +124,17 @@ jobs:
             return None
 
         # 1. Remove any pre-existing duplicates or 0-byte files
-        dup_removed = deduplicate_dir("app/src/main/res/drawable") + deduplicate_dir("app/src/main/res/raw")
+        dup_removed = (
+            deduplicate_dir("app/src/main/res/drawable")
+            + deduplicate_dir("app/src/main/res/drawable-nodpi")
+            + deduplicate_dir("app/src/main/res/raw")
+        )
 
         # 2. Check and auto-restore any missing referenced drawables or raw files from git history
         restored = []
         fallback_created = []
         for rtype, subdirs, primary_dir in [
-            ("drawable", ["drawable", "drawable-v24"], "drawable"),
+            ("drawable", ["drawable", "drawable-nodpi", "drawable-v24"], "drawable"),
             ("raw", ["raw"], "raw"),
         ]:
             have = set()
@@ -143,7 +147,9 @@ jobs:
                             have.add(os.path.splitext(fn)[0])
             refs = collect_refs(rtype)
             for name in sorted(refs - have):
-                restored_path = restore_from_git(primary_dir, name)
+                restored_path = restore_from_git("drawable-nodpi", name) if rtype == "drawable" else None
+                if not restored_path:
+                    restored_path = restore_from_git(primary_dir, name)
                 if restored_path:
                     restored.append(restored_path)
                 elif rtype == "drawable":
@@ -154,7 +160,11 @@ jobs:
                     fallback_created.append(fb)
 
         # 3. Deduplicate again after any restores
-        dup_removed += deduplicate_dir("app/src/main/res/drawable") + deduplicate_dir("app/src/main/res/raw")
+        dup_removed += (
+            deduplicate_dir("app/src/main/res/drawable")
+            + deduplicate_dir("app/src/main/res/drawable-nodpi")
+            + deduplicate_dir("app/src/main/res/raw")
+        )
 
         # 4. Validate XML syntax across app/src/main
         xml_errors = []

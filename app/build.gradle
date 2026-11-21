@@ -98,26 +98,28 @@ tasks.matching { it.name.startsWith("lint") || it.name.contains("Lint") }.config
 
 tasks.register('deduplicateDrawableResources') {
     doLast {
-        def drawableDir = file("src/main/res/drawable")
-        if (!drawableDir.exists()) return
         def priority = ['.png': 1, '.jpeg': 2, '.jpg': 3, '.gif': 4, '.xml': 5, '.webp': 6]
-        def groups = [:].withDefault { [] }
-        drawableDir.listFiles()?.each { File f ->
-            if (!f.isFile()) return
-            def name = f.name
-            def dot = name.lastIndexOf('.')
-            if (dot <= 0) return
-            def stem = name.substring(0, dot)
-            def ext = name.substring(dot).toLowerCase(Locale.ROOT)
-            if (priority.containsKey(ext)) {
-                groups[stem] << [rank: priority[ext], file: f]
+        def dirs = [file("src/main/res/drawable"), file("src/main/res/drawable-nodpi")]
+        dirs.each { File drawableDir ->
+            if (!drawableDir.exists()) return
+            def groups = [:].withDefault { [] }
+            drawableDir.listFiles()?.each { File f ->
+                if (!f.isFile()) return
+                def name = f.name
+                def dot = name.lastIndexOf('.')
+                if (dot <= 0) return
+                def stem = name.substring(0, dot)
+                def ext = name.substring(dot).toLowerCase(Locale.ROOT)
+                if (priority.containsKey(ext)) {
+                    groups[stem] << [rank: priority[ext], file: f]
+                }
             }
-        }
-        groups.each { stem, items ->
-            if (items.size() > 1) {
-                items.sort { a, b -> a.rank <=> b.rank }
-                items.drop(1).each { entry ->
-                    entry.file.delete()
+            groups.each { stem, items ->
+                if (items.size() > 1) {
+                    items.sort { a, b -> a.rank <=> b.rank }
+                    items.drop(1).each { entry ->
+                        entry.file.delete()
+                    }
                 }
             }
         }
