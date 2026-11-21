@@ -20,18 +20,21 @@
 
     <ImageView
         android:id="@+id/imageView142"
-        android:layout_width="90dp"
-        android:layout_height="130dp"
-        android:layout_marginStart="3dp"
+        android:layout_width="72dp"
+        android:layout_height="102dp"
+        android:layout_marginStart="4dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/adanimation" />
 
     <ImageView
         android:id="@+id/imageView143"
-        android:layout_width="85dp"
-        android:layout_height="85dp"
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="10dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/spinadbg2" />
@@ -246,27 +249,33 @@
 
     <ImageView
         android:id="@+id/imageView12"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="-6dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="-4dp"
+        android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topNavBar"
         app:srcCompat="@drawable/exitfromapp" />
 
     <ImageView
         android:id="@+id/imageView13"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="-6dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="-4dp"
+        android:layout_marginEnd="4dp"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topNavBar"
         app:srcCompat="@drawable/settings" />
 
     <ImageView
         android:id="@+id/imageView14"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="-6dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="-4dp"
+        android:layout_marginEnd="4dp"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView13"
         app:srcCompat="@drawable/friends" />
@@ -275,9 +284,9 @@
         android:id="@+id/imageView15"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="70dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="76dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topNavBar"
@@ -286,8 +295,9 @@
     <ImageView
         android:id="@+id/imageView16"
         android:layout_width="wrap_content"
-        android:layout_height="75dp"
-        android:layout_marginTop="-10dp"
+        android:layout_height="58dp"
+        android:layout_marginTop="-6dp"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView4"
@@ -296,8 +306,9 @@
     <ImageView
         android:id="@+id/imageView17"
         android:layout_width="wrap_content"
-        android:layout_height="80dp"
-        android:layout_marginEnd="-35dp"
+        android:layout_height="62dp"
+        android:layout_marginEnd="-20dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/imageView16"
         app:layout_constraintEnd_toEndOf="@+id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/imageView16"
@@ -558,8 +569,8 @@
 
         <ImageView
             android:id="@+id/computermainplaybtn"
-            android:layout_width="148dp"
-            android:layout_height="56dp"
+            android:layout_width="130dp"
+            android:layout_height="48dp"
             android:layout_marginBottom="16dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -570,8 +581,8 @@
 
         <ImageView
             android:id="@+id/compl2backbtn2"
-            android:layout_width="50dp"
-            android:layout_height="46dp"
+            android:layout_width="44dp"
+            android:layout_height="40dp"
             android:layout_marginStart="16dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/computermainplaybtn"
@@ -648,9 +659,9 @@
             <ImageView
                 android:id="@+id/computerclassicbtn"
                 android:layout_width="0dp"
-                android:layout_height="62dp"
+                android:layout_height="56dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="20dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -661,9 +672,9 @@
             <ImageView
                 android:id="@+id/computerrushmodebtn"
                 android:layout_width="0dp"
-                android:layout_height="62dp"
+                android:layout_height="56dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -673,8 +684,8 @@
 
             <ImageView
                 android:id="@+id/computerhelpbtn"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_marginEnd="14dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/computerrushmodebtn"
@@ -685,9 +696,9 @@
 
         <ImageView
             android:id="@+id/computernxtbtn"
-            android:layout_width="148dp"
-            android:layout_height="54dp"
-            android:layout_marginBottom="18dp"
+            android:layout_width="130dp"
+            android:layout_height="46dp"
+            android:layout_marginBottom="16dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -696,8 +707,8 @@
 
         <ImageView
             android:id="@+id/computerselectgamebackbtn"
-            android:layout_width="50dp"
-            android:layout_height="46dp"
+            android:layout_width="44dp"
+            android:layout_height="40dp"
             android:layout_marginStart="16dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/computernxtbtn"
@@ -737,10 +748,10 @@
             android:id="@+id/constraintLayout7"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="10dp"
-            android:paddingBottom="18dp"
+            android:paddingBottom="16dp"
             app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toTopOf="@+id/teamupplaybtn"
             app:layout_constraintEnd_toEndOf="parent"
@@ -930,8 +941,8 @@
 
         <ImageView
             android:id="@+id/teamupplaybtn"
-            android:layout_width="148dp"
-            android:layout_height="56dp"
+            android:layout_width="130dp"
+            android:layout_height="48dp"
             android:layout_marginBottom="16dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -941,8 +952,8 @@
 
         <ImageView
             android:id="@+id/teamupbackbtn"
-            android:layout_width="50dp"
-            android:layout_height="46dp"
+            android:layout_width="44dp"
+            android:layout_height="40dp"
             android:layout_marginStart="16dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/teamupplaybtn"
@@ -966,9 +977,9 @@
             android:id="@+id/choosecolornnamemainlayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toTopOf="@+id/passnplaymainplaybtn"
@@ -1956,8 +1967,8 @@
 
         <ImageView
             android:id="@+id/choosecolornnamebackbtn"
-            android:layout_width="50dp"
-            android:layout_height="46dp"
+            android:layout_width="44dp"
+            android:layout_height="40dp"
             android:layout_marginStart="16dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/passnplaymainplaybtn"
@@ -1967,8 +1978,8 @@
 
         <ImageView
             android:id="@+id/passnplaymainplaybtn"
-            android:layout_width="148dp"
-            android:layout_height="54dp"
+            android:layout_width="130dp"
+            android:layout_height="46dp"
             android:layout_marginBottom="6dp"
             android:scaleType="fitCenter"
             app:layout_goneMarginBottom="18dp"
@@ -1979,8 +1990,8 @@
 
         <ImageView
             android:id="@+id/playonetokenoutbutton"
-            android:layout_width="160dp"
-            android:layout_height="44dp"
+            android:layout_width="140dp"
+            android:layout_height="38dp"
             android:layout_marginBottom="10dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -2059,7 +2070,7 @@
             <ImageView
                 android:id="@+id/piecetype1layout"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="54dp"
                 android:layout_marginStart="14dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
@@ -2073,7 +2084,7 @@
             <ImageView
                 android:id="@+id/piecetype2layout"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="54dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="14dp"
@@ -2089,8 +2100,8 @@
             android:id="@+id/selectgamelayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="10dp"
             android:paddingBottom="14dp"
             app:layout_constraintBottom_toTopOf="@+id/imageView89"
@@ -2112,8 +2123,8 @@
 
             <ImageView
                 android:id="@+id/imageView58"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_marginEnd="12dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView55"
@@ -2137,7 +2148,7 @@
             <ImageView
                 android:id="@+id/imageView59"
                 android:layout_width="0dp"
-                android:layout_height="68dp"
+                android:layout_height="60dp"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="18dp"
@@ -2150,7 +2161,7 @@
             <ImageView
                 android:id="@+id/imageView87"
                 android:layout_width="0dp"
-                android:layout_height="68dp"
+                android:layout_height="60dp"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="18dp"
@@ -2163,7 +2174,7 @@
             <ImageView
                 android:id="@+id/imageView88"
                 android:layout_width="0dp"
-                android:layout_height="68dp"
+                android:layout_height="60dp"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="18dp"
@@ -2177,8 +2188,8 @@
 
         <ImageView
             android:id="@+id/imageView89"
-            android:layout_width="148dp"
-            android:layout_height="52dp"
+            android:layout_width="130dp"
+            android:layout_height="46dp"
             android:layout_marginBottom="14dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -2189,8 +2200,8 @@
 
         <ImageView
             android:id="@+id/imageView90"
-            android:layout_width="50dp"
-            android:layout_height="46dp"
+            android:layout_width="44dp"
+            android:layout_height="40dp"
             android:layout_marginStart="16dp"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="@+id/imageView89"
