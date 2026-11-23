@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activitybg"
     android:layout_width="match_parent"
-
     android:layout_height="match_parent"
     android:background="@drawable/backgroundmaze"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     tools:context=".MainActivity">
 
     <RelativeLayout
@@ -15,8 +16,6 @@
         android:layout_height="wrap_content"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:gravity="center"
-        android:paddingTop="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,9 +25,8 @@
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
             android:rotation="180"
+            android:scaleType="fitXY"
             app:srcCompat="@drawable/ludofinalboard3" />
 
         <ImageView
@@ -812,13 +810,12 @@
         android:id="@+id/trightdicebg"
         android:layout_width="112dp"
         android:layout_height="60dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/dice_pad_right"
         android:backgroundTintMode="add"
         app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
-        app:layout_constraintEnd_toEndOf="@+id/relativeLayout"
-        app:layout_constraintWidth_percent="0.3">
+        app:layout_constraintEnd_toEndOf="@+id/relativeLayout">
 
         <ImageView
             android:id="@+id/trightpieceimage"
@@ -834,13 +831,12 @@
         android:id="@+id/tleftdicebg"
         android:layout_width="112dp"
         android:layout_height="60dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/dice_pad_left"
         android:backgroundTintMode="add"
         app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
-        app:layout_constraintStart_toStartOf="@+id/relativeLayout"
-        app:layout_constraintWidth_percent="0.3">
+        app:layout_constraintStart_toStartOf="@+id/relativeLayout">
 
         <ImageView
             android:id="@+id/tleftpieceimage"
@@ -857,13 +853,12 @@
         android:id="@+id/brightdicebg"
         android:layout_width="112dp"
         android:layout_height="60dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
         android:background="@drawable/dice_pad_right"
         android:backgroundTintMode="add"
         app:layout_constraintEnd_toEndOf="@+id/relativeLayout"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintWidth_percent="0.3">
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
 
         <ImageView
             android:id="@+id/brightpieceimage"
@@ -879,13 +874,12 @@
         android:id="@+id/bleftdicebg"
         android:layout_width="112dp"
         android:layout_height="60dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/dice_pad_left"
         android:backgroundTintMode="add"
         app:layout_constraintStart_toStartOf="@+id/relativeLayout"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintWidth_percent="0.3">
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
 
         <ImageView
             android:id="@+id/bleftpieceimage"
@@ -922,7 +916,7 @@
         android:id="@+id/pname1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="2dp"
         android:fontFamily="@font/rcbold"
         android:paddingStart="4dp"
         android:paddingTop="1dp"
@@ -942,7 +936,7 @@
         android:id="@+id/pname2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="2dp"
         android:fontFamily="@font/rcbold"
         android:paddingStart="4dp"
         android:paddingTop="1dp"
@@ -962,7 +956,7 @@
         android:id="@+id/pname3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="1dp"
+        android:layout_marginBottom="2dp"
         android:fontFamily="@font/rcbold"
         android:paddingStart="4dp"
         android:paddingTop="1dp"
@@ -982,7 +976,7 @@
         android:id="@+id/pname4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="1dp"
+        android:layout_marginBottom="2dp"
         android:fontFamily="@font/rcbold"
         android:paddingStart="4dp"
         android:paddingTop="1dp"
@@ -1028,7 +1022,6 @@
         android:id="@+id/winnercrownindex2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         android:scaleType="fitCenter"
         android:scaleX="0.75"
         android:scaleY="0.75"
@@ -1055,7 +1048,6 @@
         android:id="@+id/winnercrownindex3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         android:scaleType="fitCenter"
         android:scaleX="0.75"
         android:scaleY="0.75"

@@ -1355,8 +1355,8 @@ public class MainActivity extends AppCompatActivity {
         return isLockedMatchActive && !isFavoredTurn && consecutiveSixCount >= 1 && candidateRoll == 6;
     }
 
-    public static final float BOARD_WIDTH_RATIO = 0.90f;
-    public static final float BOARD_MAX_HEIGHT_RATIO = 0.64f;
+    public static final float BOARD_WIDTH_RATIO = 0.96f;
+    public static final float BOARD_MAX_HEIGHT_RATIO = 0.72f;
 
     public static int computeBoardWidthPx(int screenWidthPx, int screenHeightPx) {
         if (screenWidthPx <= 0) {
@@ -2395,10 +2395,10 @@ public class MainActivity extends AppCompatActivity {
             playername1.setRotation(90);
             playername1.setGravity(Gravity.BOTTOM);
             playername1.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            ((ConstraintLayout.LayoutParams)playername1.getLayoutParams()).topMargin = (int) (24 * displayMetrics.density);
+            ((ConstraintLayout.LayoutParams)playername1.getLayoutParams()).topMargin = 0;
 
             playername2.setRotation(180);
-            ((ConstraintLayout.LayoutParams)playername2.getLayoutParams()).topMargin = (int) (24 * displayMetrics.density);
+            ((ConstraintLayout.LayoutParams)playername2.getLayoutParams()).topMargin = 0;
 
             playername4.getLayoutParams().width = (int) (total);
             playername4.getLayoutParams().height = (int) (total);
@@ -3497,6 +3497,12 @@ public class MainActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.editTextNumber);
 
+        View boardContainer = findViewById(R.id.relativeLayout);
+        if (boardContainer != null && boardContainer.getLayoutParams() != null) {
+            boardContainer.getLayoutParams().width = (int) pxWidth;
+            boardContainer.getLayoutParams().height = (int) pxWidth;
+            boardContainer.requestLayout();
+        }
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(((int)(pxWidth)),((int)(pxWidth)));
         ludoBoard.setLayoutParams(layoutParams);
     }
