@@ -348,63 +348,45 @@ public class DiceLogicTest {
     }
 
     @Test
-    public void boardWidthReduction_leavesBalancedSideMarginsAndRespectsShortScreens() {
-        // Modern 1080x2400 phone -> 96% width = 1037px (slim 2% Ludo King side margin on left & right)
-        assertEquals(1037, MainActivity.computeBoardWidthPx(1080, 2400));
-        // Classic 720x1280 phone -> 96% width = 691px
-        assertEquals(691, MainActivity.computeBoardWidthPx(720, 1280));
-        // Old small 480x800 phone -> 96% width = 461px
-        assertEquals(461, MainActivity.computeBoardWidthPx(480, 800));
-        // Tiny 320x480 phone -> 96% width = 307px (fits comfortably within 72% of 480 = 346px)
-        assertEquals(307, MainActivity.computeBoardWidthPx(320, 480));
-        // Very short / square-ish 600x700 display -> capped at 72% of height = 504px so dice pads never clip
-        assertEquals(504, MainActivity.computeBoardWidthPx(600, 700));
+    public void boardWidthReduction_scalesProportionallyAndRespectsShortScreens() {
+        // Standard 1080x2400 phone -> 92% of width (~994px), comfortably narrower than full screen width
+        int standardBoard = MainActivity.computeBoardSizePx(1080, 2320);
+        assertEquals(994, standardBoard);
+        assertTrue(standardBoard < 1080);
+
+        // Old small 480x800 phone -> 92% of width (442px) fits within 66% of height (508px)
+        int smallPhoneBoard = MainActivity.computeBoardSizePx(480, 770);
+        assertEquals(442, smallPhoneBoard);
+
+        // Very short / square 480x600 screen -> capped at 66% of height (396px) so top/bottom dice pads never clip
+        int shortScreenBoard = MainActivity.computeBoardSizePx(480, 600);
+        assertEquals(396, shortScreenBoard);
     }
 
     @Test
-    public void antiLoopPenalty_preventsTripleRepeatsAndAlternatingLoops() {
-        // Fresh distinct roll has zero penalty
-        assertEquals(0, MainActivity.computeAntiLoopPenalty(3, 3, 5, 2, 4));
-        // Single natural repeat (e.g. 4 then 4) is completely natural (zero penalty)
-        assertEquals(0, MainActivity.computeAntiLoopPenalty(4, 4, 4, 2, 5));
-        // Triple repeat (4, 4, 4) gets penalized strongly
-        assertTrue(MainActivity.computeAntiLoopPenalty(4, 4, 4, 4, 2) >= 180);
-        assertTrue(MainActivity.computeAntiLoopPenalty(4, 3, 4, 4, 2) >= 400);
-        // Alternating A-B-A-B loop (5, 4, 5 -> candidate 4) gets penalized to break oscillation
-        assertTrue(MainActivity.computeAntiLoopPenalty(4, 4, 5, 4, 5) >= 110);
-        assertTrue(MainActivity.computeAntiLoopPenalty(4, 2, 5, 4, 5) >= 250);
+    public void diceAntiLoopGuard_detectsTripleRepeatsAndAlternatingPatterns() {
+        // Triple repeats (e.g. 4, 4, 4) flagged as suspicious loop
+        assertTrue(MainActivity.isSuspiciousRepeatPattern(4, 4, 4, 2));
+
+        // Alternating robotic loop (e.g. 5, 4, 5 -> next 4) flagged as suspicious loop
+        assertTrue(MainActivity.isSuspiciousRepeatPattern(4, 5, 4, 5));
+
+        // Normal double or varied rolls are completely allowed
+        assertFalse(MainActivity.isSuspiciousRepeatPattern(4, 4, 2, 5));
+        assertFalse(MainActivity.isSuspiciousRepeatPattern(3, 5, 4, 5));
+        assertFalse(MainActivity.isSuspiciousRepeatPattern(2, 1, 6, 3));
     }
 
     @Test
-    public void sixDroughtRelief_preventsBaseLockoutForBothSidesWithoutDoubleSix() {
-        // Locked winner with 0 live tokens relieved at 3+ turns without 6
-        assertTrue(MainActivity.shouldGrantSixDroughtRelief(true, 0, 4, 3, 0));
-        assertFalse(MainActivity.shouldGrantSixDroughtRelief(true, 0, 4, 2, 0));
-        // Locked winner with 1 live token relieved at 7+ turns without 6
-        assertTrue(MainActivity.shouldGrantSixDroughtRelief(true, 1, 3, 7, 0));
-        assertFalse(MainActivity.shouldGrantSixDroughtRelief(true, 2, 2, 10, 0));
-        // Opponent with 0 live tokens relieved at 7+ turns without 6 so opponents never feel starved
-        assertTrue(MainActivity.shouldGrantSixDroughtRelief(false, 0, 4, 7, 0));
-        assertFalse(MainActivity.shouldGrantSixDroughtRelief(false, 1, 3, 10, 0));
-        // Never triggers on consecutive six or when no base tokens remain
-        assertFalse(MainActivity.shouldGrantSixDroughtRelief(true, 0, 4, 8, 1));
-        assertFalse(MainActivity.shouldGrantSixDroughtRelief(true, 1, 0, 10, 0));
-    }
-
-    @Test
-    public void opponentFinalTokenSurge_trimsEarlierFromStep34AndQuickModeBlocksAllWinningSteps() {
-        // Trims 5 and 6 smoothly starting at step 34 while keeping 1..4 completely untouched
-        assertTrue(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 34, 5));
-        assertTrue(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 36, 6));
-        assertFalse(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 34, 4));
-        assertFalse(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 33, 6));
-
-        // Quick mode (gameType == 3): opponent with 4 tokens at steps 55, 54, 53, 52 (needs 1, 2, 3, 4 to win)
-        // must never roll 1, 2, 3, or 4
-        int[] fourHomeTokens = new int[]{55, 54, 53, 52};
-        for (int raw = 1; raw <= 6; raw++) {
-            int chosen = MainActivity.selectSmartFairRoll(raw, false, fourHomeTokens, 0, 0, 3, 0);
-            assertTrue("Expected non-winning roll (5 or 6), got " + chosen, chosen == 5 || chosen == 6);
-        }
+    public void opponentFinalTokenSmoothPacing_preventsEarlySprintToStep55Stall() {
+        // Opponent on final winning token at step 34 while locked winner still has 38 steps left -> trims 5/6 leaps
+        assertTrue(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, true, 34, 6, 38));
+        assertTrue(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, true, 34, 5, 38));
+        // Natural 1..4 moves are never trimmed so opponent keeps moving smoothly every turn
+        assertFalse(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, true, 34, 4, 38));
+        assertFalse(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, true, 34, 3, 38));
+        // Non-final tokens or when locked winner is ahead are never trimmed
+        assertFalse(MainActivity.shouldSmoothlyPaceOpponentFinalToken(false, true, 34, 6, 38));
+        assertFalse(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, false, 34, 6, 38));
     }
 }

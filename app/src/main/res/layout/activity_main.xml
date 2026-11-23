@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activitybg"
     android:layout_width="match_parent"
+
     android:layout_height="match_parent"
     android:background="@drawable/backgroundmaze"
-    android:clipChildren="false"
-    android:clipToPadding="false"
     tools:context=".MainActivity">
 
     <RelativeLayout
@@ -16,6 +15,8 @@
         android:layout_height="wrap_content"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:gravity="center"
+        android:paddingTop="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,8 +26,9 @@
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:rotation="180"
-            android:scaleType="fitXY"
             app:srcCompat="@drawable/ludofinalboard3" />
 
         <ImageView
@@ -133,7 +135,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/redpiece1"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -152,8 +154,8 @@
 
             <ImageView
                 android:id="@+id/red1activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -175,7 +177,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/redpiece2"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -194,8 +196,8 @@
 
             <ImageView
                 android:id="@+id/red2activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -217,7 +219,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/redpiece3"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -236,8 +238,8 @@
 
             <ImageView
                 android:id="@+id/red3activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -259,7 +261,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/redpiece4"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -278,8 +280,8 @@
 
             <ImageView
                 android:id="@+id/red4activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -301,7 +303,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/greenpiece1"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -320,8 +322,8 @@
 
             <ImageView
                 android:id="@+id/green1activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -343,7 +345,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/greenpiece2"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -362,8 +364,8 @@
 
             <ImageView
                 android:id="@+id/green2activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -385,7 +387,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/greenpiece3"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -404,8 +406,8 @@
 
             <ImageView
                 android:id="@+id/green3activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -427,7 +429,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/greenpiece4"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -446,8 +448,8 @@
 
             <ImageView
                 android:id="@+id/green4activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -469,7 +471,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bluepiece1"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -488,8 +490,8 @@
 
             <ImageView
                 android:id="@+id/blue1activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -511,7 +513,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bluepiece2"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -530,8 +532,8 @@
 
             <ImageView
                 android:id="@+id/blue2activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -553,7 +555,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bluepiece3"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -572,8 +574,8 @@
 
             <ImageView
                 android:id="@+id/blue3activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -595,7 +597,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bluepiece4"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -614,8 +616,8 @@
 
             <ImageView
                 android:id="@+id/blue4activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -638,7 +640,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yellowpiece1"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -657,8 +659,8 @@
 
             <ImageView
                 android:id="@+id/yellow1activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -680,7 +682,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yellowpiece2"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -699,8 +701,8 @@
 
             <ImageView
                 android:id="@+id/yellow2activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -722,7 +724,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yellowpiece3"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -741,8 +743,8 @@
 
             <ImageView
                 android:id="@+id/yellow3activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -764,7 +766,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yellowpiece4"
-            android:layout_width="34dp"
+            android:layout_width="32dp"
             android:layout_height="52dp"
             android:clipChildren="false"
             android:clipToPadding="false"
@@ -783,8 +785,8 @@
 
             <ImageView
                 android:id="@+id/yellow4activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="29dp"
+                android:layout_height="29dp"
                 android:layout_marginTop="19dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -808,19 +810,20 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/trightdicebg"
-        android:layout_width="112dp"
-        android:layout_height="60dp"
+        android:layout_width="115dp"
+        android:layout_height="62dp"
         android:layout_marginEnd="4dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="2dp"
         android:background="@drawable/dice_pad_right"
         android:backgroundTintMode="add"
         app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
-        app:layout_constraintEnd_toEndOf="@+id/relativeLayout">
+        app:layout_constraintEnd_toEndOf="@+id/relativeLayout"
+        app:layout_constraintWidth_percent="0.3">
 
         <ImageView
             android:id="@+id/trightpieceimage"
-            android:layout_width="48dp"
-            android:layout_height="38dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -829,19 +832,20 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/tleftdicebg"
-        android:layout_width="112dp"
-        android:layout_height="60dp"
+        android:layout_width="115dp"
+        android:layout_height="62dp"
         android:layout_marginStart="4dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="2dp"
         android:background="@drawable/dice_pad_left"
         android:backgroundTintMode="add"
         app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
-        app:layout_constraintStart_toStartOf="@+id/relativeLayout">
+        app:layout_constraintStart_toStartOf="@+id/relativeLayout"
+        app:layout_constraintWidth_percent="0.3">
 
         <ImageView
             android:id="@+id/tleftpieceimage"
-            android:layout_width="48dp"
-            android:layout_height="38dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -851,19 +855,20 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/brightdicebg"
-        android:layout_width="112dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="115dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="4dp"
         android:background="@drawable/dice_pad_right"
         android:backgroundTintMode="add"
         app:layout_constraintEnd_toEndOf="@+id/relativeLayout"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintWidth_percent="0.3">
 
         <ImageView
             android:id="@+id/brightpieceimage"
-            android:layout_width="48dp"
-            android:layout_height="38dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -872,19 +877,20 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bleftdicebg"
-        android:layout_width="112dp"
-        android:layout_height="60dp"
+        android:layout_width="115dp"
+        android:layout_height="62dp"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="5dp"
         android:background="@drawable/dice_pad_left"
         android:backgroundTintMode="add"
         app:layout_constraintStart_toStartOf="@+id/relativeLayout"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintWidth_percent="0.3">
 
         <ImageView
             android:id="@+id/bleftpieceimage"
-            android:layout_width="48dp"
-            android:layout_height="38dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -916,7 +922,7 @@
         android:id="@+id/pname1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="18dp"
         android:fontFamily="@font/rcbold"
         android:paddingStart="4dp"
         android:paddingTop="1dp"
@@ -927,7 +933,7 @@
         android:text="p1"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/relativeLayout"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
@@ -936,7 +942,7 @@
         android:id="@+id/pname2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="18dp"
         android:fontFamily="@font/rcbold"
         android:paddingStart="4dp"
         android:paddingTop="1dp"
@@ -947,7 +953,7 @@
         android:text="p2"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/relativeLayout"
         app:layout_constraintTop_toTopOf="@+id/relativeLayout" />
@@ -956,7 +962,7 @@
         android:id="@+id/pname3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="1dp"
         android:fontFamily="@font/rcbold"
         android:paddingStart="4dp"
         android:paddingTop="1dp"
@@ -967,7 +973,7 @@
         android:text="p3"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
         app:layout_constraintStart_toStartOf="@+id/relativeLayout" />
@@ -976,7 +982,7 @@
         android:id="@+id/pname4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="1dp"
         android:fontFamily="@font/rcbold"
         android:paddingStart="4dp"
         android:paddingTop="1dp"
@@ -987,7 +993,7 @@
         android:text="p4"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/relativeLayout"
         app:layout_constraintEnd_toEndOf="@+id/relativeLayout" />
@@ -1008,7 +1014,7 @@
         android:id="@+id/winnerindexnumber1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="30dp"
         android:scaleX="0.9"
         android:scaleY="0.9"
         android:visibility="gone"
@@ -1022,6 +1028,7 @@
         android:id="@+id/winnercrownindex2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
         android:scaleType="fitCenter"
         android:scaleX="0.75"
         android:scaleY="0.75"
@@ -1034,7 +1041,7 @@
         android:id="@+id/winnerindexnumber2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="30dp"
         android:scaleX="0.9"
         android:scaleY="0.9"
         android:visibility="gone"
@@ -1048,6 +1055,7 @@
         android:id="@+id/winnercrownindex3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
         android:scaleType="fitCenter"
         android:scaleX="0.75"
         android:scaleY="0.75"
@@ -1060,7 +1068,7 @@
         android:id="@+id/winnerindexnumber3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="30dp"
         android:scaleX="0.9"
         android:scaleY="0.9"
         android:visibility="gone"

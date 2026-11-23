@@ -262,6 +262,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
+            // Start non-clickable so inactive or opponent tokens never steal taps from overlapping playable tokens
+            this.piece.setClickable(false);
             if(!normalPiece) {
                 pieceIcon.setScaleX(0.8f);pieceIcon.setScaleY(0.8f);
                 pieceIcon.setImageDrawable(getStylishIconDrawableByColor(this.colour));
@@ -277,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
                 readyToPick.setScaleX(1.25f);readyToPick.setScaleY(1.25f);
             }
 
-            rotateAnimator = ObjectAnimator.ofFloat(readyToPick,"rotation",360,0);
+            rotateAnimator = ObjectAnimator.ofFloat(readyToPick,"rotation",360f,0f);
             rotateAnimator.setDuration(900);
             rotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
             rotateAnimator.setRepeatMode(ObjectAnimator.RESTART);
@@ -410,9 +412,23 @@ public class MainActivity extends AppCompatActivity {
             globalHandler.post(r);
         }
 
+        private void restorePieceElevation() {
+            if (currBlock < 0) {
+                ViewCompat.setElevation(piece, 1f);
+            } else if (currBlock >= 24 && currBlock <= 51) {
+                ViewCompat.setElevation(piece, 51 - currBlock);
+            } else if (currBlock >= 64 && currBlock <= 69) {
+                ViewCompat.setElevation(piece, 70 - currBlock);
+            } else {
+                ViewCompat.setElevation(piece, currBlock);
+            }
+        }
+
         void activeState()
         {
             isClickable = true;
+            piece.setClickable(true);
+            ViewCompat.setElevation(piece, 120f);
             readyToPick.setVisibility(View.VISIBLE);
             readyToPick.setAlpha(1.0f);
             if (rotateAnimator.isRunning()) {
@@ -431,8 +447,11 @@ public class MainActivity extends AppCompatActivity {
         void inactiveState()
         {
             isClickable = false;
+            piece.setClickable(false);
             rotateAnimator.cancel();
+            readyToPick.setRotation(0f);
             readyToPick.setVisibility(View.INVISIBLE);
+            restorePieceElevation();
             if(currBlock!=-1) {
                 checkAdjustments(currBlock);
             }
@@ -1355,63 +1374,53 @@ public class MainActivity extends AppCompatActivity {
         return isLockedMatchActive && !isFavoredTurn && consecutiveSixCount >= 1 && candidateRoll == 6;
     }
 
-    public static final float BOARD_WIDTH_RATIO = 0.96f;
-    public static final float BOARD_MAX_HEIGHT_RATIO = 0.72f;
+    public static final double BOARD_WIDTH_RATIO = 0.92;
+    public static final double BOARD_MAX_HEIGHT_RATIO = 0.66;
 
-    public static int computeBoardWidthPx(int screenWidthPx, int screenHeightPx) {
+    public static int computeBoardSizePx(int screenWidthPx, int screenHeightPx) {
         if (screenWidthPx <= 0) {
             return 0;
         }
-        int targetByWidth = Math.round(screenWidthPx * BOARD_WIDTH_RATIO);
+        int targetByWidth = (int) Math.round(screenWidthPx * BOARD_WIDTH_RATIO);
         if (screenHeightPx > 0) {
-            int maxByHeight = Math.round(screenHeightPx * BOARD_MAX_HEIGHT_RATIO);
-            if (maxByHeight > 0 && targetByWidth > maxByHeight) {
-                return maxByHeight;
-            }
+            int maxByHeight = (int) Math.round(screenHeightPx * BOARD_MAX_HEIGHT_RATIO);
+            return Math.min(targetByWidth, maxByHeight);
         }
         return targetByWidth;
     }
 
-    public static int computeAntiLoopPenalty(
-            int candidateRoll,
-            int naturalRoll,
-            int lastRoll,
-            int secondLastRoll,
-            int thirdLastRoll
-    ) {
-        int penalty = 0;
-        // Strongly avoid 3 identical rolls in a row (e.g. 4-4-4 or 5-5-5 loop)
-        if (lastRoll > 0 && candidateRoll == lastRoll && candidateRoll == secondLastRoll) {
-            penalty += (candidateRoll == naturalRoll) ? 180 : 420;
-        } else if (lastRoll > 0 && candidateRoll == lastRoll && candidateRoll != naturalRoll) {
-            penalty += 90;
-        }
-        // Break robotic A-B-A-B oscillation loops (e.g. 4-5-4-5)
-        if (lastRoll > 0 && secondLastRoll > 0 && thirdLastRoll > 0
-                && candidateRoll == secondLastRoll
-                && lastRoll == thirdLastRoll
-                && candidateRoll != lastRoll) {
-            penalty += (candidateRoll == naturalRoll) ? 110 : 260;
-        }
-        return penalty;
-    }
-
-    public static boolean shouldGrantSixDroughtRelief(
-            boolean isFavored,
-            int aliveCount,
-            int baseCount,
-            int turnsSinceLastSix,
-            int consecutiveSixCount
-    ) {
-        if (baseCount <= 0 || consecutiveSixCount > 0) {
+    public static boolean isSuspiciousRepeatPattern(int candidateRoll, int lastRoll, int secondLastRoll, int thirdLastRoll) {
+        if (candidateRoll < 1 || candidateRoll > 6) {
             return false;
         }
-        if (isFavored) {
-            return (aliveCount == 0 && turnsSinceLastSix >= 3)
-                    || (aliveCount <= 1 && turnsSinceLastSix >= 7);
+        // Prevent robotic X-X-X triple repeats
+        if (candidateRoll == lastRoll && candidateRoll == secondLastRoll) {
+            return true;
         }
-        // Never leave opponents starved in base for 8+ turns (keeps gameplay 100% authentic & doubt-free)
-        return aliveCount == 0 && turnsSinceLastSix >= 7;
+        // Prevent robotic A-B-A-B alternating loops (e.g. 5-4-5-4)
+        return candidateRoll == secondLastRoll
+                && lastRoll == thirdLastRoll
+                && lastRoll != 0
+                && candidateRoll != lastRoll;
+    }
+
+    public static boolean shouldSmoothlyPaceOpponentFinalToken(
+            boolean isFinalWinningToken,
+            boolean favoredTrailing,
+            int pieceSteps,
+            int candidateRoll,
+            int favoredRemainingSteps
+    ) {
+        if (!isFinalWinningToken || !favoredTrailing) {
+            return false;
+        }
+        // Gently trim 5/6 leaps on the opponent's final winning token starting at step 30+
+        // when the locked winner still has 20+ steps left, so the opponent glides forward
+        // naturally with 1..4 moves instead of sprinting into a visible step-55 stall.
+        if (pieceSteps >= 30 && favoredRemainingSteps >= 20 && candidateRoll >= 5) {
+            return true;
+        }
+        return shouldTrimOpponentFinalTokenSurge(isFinalWinningToken, favoredTrailing, pieceSteps, candidateRoll);
     }
 
     public static boolean shouldTrimOpponentFinalTokenSurge(
@@ -1421,9 +1430,9 @@ public class MainActivity extends AppCompatActivity {
             int candidateRoll
     ) {
         // When an opponent is on their final winning token while ahead of the locked winner,
-        // smoothly trim big 5/6 leaps from step 34+ so they keep advancing with natural 1..4 moves
-        // instead of racing to step 55 early and sitting visibly stuck waiting for a 1.
-        return isFinalWinningToken && favoredTrailing && candidateRoll >= 5 && pieceSteps >= 34;
+        // gently avoid big 5/6 leaps into the last 6 squares so they keep advancing naturally
+        // instead of reaching step 55 early and sitting visibly stuck waiting for a 1.
+        return isFinalWinningToken && favoredTrailing && candidateRoll >= 5 && pieceSteps >= 42 && (pieceSteps + candidateRoll) >= 50;
     }
 
     public static boolean shouldApplyMidGamePaceNudge(
@@ -2356,14 +2365,15 @@ public class MainActivity extends AppCompatActivity {
         float total = onePercentWidth * 40;
         float homeCircleWidth = (float) ((total * 0.64) * 0.25);
         float pieceBlockSize = (float) (pxWidth * 0.065);
-        pieceWidth = 34 * displayMetrics.density;
+        pieceWidth = 32 * displayMetrics.density;
         pieceHeight = 38 * displayMetrics.density;
+        // Center the lower circle (y=33.5dp for normal pin tokens, y=19dp for stylish tokens) dead-center inside every board square & home circle
         float circleCenterY = (normalPiece ? 33.5f : 19.0f) * displayMetrics.density;
-        float trackLiftY = circleCenterY - (blockSize / 2f);
+        float lifty = circleCenterY - (blockSize / 2f);
         float homeLiftY = circleCenterY - (homeCircleWidth / 2f);
         float pushx = (homeCircleWidth - pieceWidth) / 2f;
         pushXForPieces = (pieceBlockSize - pieceWidth) / 2f;
-        pushYForPieces = trackLiftY;
+        pushYForPieces = lifty;
         float base = (float) pxWidth - total;
 
         crownIndex1.getLayoutParams().width = (int) total;
@@ -2395,10 +2405,10 @@ public class MainActivity extends AppCompatActivity {
             playername1.setRotation(90);
             playername1.setGravity(Gravity.BOTTOM);
             playername1.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            ((ConstraintLayout.LayoutParams)playername1.getLayoutParams()).topMargin = 0;
+            ((ConstraintLayout.LayoutParams)playername1.getLayoutParams()).topMargin = (int) (18 * displayMetrics.density);
 
             playername2.setRotation(180);
-            ((ConstraintLayout.LayoutParams)playername2.getLayoutParams()).topMargin = 0;
+            ((ConstraintLayout.LayoutParams)playername2.getLayoutParams()).topMargin = (int) (18 * displayMetrics.density);
 
             playername4.getLayoutParams().width = (int) (total);
             playername4.getLayoutParams().height = (int) (total);
@@ -3310,7 +3320,7 @@ public class MainActivity extends AppCompatActivity {
         dpHeight = displayMetrics.heightPixels/displayMetrics.density;
         dpWidth = displayMetrics.widthPixels/displayMetrics.density;
         pxHeight = displayMetrics.heightPixels-getStatusBarHeight();
-        pxWidth = computeBoardWidthPx(displayMetrics.widthPixels, (int) pxHeight);
+        pxWidth = computeBoardSizePx(displayMetrics.widthPixels, (int) pxHeight);
         ludoBoard = findViewById(R.id.imageView);
         red1activecircle = findViewById(R.id.red1activecircle);
         red2activecircle = findViewById(R.id.red2activecircle);
@@ -3497,12 +3507,6 @@ public class MainActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.editTextNumber);
 
-        View boardContainer = findViewById(R.id.relativeLayout);
-        if (boardContainer != null && boardContainer.getLayoutParams() != null) {
-            boardContainer.getLayoutParams().width = (int) pxWidth;
-            boardContainer.getLayoutParams().height = (int) pxWidth;
-            boardContainer.requestLayout();
-        }
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(((int)(pxWidth)),((int)(pxWidth)));
         ludoBoard.setLayoutParams(layoutParams);
     }
@@ -4219,8 +4223,8 @@ public class MainActivity extends AppCompatActivity {
         if (d != null) {
             if (rollColor != null && !rollColor.isEmpty()) {
                 Integer prev = d.lastRollByColor.get(rollColor);
-                Integer secondPrev = d.secondLastRollByColor.get(rollColor);
-                d.thirdLastRollByColor.put(rollColor, secondPrev != null ? secondPrev : 0);
+                Integer prev2 = d.secondLastRollByColor.get(rollColor);
+                d.thirdLastRollByColor.put(rollColor, prev2 != null ? prev2 : 0);
                 d.secondLastRollByColor.put(rollColor, prev != null ? prev : 0);
                 d.lastRollByColor.put(rollColor, chosenRoll);
             }
@@ -4338,7 +4342,7 @@ public class MainActivity extends AppCompatActivity {
             opponentNearWin = (opponentTeamCompleted >= 6)
                     || (opponentTeamCompleted >= 5 && maxOppSteps >= 38)
                     || (minOpponentRemainingSteps <= 52);
-            anyOpponentOnFinalHomeStretch = (opponentTeamCompleted >= 7 && maxOppSteps >= 50);
+            anyOpponentOnFinalHomeStretch = (opponentTeamCompleted >= 7 && maxOppSteps >= 51);
         } else {
             for (Player pl : players) {
                 String col = pl.getColor();
@@ -4405,8 +4409,8 @@ public class MainActivity extends AppCompatActivity {
                             || (gametype != 3 && comp >= pantaValue - 2 && maxSteps >= 42)) {
                         opponentNearWin = true;
                     }
-                    if ((gametype == 3 && maxSteps >= 50)
-                            || (gametype != 3 && comp >= pantaValue - 1 && maxSteps >= 50)) {
+                    if ((gametype == 3 && maxSteps >= 51)
+                            || (gametype != 3 && comp >= pantaValue - 1 && maxSteps >= 51)) {
                         anyOpponentOnFinalHomeStretch = true;
                     }
                 }
@@ -4468,18 +4472,20 @@ public class MainActivity extends AppCompatActivity {
             // with smooth invisible pace matching when falling behind so matches stay neck-and-neck
             // and the opponent never sits visibly stranded at step 55.
             if (!isEmergencyCatchUp) {
-                // 1. After a token was cut, wait at least 3 turns before offering a subtle reopen assist,
-                // or relieve an extended 6-drought when locked winner has <= 1 live token.
-                if ((d.favoredNeedsReopenAfterCut
-                        && baseCount > 0
-                        && d.consecutiveSixCount == 0
-                        && d.turnsSinceFavoredCut >= 3
-                        && d.turnsSinceLastFavoredSix >= 3
-                        && Math.random() < 0.28)
-                        || (shouldGrantSixDroughtRelief(true, aliveCount, baseCount, d.turnsSinceLastFavoredSix, d.consecutiveSixCount)
-                        && (d.turnsSinceLastFavoredSix >= 10 || Math.random() < 0.38))) {
-                    d.favoredNeedsReopenAfterCut = false;
-                    return recordAndReturnRoll(6, true, turnColor);
+                // 1. After a token was cut, wait at least 3 turns before offering a subtle reopen assist;
+                // also prevent frustrating 6-droughts when locked winner has <=1 token out while tokens wait in base.
+                if (baseCount > 0 && d.consecutiveSixCount == 0) {
+                    boolean reopenAfterCut = d.favoredNeedsReopenAfterCut
+                            && d.turnsSinceFavoredCut >= 3
+                            && d.turnsSinceLastFavoredSix >= 3
+                            && Math.random() < 0.28;
+                    boolean droughtRelief = aliveCount <= 1
+                            && d.turnsSinceLastFavoredSix >= 7
+                            && (d.turnsSinceLastFavoredSix >= 10 || Math.random() < 0.38);
+                    if (reopenAfterCut || droughtRelief) {
+                        d.favoredNeedsReopenAfterCut = false;
+                        return recordAndReturnRoll(6, true, turnColor);
+                    }
                 }
                 if (normalizedRoll == 6 && baseCount > 0) {
                     d.favoredNeedsReopenAfterCut = false;
@@ -4534,7 +4540,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                // Keep natural rolls untouched (including genuine double-6s and authentic 3-sixes forfeits!)
+                // Keep natural rolls untouched except avoid suspicious back-to-back triple-6s when trailing
+                if (naturalRoll == 6 && d.consecutiveSixCount >= 2 && effectiveFavoredRem > minOpponentRemainingSteps + 12) {
+                    naturalRoll = (playerLastRoll == 4) ? 5 : 4;
+                }
                 return recordAndReturnRoll(naturalRoll, true, turnColor);
             }
 
@@ -4609,20 +4618,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if (cand == 6 && d.consecutiveSixCount >= 1 && cand != normalizedRoll) {
-                    maxPieceScore -= 140;
+                if (cand == 6 && d.consecutiveSixCount >= 1) {
+                    // Never force consecutive multiple 6s during comeback; keep 6s natural and single-turn
+                    maxPieceScore -= (cand == normalizedRoll ? 90 : 220);
                 } else if (cand == 6 && d.turnsSinceLastFavoredSix < 2 && movableCount > 0 && aliveCount > 0 && cand != normalizedRoll) {
-                    maxPieceScore -= 85;
+                    maxPieceScore -= 95;
                 }
 
                 if (maxPieceScore < 260) {
-                    maxPieceScore -= computeAntiLoopPenalty(
-                            cand,
-                            normalizedRoll,
-                            playerLastRoll,
-                            playerSecondLastRoll,
-                            playerThirdLastRoll
-                    );
+                    if (isSuspiciousRepeatPattern(cand, playerLastRoll, playerSecondLastRoll, playerThirdLastRoll)) {
+                        maxPieceScore -= 180;
+                    } else if (cand == playerLastRoll && cand != normalizedRoll) {
+                        maxPieceScore -= 55;
+                    }
                 }
 
                 candScores[cand] = maxPieceScore;
@@ -4668,7 +4676,7 @@ public class MainActivity extends AppCompatActivity {
             boolean favoredTrailing = effectiveFavoredRem > minOpponentRemainingSteps + 8;
 
             int[] candScores = new int[7];
-            boolean[] candWinsMatch = new boolean[7];
+            boolean[] candWinsMatchArr = new boolean[7];
             int bestCand = normalizedRoll;
             int bestScore = Integer.MIN_VALUE;
             int safeCutFavoredCand = -1;
@@ -4683,22 +4691,16 @@ public class MainActivity extends AppCompatActivity {
                     score -= 120000;
                 }
 
-                // Prevent robotic repeat (X-X-X) and alternating (A-B-A-B) loops so opponent rolls always look natural
-                score -= computeAntiLoopPenalty(
-                        cand,
-                        normalizedRoll,
-                        playerLastRoll,
-                        playerSecondLastRoll,
-                        playerThirdLastRoll
-                );
-
-                // Relieve extended 6-drought when opponent has 0 live tokens so they never feel starved in base
-                if (cand == 6 && shouldGrantSixDroughtRelief(false, aliveCount, baseCount, d.turnsSinceLastOpponentSix, d.consecutiveSixCount)) {
-                    score += 95;
+                // Prevent robotic triple repeats (X-X-X) or alternating loops (A-B-A-B) so opponent dice always look 100% organic
+                if (isSuspiciousRepeatPattern(cand, playerLastRoll, playerSecondLastRoll, playerThirdLastRoll)) {
+                    score -= 360;
+                } else if (cand == playerLastRoll && cand != normalizedRoll) {
+                    score -= 45;
                 }
 
                 int movableForCand = 0;
                 boolean candCutsFavoredSafely = false;
+                boolean candWinsMatch = false;
                 boolean candHardBlocked = shouldPreventOpponentConsecutiveSix(true, false, d.consecutiveSixCount, cand);
 
                 for (Piece p : myPieces) {
@@ -4710,13 +4712,17 @@ public class MainActivity extends AppCompatActivity {
                     if (p.isAlive) {
                         int nextSteps = p.numberOfSteps + cand;
                         if (isFinalWinningTokenForWinGate && nextSteps == 56) {
-                            // Absolute hard win-gate: strictly prevent opponent from completing the exact final match-winning token
-                            candWinsMatch[cand] = true;
-                            score -= 10000000;
+                            // Absolute match-winning gate: strictly impossible for opponent to complete final winning token
+                            candWinsMatch = true;
                             candHardBlocked = true;
-                        } else if (shouldTrimOpponentFinalTokenSurge(isFinalWinningTokenForWinGate, favoredTrailing, p.numberOfSteps, cand)) {
-                            // Smoothly trim big 5/6 surges on the opponent's final token so they advance with natural 1..4 moves
-                            // instead of reaching step 55 early and sitting visibly stuck waiting for a 1.
+                        } else if (shouldSmoothlyPaceOpponentFinalToken(
+                                isFinalWinningTokenForWinGate,
+                                favoredTrailing,
+                                p.numberOfSteps,
+                                cand,
+                                effectiveFavoredRem)) {
+                            // Smoothly pace 5/6 surges on the opponent's final winning token so they keep
+                            // advancing naturally with 1..4 moves instead of sitting visibly stranded at step 55
                             score -= 220;
                         }
 
@@ -4743,7 +4749,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if (candCutsFavoredSafely && !candHardBlocked && !candWinsMatch[cand] && (cand != 6 || d.consecutiveSixCount == 0)) {
+                if (candWinsMatch) {
+                    score = -10000000;
+                }
+                candWinsMatchArr[cand] = candWinsMatch;
+
+                if (candCutsFavoredSafely && !candHardBlocked && !candWinsMatch && (cand != 6 || d.consecutiveSixCount == 0)) {
                     if (safeCutFavoredCand == -1
                             || cand == normalizedRoll
                             || (safeCutFavoredCand == 6 && cand != 6)) {
@@ -4754,10 +4765,12 @@ public class MainActivity extends AppCompatActivity {
                 boolean waitingOnHomeStretchWinGate = isFinalWinningTokenForWinGate
                         && aliveCount == 1
                         && maxOpponentPieceSteps > 50;
-                if (aliveCount > 0 && movableForCand > 0) {
-                    score += 35;
-                } else if (aliveCount > 0 && movableForCand == 0 && !waitingOnHomeStretchWinGate) {
-                    score -= 40;
+                if (!candWinsMatch) {
+                    if (aliveCount > 0 && movableForCand > 0) {
+                        score += 35;
+                    } else if (aliveCount > 0 && movableForCand == 0 && !waitingOnHomeStretchWinGate) {
+                        score -= 40;
+                    }
                 }
 
                 candScores[cand] = score;
@@ -4767,8 +4780,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            // Natural 6-drought relief for opponents stuck in base so they never feel suspiciously starved of 6s
+            if (aliveCount == 0 && baseCount > 0 && d.consecutiveSixCount == 0 && d.turnsSinceLastOpponentSix >= 8
+                    && !candWinsMatchArr[6] && candScores[6] >= 0) {
+                return recordAndReturnRoll(6, false, turnColor);
+            }
+
             // Always allow natural opponent cuts when safe, with only a light organic assist if no cuts have happened yet
-            if (safeCutFavoredCand != -1 && !candWinsMatch[safeCutFavoredCand] && candScores[safeCutFavoredCand] >= 0) {
+            if (safeCutFavoredCand != -1 && !candWinsMatchArr[safeCutFavoredCand] && candScores[safeCutFavoredCand] >= 0) {
                 if (normalizedRoll == safeCutFavoredCand) {
                     return recordAndReturnRoll(safeCutFavoredCand, false, turnColor);
                 }
@@ -4777,9 +4796,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            // Whenever the genuine random roll is valid, non-winning, and does not violate double-6,
-            // anti-loop, or soft final-token surge pacing, return it directly for 100% authentic feel.
-            if (!candWinsMatch[normalizedRoll] && candScores[normalizedRoll] >= 0) {
+            // Whenever the genuine random roll is valid and does not violate the final match-winning gate,
+            // double-6 prevention, repeat-loop guard, or soft final-token surge pacing, return it directly.
+            if (!candWinsMatchArr[normalizedRoll] && candScores[normalizedRoll] >= 0) {
                 return recordAndReturnRoll(normalizedRoll, false, turnColor);
             }
             return recordAndReturnRoll(bestCand, false, turnColor);
