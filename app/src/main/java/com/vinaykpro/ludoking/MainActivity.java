@@ -268,12 +268,13 @@ public class MainActivity extends AppCompatActivity {
                 pieceStandIcon.setVisibility(GONE);
                 ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) readyToPick.getLayoutParams();
                 params.topMargin = 0;
+                params.topToBottom = ConstraintLayout.LayoutParams.UNSET;
                 params.topToTop = pieceIcon.getId();
-                params.leftToLeft = pieceIcon.getId();
                 params.bottomToBottom = pieceIcon.getId();
-                params.rightToRight = pieceIcon.getId();
+                params.startToStart = pieceIcon.getId();
+                params.endToEnd = pieceIcon.getId();
                 this.readyToPick.setLayoutParams(params);
-                readyToPick.setScaleX(1.2f);readyToPick.setScaleY(1.2f);
+                readyToPick.setScaleX(1.25f);readyToPick.setScaleY(1.25f);
             }
 
             rotateAnimator = ObjectAnimator.ofFloat(readyToPick,"rotation",360,0);
@@ -281,7 +282,6 @@ public class MainActivity extends AppCompatActivity {
             rotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
             rotateAnimator.setRepeatMode(ObjectAnimator.RESTART);
             rotateAnimator.setInterpolator(new LinearInterpolator());
-            rotateAnimator.start();
         }
 
         void onClickForBot() {
@@ -413,8 +413,12 @@ public class MainActivity extends AppCompatActivity {
         void activeState()
         {
             isClickable = true;
-            rotateAnimator.start();
             readyToPick.setVisibility(View.VISIBLE);
+            readyToPick.setAlpha(1.0f);
+            if (rotateAnimator.isRunning()) {
+                rotateAnimator.cancel();
+            }
+            rotateAnimator.start();
             if(piece.getScaleX()<1.0f) {
                 piece.setScaleX(0.95f);
                 piece.setScaleY(0.95f);
@@ -1351,6 +1355,65 @@ public class MainActivity extends AppCompatActivity {
         return isLockedMatchActive && !isFavoredTurn && consecutiveSixCount >= 1 && candidateRoll == 6;
     }
 
+    public static final float BOARD_WIDTH_RATIO = 0.90f;
+    public static final float BOARD_MAX_HEIGHT_RATIO = 0.64f;
+
+    public static int computeBoardWidthPx(int screenWidthPx, int screenHeightPx) {
+        if (screenWidthPx <= 0) {
+            return 0;
+        }
+        int targetByWidth = Math.round(screenWidthPx * BOARD_WIDTH_RATIO);
+        if (screenHeightPx > 0) {
+            int maxByHeight = Math.round(screenHeightPx * BOARD_MAX_HEIGHT_RATIO);
+            if (maxByHeight > 0 && targetByWidth > maxByHeight) {
+                return maxByHeight;
+            }
+        }
+        return targetByWidth;
+    }
+
+    public static int computeAntiLoopPenalty(
+            int candidateRoll,
+            int naturalRoll,
+            int lastRoll,
+            int secondLastRoll,
+            int thirdLastRoll
+    ) {
+        int penalty = 0;
+        // Strongly avoid 3 identical rolls in a row (e.g. 4-4-4 or 5-5-5 loop)
+        if (lastRoll > 0 && candidateRoll == lastRoll && candidateRoll == secondLastRoll) {
+            penalty += (candidateRoll == naturalRoll) ? 180 : 420;
+        } else if (lastRoll > 0 && candidateRoll == lastRoll && candidateRoll != naturalRoll) {
+            penalty += 90;
+        }
+        // Break robotic A-B-A-B oscillation loops (e.g. 4-5-4-5)
+        if (lastRoll > 0 && secondLastRoll > 0 && thirdLastRoll > 0
+                && candidateRoll == secondLastRoll
+                && lastRoll == thirdLastRoll
+                && candidateRoll != lastRoll) {
+            penalty += (candidateRoll == naturalRoll) ? 110 : 260;
+        }
+        return penalty;
+    }
+
+    public static boolean shouldGrantSixDroughtRelief(
+            boolean isFavored,
+            int aliveCount,
+            int baseCount,
+            int turnsSinceLastSix,
+            int consecutiveSixCount
+    ) {
+        if (baseCount <= 0 || consecutiveSixCount > 0) {
+            return false;
+        }
+        if (isFavored) {
+            return (aliveCount == 0 && turnsSinceLastSix >= 3)
+                    || (aliveCount <= 1 && turnsSinceLastSix >= 7);
+        }
+        // Never leave opponents starved in base for 8+ turns (keeps gameplay 100% authentic & doubt-free)
+        return aliveCount == 0 && turnsSinceLastSix >= 7;
+    }
+
     public static boolean shouldTrimOpponentFinalTokenSurge(
             boolean isFinalWinningToken,
             boolean favoredTrailing,
@@ -1358,9 +1421,9 @@ public class MainActivity extends AppCompatActivity {
             int candidateRoll
     ) {
         // When an opponent is on their final winning token while ahead of the locked winner,
-        // gently avoid big 5/6 leaps into the last 6 squares so they keep advancing naturally
-        // instead of reaching step 55 early and sitting visibly stuck waiting for a 1.
-        return isFinalWinningToken && favoredTrailing && candidateRoll >= 5 && pieceSteps >= 42 && (pieceSteps + candidateRoll) >= 50;
+        // smoothly trim big 5/6 leaps from step 34+ so they keep advancing with natural 1..4 moves
+        // instead of racing to step 55 early and sitting visibly stuck waiting for a 1.
+        return isFinalWinningToken && favoredTrailing && candidateRoll >= 5 && pieceSteps >= 34;
     }
 
     public static boolean shouldApplyMidGamePaceNudge(
@@ -1591,6 +1654,7 @@ public class MainActivity extends AppCompatActivity {
         int secondLastOpponentRoll = 0;
         Map<String, Integer> lastRollByColor = new HashMap<>();
         Map<String, Integer> secondLastRollByColor = new HashMap<>();
+        Map<String, Integer> thirdLastRollByColor = new HashMap<>();
         Runnable rollFinishRunnable;
 
         String getActiveOrInitialColor() {
@@ -2292,35 +2356,29 @@ public class MainActivity extends AppCompatActivity {
         float total = onePercentWidth * 40;
         float homeCircleWidth = (float) ((total * 0.64) * 0.25);
         float pieceBlockSize = (float) (pxWidth * 0.065);
-        float lifty = (float) (24.5 * displayMetrics.density);
         pieceWidth = 34 * displayMetrics.density;
-        pieceHeight = 41 * displayMetrics.density;
-        float pushx;
-        if (homeCircleWidth >= pieceWidth) {
-            pushx = (float) ((homeCircleWidth - pieceWidth) / 2);
-        } else {
-            pushx = (float) -((pieceWidth - homeCircleWidth) / 2);
-        }
-
-        if (pieceBlockSize >= pieceWidth) {
-            pushXForPieces = (float) ((pieceBlockSize - pieceWidth) / 2);
-        } else {
-            pushXForPieces = (float) -((pieceWidth - pieceBlockSize) / 2);
-        }
-
-        pushYForPieces = lifty;
-        if (!normalPiece) {
-            pushx /= 1.5;
-            lifty /= 3;
-            pushXForPieces = pushx;
-            pushYForPieces = lifty;
-        }
+        pieceHeight = 38 * displayMetrics.density;
+        float circleCenterY = (normalPiece ? 33.5f : 19.0f) * displayMetrics.density;
+        float trackLiftY = circleCenterY - (blockSize / 2f);
+        float homeLiftY = circleCenterY - (homeCircleWidth / 2f);
+        float pushx = (homeCircleWidth - pieceWidth) / 2f;
+        pushXForPieces = (pieceBlockSize - pieceWidth) / 2f;
+        pushYForPieces = trackLiftY;
         float base = (float) pxWidth - total;
 
+        crownIndex1.getLayoutParams().width = (int) total;
+        crownIndex2.getLayoutParams().width = (int) total;
+        crownIndex3.getLayoutParams().width = (int) total;
+        crownIndex4.getLayoutParams().width = (int) total;
         crownIndex1.getLayoutParams().height = (int) total;
         crownIndex2.getLayoutParams().height = (int) total;
         crownIndex3.getLayoutParams().height = (int) total;
         crownIndex4.getLayoutParams().height = (int) total;
+
+        playername1.getLayoutParams().width = (int) total;
+        playername2.getLayoutParams().width = (int) total;
+        playername3.getLayoutParams().width = (int) total;
+        playername4.getLayoutParams().width = (int) total;
 
         p1exitbox.getLayoutParams().height = (int) (total * 0.985);
         p2exitbox.getLayoutParams().height = (int) (total * 0.985);
@@ -2337,10 +2395,10 @@ public class MainActivity extends AppCompatActivity {
             playername1.setRotation(90);
             playername1.setGravity(Gravity.BOTTOM);
             playername1.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            ((ConstraintLayout.LayoutParams)playername1.getLayoutParams()).topMargin = (int) (30 * displayMetrics.density);
+            ((ConstraintLayout.LayoutParams)playername1.getLayoutParams()).topMargin = (int) (24 * displayMetrics.density);
 
             playername2.setRotation(180);
-            ((ConstraintLayout.LayoutParams)playername2.getLayoutParams()).topMargin = (int) (30 * displayMetrics.density);
+            ((ConstraintLayout.LayoutParams)playername2.getLayoutParams()).topMargin = (int) (24 * displayMetrics.density);
 
             playername4.getLayoutParams().width = (int) (total);
             playername4.getLayoutParams().height = (int) (total);
@@ -2351,41 +2409,41 @@ public class MainActivity extends AppCompatActivity {
 
 
         pos1[0][0] = (float) (total * 0.18 + ((total * 0.64) * 0.12)) + pushx;
-        pos1[0][1] = (float) (total * 0.18 + ((total * 0.64) * 0.12) - lifty);
+        pos1[0][1] = (float) (total * 0.18 + ((total * 0.64) * 0.12) - homeLiftY);
         double corDist = total * 0.18 + ((total * 0.64) * 0.12) + ((total * 0.64) * 0.25);
         pos1[1][0] = (float) (total - corDist + pushx);
         pos1[1][1] = (float) pos1[0][1];
         pos1[2][0] = (float) (total * 0.18 + ((total * 0.64) * 0.12) + pushx);
-        pos1[2][1] = (float) (total - corDist - lifty);
+        pos1[2][1] = (float) (total - corDist - homeLiftY);
         pos1[3][0] = (float) pos1[1][0];
-        pos1[3][1] = (float) (total - corDist - lifty);
+        pos1[3][1] = (float) (total - corDist - homeLiftY);
 
         pos2[0][0] = (float) base + pos1[2][0];
         pos2[0][1] = (float) pos1[0][1];
         pos2[1][0] = (float) base + (pos1[1][0]);
         pos2[1][1] = (float) pos1[0][1];
         pos2[2][0] = (float) base + pos1[2][0];
-        pos2[2][1] = (float) (total - corDist - lifty);
+        pos2[2][1] = (float) (total - corDist - homeLiftY);
         pos2[3][0] = (float) base + (pos1[1][0]);
-        pos2[3][1] = (float) (total - corDist - lifty);
+        pos2[3][1] = (float) (total - corDist - homeLiftY);
 
         pos3[0][0] = (float) pos1[2][0];
         pos3[0][1] = (float) base + pos1[0][1];
         pos3[1][0] = (float) pos1[1][0];
         pos3[1][1] = (float) base + pos1[0][1];
         pos3[2][0] = (float) pos1[2][0];
-        pos3[2][1] = (float) (base + total - corDist - lifty);
+        pos3[2][1] = (float) (base + total - corDist - homeLiftY);
         pos3[3][0] = (float) pos1[1][0];
-        pos3[3][1] = (float) (base + total - corDist - lifty);
+        pos3[3][1] = (float) (base + total - corDist - homeLiftY);
 
         pos4[0][0] = (float) base + pos1[2][0];
         pos4[0][1] = (float) base + pos1[0][1];
         pos4[1][0] = (float) base + pos1[1][0];
         pos4[1][1] = (float) base + pos1[0][1];
         pos4[2][0] = (float) base + pos1[2][0];
-        pos4[2][1] = (float) (base + total - corDist - lifty);
+        pos4[2][1] = (float) (base + total - corDist - homeLiftY);
         pos4[3][0] = (float) base + pos1[1][0];
-        pos4[3][1] = (float) (base + total - corDist - lifty);
+        pos4[3][1] = (float) (base + total - corDist - homeLiftY);
 
         if (nop == 2) {
             winnerlistp3layout.setVisibility(GONE);
@@ -3251,8 +3309,8 @@ public class MainActivity extends AppCompatActivity {
         displayMetrics = getResources().getDisplayMetrics();
         dpHeight = displayMetrics.heightPixels/displayMetrics.density;
         dpWidth = displayMetrics.widthPixels/displayMetrics.density;
-        pxWidth = displayMetrics.widthPixels;
         pxHeight = displayMetrics.heightPixels-getStatusBarHeight();
+        pxWidth = computeBoardWidthPx(displayMetrics.widthPixels, (int) pxHeight);
         ludoBoard = findViewById(R.id.imageView);
         red1activecircle = findViewById(R.id.red1activecircle);
         red2activecircle = findViewById(R.id.red2activecircle);
@@ -4155,6 +4213,8 @@ public class MainActivity extends AppCompatActivity {
         if (d != null) {
             if (rollColor != null && !rollColor.isEmpty()) {
                 Integer prev = d.lastRollByColor.get(rollColor);
+                Integer secondPrev = d.secondLastRollByColor.get(rollColor);
+                d.thirdLastRollByColor.put(rollColor, secondPrev != null ? secondPrev : 0);
                 d.secondLastRollByColor.put(rollColor, prev != null ? prev : 0);
                 d.lastRollByColor.put(rollColor, chosenRoll);
             }
@@ -4195,6 +4255,7 @@ public class MainActivity extends AppCompatActivity {
         int pantaValue = (gametype == 3) ? 1 : 4;
         int playerLastRoll = d.lastRollByColor.containsKey(turnColor) ? d.lastRollByColor.get(turnColor) : 0;
         int playerSecondLastRoll = d.secondLastRollByColor.containsKey(turnColor) ? d.secondLastRollByColor.get(turnColor) : 0;
+        int playerThirdLastRoll = d.thirdLastRollByColor.containsKey(turnColor) ? d.thirdLastRollByColor.get(turnColor) : 0;
 
         int favoredCompleted = 0;
         int favoredTeamCompleted = 0;
@@ -4207,6 +4268,7 @@ public class MainActivity extends AppCompatActivity {
         int minOpponentRemainingSteps = 9999;
         boolean anyOpponentAlive = false;
         boolean opponentNearWin = false;
+        boolean anyOpponentOnFinalHomeStretch = false;
 
         if (gametype == 2) {
             String[] allColors = {"blue", "green", "red", "yellow"};
@@ -4270,6 +4332,7 @@ public class MainActivity extends AppCompatActivity {
             opponentNearWin = (opponentTeamCompleted >= 6)
                     || (opponentTeamCompleted >= 5 && maxOppSteps >= 38)
                     || (minOpponentRemainingSteps <= 52);
+            anyOpponentOnFinalHomeStretch = (opponentTeamCompleted >= 7 && maxOppSteps >= 50);
         } else {
             for (Player pl : players) {
                 String col = pl.getColor();
@@ -4336,6 +4399,10 @@ public class MainActivity extends AppCompatActivity {
                             || (gametype != 3 && comp >= pantaValue - 2 && maxSteps >= 42)) {
                         opponentNearWin = true;
                     }
+                    if ((gametype == 3 && maxSteps >= 50)
+                            || (gametype != 3 && comp >= pantaValue - 1 && maxSteps >= 50)) {
+                        anyOpponentOnFinalHomeStretch = true;
+                    }
                 }
             }
         }
@@ -4395,13 +4462,16 @@ public class MainActivity extends AppCompatActivity {
             // with smooth invisible pace matching when falling behind so matches stay neck-and-neck
             // and the opponent never sits visibly stranded at step 55.
             if (!isEmergencyCatchUp) {
-                // 1. After a token was cut, wait at least 3 turns before offering a subtle reopen assist.
-                if (d.favoredNeedsReopenAfterCut
+                // 1. After a token was cut, wait at least 3 turns before offering a subtle reopen assist,
+                // or relieve an extended 6-drought when locked winner has <= 1 live token.
+                if ((d.favoredNeedsReopenAfterCut
                         && baseCount > 0
                         && d.consecutiveSixCount == 0
                         && d.turnsSinceFavoredCut >= 3
                         && d.turnsSinceLastFavoredSix >= 3
-                        && Math.random() < 0.28) {
+                        && Math.random() < 0.28)
+                        || (shouldGrantSixDroughtRelief(true, aliveCount, baseCount, d.turnsSinceLastFavoredSix, d.consecutiveSixCount)
+                        && (d.turnsSinceLastFavoredSix >= 10 || Math.random() < 0.38))) {
                     d.favoredNeedsReopenAfterCut = false;
                     return recordAndReturnRoll(6, true, turnColor);
                 }
@@ -4540,11 +4610,13 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (maxPieceScore < 260) {
-                    if (cand == playerLastRoll && cand == playerSecondLastRoll && cand != normalizedRoll) {
-                        maxPieceScore -= 140;
-                    } else if (cand == playerLastRoll && cand != normalizedRoll) {
-                        maxPieceScore -= 35;
-                    }
+                    maxPieceScore -= computeAntiLoopPenalty(
+                            cand,
+                            normalizedRoll,
+                            playerLastRoll,
+                            playerSecondLastRoll,
+                            playerThirdLastRoll
+                    );
                 }
 
                 candScores[cand] = maxPieceScore;
@@ -4554,7 +4626,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            if (!opponentNearWin && candScores[normalizedRoll] >= 95 && Math.random() < 0.55) {
+            if (!opponentNearWin && !anyOpponentOnFinalHomeStretch && candScores[normalizedRoll] >= 95 && Math.random() < 0.55) {
                 return recordAndReturnRoll(normalizedRoll, true, turnColor);
             }
             return recordAndReturnRoll(bestCand, true, turnColor);
@@ -4590,8 +4662,9 @@ public class MainActivity extends AppCompatActivity {
             boolean favoredTrailing = effectiveFavoredRem > minOpponentRemainingSteps + 8;
 
             int[] candScores = new int[7];
+            boolean[] candWinsMatch = new boolean[7];
             int bestCand = normalizedRoll;
-            int bestScore = -1000000;
+            int bestScore = Integer.MIN_VALUE;
             int safeCutFavoredCand = -1;
 
             for (int cand = 1; cand <= 6; cand++) {
@@ -4604,9 +4677,18 @@ public class MainActivity extends AppCompatActivity {
                     score -= 120000;
                 }
 
-                // Prevent artificially selecting 3 identical rolls in a row for the same player
-                if (cand == playerLastRoll && cand == playerSecondLastRoll && cand != normalizedRoll) {
-                    score -= 320;
+                // Prevent robotic repeat (X-X-X) and alternating (A-B-A-B) loops so opponent rolls always look natural
+                score -= computeAntiLoopPenalty(
+                        cand,
+                        normalizedRoll,
+                        playerLastRoll,
+                        playerSecondLastRoll,
+                        playerThirdLastRoll
+                );
+
+                // Relieve extended 6-drought when opponent has 0 live tokens so they never feel starved in base
+                if (cand == 6 && shouldGrantSixDroughtRelief(false, aliveCount, baseCount, d.turnsSinceLastOpponentSix, d.consecutiveSixCount)) {
+                    score += 95;
                 }
 
                 int movableForCand = 0;
@@ -4622,13 +4704,14 @@ public class MainActivity extends AppCompatActivity {
                     if (p.isAlive) {
                         int nextSteps = p.numberOfSteps + cand;
                         if (isFinalWinningTokenForWinGate && nextSteps == 56) {
-                            // Strictly prevent opponent from completing the exact final match-winning token
-                            score -= 300000;
+                            // Absolute hard win-gate: strictly prevent opponent from completing the exact final match-winning token
+                            candWinsMatch[cand] = true;
+                            score -= 10000000;
                             candHardBlocked = true;
                         } else if (shouldTrimOpponentFinalTokenSurge(isFinalWinningTokenForWinGate, favoredTrailing, p.numberOfSteps, cand)) {
-                            // Softly trim big 5/6 surges into the last 6 squares on the opponent's final token
-                            // so they keep advancing with natural 1..4 moves instead of sitting stranded at step 55
-                            score -= 180;
+                            // Smoothly trim big 5/6 surges on the opponent's final token so they advance with natural 1..4 moves
+                            // instead of reaching step 55 early and sitting visibly stuck waiting for a 1.
+                            score -= 220;
                         }
 
                         if (nextSteps <= 50) {
@@ -4654,7 +4737,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if (candCutsFavoredSafely && !candHardBlocked && (cand != 6 || d.consecutiveSixCount == 0)) {
+                if (candCutsFavoredSafely && !candHardBlocked && !candWinsMatch[cand] && (cand != 6 || d.consecutiveSixCount == 0)) {
                     if (safeCutFavoredCand == -1
                             || cand == normalizedRoll
                             || (safeCutFavoredCand == 6 && cand != 6)) {
@@ -4679,7 +4762,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // Always allow natural opponent cuts when safe, with only a light organic assist if no cuts have happened yet
-            if (safeCutFavoredCand != -1 && candScores[safeCutFavoredCand] >= 0) {
+            if (safeCutFavoredCand != -1 && !candWinsMatch[safeCutFavoredCand] && candScores[safeCutFavoredCand] >= 0) {
                 if (normalizedRoll == safeCutFavoredCand) {
                     return recordAndReturnRoll(safeCutFavoredCand, false, turnColor);
                 }
@@ -4688,9 +4771,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            // Whenever the genuine random roll is valid and does not violate the final match-winning gate,
-            // double-6 prevention, or soft final-token surge pacing, return it directly for 100% authentic feel.
-            if (candScores[normalizedRoll] >= 0) {
+            // Whenever the genuine random roll is valid, non-winning, and does not violate double-6,
+            // anti-loop, or soft final-token surge pacing, return it directly for 100% authentic feel.
+            if (!candWinsMatch[normalizedRoll] && candScores[normalizedRoll] >= 0) {
                 return recordAndReturnRoll(normalizedRoll, false, turnColor);
             }
             return recordAndReturnRoll(bestCand, false, turnColor);
