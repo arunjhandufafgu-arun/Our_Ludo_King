@@ -15,13 +15,16 @@ import static org.junit.Assert.assertTrue;
 public class DiceLogicTest {
 
     @Test
-    public void threeRapidTaps_locksFirstWinnerColorAndNeverChangesAfterward() {
+    public void fourInstantTaps_locksFirstWinnerColorAndNeverChangesAfterward() {
+        assertEquals(4, MainActivity.RAPID_TAP_THRESHOLD);
+
         int tapCount = 0;
         long lastTapTime = 0L;
         String lastColor = null;
         String lockedWinner = null;
 
-        // Player Red taps 3 times rapidly at start (1000ms, 1200ms, 1400ms)
+        // Player Red taps 4 times instantly (1000ms, 1200ms, 1400ms, 1600ms)
+        // Taps 1, 2, and 3 must NOT lock yet
         tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "red", lastTapTime, 1000L);
         lastColor = "red";
         lastTapTime = 1000L;
@@ -35,27 +38,63 @@ public class DiceLogicTest {
 
         tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "red", lastTapTime, 1400L);
         lastTapTime = 1400L;
+        assertEquals(3, tapCount);
+        lockedWinner = MainActivity.tryLockWinnerColor(lockedWinner, lastColor, tapCount, false);
+        assertNull(lockedWinner);
+
+        // 4th instant tap locks "red"
+        tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "red", lastTapTime, 1600L);
+        lastTapTime = 1600L;
+        assertEquals(4, tapCount);
         lockedWinner = MainActivity.tryLockWinnerColor(lockedWinner, lastColor, tapCount, false);
         assertEquals("red", lockedWinner);
 
-        // Another player (Blue) later taps 3 times rapidly — lockedWinner must remain "red"
-        tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "blue", lastTapTime, 2000L);
+        // Another player (Blue) later taps 4 times rapidly — lockedWinner must remain "red"
+        tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "blue", lastTapTime, 2500L);
         lastColor = "blue";
-        lastTapTime = 2000L;
-        tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "blue", lastTapTime, 2150L);
-        lastTapTime = 2150L;
-        tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "blue", lastTapTime, 2300L);
-        lastTapTime = 2300L;
-        assertEquals(3, tapCount);
+        lastTapTime = 2500L;
+        tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "blue", lastTapTime, 2650L);
+        lastTapTime = 2650L;
+        tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "blue", lastTapTime, 2800L);
+        lastTapTime = 2800L;
+        tapCount = MainActivity.updateColorRapidTapCount(tapCount, lastColor, "blue", lastTapTime, 2950L);
+        lastTapTime = 2950L;
+        assertEquals(4, tapCount);
         lockedWinner = MainActivity.tryLockWinnerColor(lockedWinner, "blue", tapCount, false);
         assertEquals("red", lockedWinner);
+
+        // Slow taps spaced beyond RAPID_TAP_INTERVAL_MS reset count and never lock
+        int slowCount = 0;
+        long slowTime = 0L;
+        String slowLocked = null;
+        for (int i = 0; i < 6; i++) {
+            long t = 10000L + i * (MainActivity.RAPID_TAP_INTERVAL_MS + 250L);
+            slowCount = MainActivity.updateColorRapidTapCount(slowCount, "green", "green", slowTime, t);
+            slowTime = t;
+            assertEquals(1, slowCount);
+            slowLocked = MainActivity.tryLockWinnerColor(slowLocked, "green", slowCount, false);
+            assertNull(slowLocked);
+        }
+
+        // Bots can never lock a winner even with 4 rapid taps
+        assertNull(MainActivity.tryLockWinnerColor(null, "green", 4, true));
+
+        // Burst attribution keeps human color if 4th instant tap lands right as roll ends and turn switches to bot
+        assertEquals("blue", MainActivity.resolveRapidDiceTapColor(
+                false, "blue", "green", "blue", 1450L, 1700L, true
+        ));
+        // Outside burst window, tapping during a bot's turn returns the bot's color (so it is ignored)
+        assertEquals("green", MainActivity.resolveRapidDiceTapColor(
+                false, "blue", "green", "blue", 1000L, 2500L, true
+        ));
     }
 
     @Test
-    public void threeTaps_doesNotForceSixDirectly() {
+    public void fourTaps_doesNotForceSixDirectly() {
         assertFalse(MainActivity.shouldForceSix(3));
+        assertFalse(MainActivity.shouldForceSix(4));
         for (int roll = 1; roll <= 5; roll++) {
-            assertEquals(roll, MainActivity.resolveDiceValue(roll, false, false, 3));
+            assertEquals(roll, MainActivity.resolveDiceValue(roll, false, false, 4));
         }
     }
 
@@ -568,5 +607,85 @@ public class DiceLogicTest {
         int[] pairSteps = new int[]{10, 14, -1, -1};
         assertNotEquals(4, MainActivity.selectSmartFairRoll(4, true, pairSteps, 0, 0, 1, 0));
         assertNotEquals(4, MainActivity.selectSmartFairRoll(4, false, pairSteps, 0, 0, 1, 0));
+    }
+
+    @Test
+    public void lockedWinnerWinGuarantee_neverAllowsOpponentWinEvenUnderConsecutiveSixAndExtremeLead() {
+        // Pass-2 safety net in resolveNoSameColorOverlapRoll:
+        // Even if faces 1..5 are hard-blocked AND consecutiveSixCount == 1 blocks 6,
+        // it must relax consecutive-6 and return 6 rather than ever returning a hard-blocked winning face.
+        boolean[] fiveBlocked = new boolean[]{false, true, true, true, true, true, false};
+        int[] extremeOppSteps = new int[]{55, 54, 53, 52};
+        for (int pref = 1; pref <= 6; pref++) {
+            int resolved = MainActivity.resolveNoSameColorOverlapRoll(
+                    pref, extremeOppSteps, 1, 6, 3, 2, null, fiveBlocked, pref
+            );
+            assertEquals("Must never violate hardBlockedFaces even when consecutiveSixCount == 1", 6, resolved);
+        }
+
+        // Full comeback simulation in Classic mode (gameType == 1):
+        // Opponent already has 3 completed tokens and 4th token at step 55 (1 step from winning);
+        // Locked winner starts from scratch with all 4 tokens in base {-1, -1, -1, -1}.
+        int[] lockedSteps = new int[]{-1, -1, -1, -1};
+        int[] oppSteps = new int[]{55, 56, 56, 56};
+        int lockedCompleted = 0;
+        int oppCompleted = 3;
+        int lockedConsecSix = 0;
+        int oppConsecSix = 0;
+        java.util.Random rng = new java.util.Random(42L);
+
+        boolean lockedWon = false;
+        for (int turn = 0; turn < 400 && !lockedWon; turn++) {
+            // Opponent turn: must NEVER complete the 4th token
+            int oppRaw = 1 + rng.nextInt(6);
+            int oppRoll = MainActivity.selectSmartFairRoll(oppRaw, false, oppSteps, oppCompleted, lockedCompleted, 1, oppConsecSix);
+            oppConsecSix = (oppRoll == 6) ? (oppConsecSix + 1) : 0;
+            for (int i = 0; i < oppSteps.length; i++) {
+                if (oppSteps[i] >= 0 && oppSteps[i] < 56 && oppSteps[i] + oppRoll <= 56) {
+                    oppSteps[i] += oppRoll;
+                    if (oppSteps[i] == 56) {
+                        oppCompleted++;
+                    }
+                    break;
+                }
+            }
+            assertTrue("Opponent must NEVER win while locked winner has not yet won", oppCompleted < 4);
+
+            // Locked winner turn: move highest-progress legal piece (or open from base on 6)
+            int favRaw = 1 + rng.nextInt(6);
+            int favRoll = MainActivity.selectSmartFairRoll(favRaw, true, lockedSteps, lockedCompleted, lockedCompleted, 1, lockedConsecSix);
+            lockedConsecSix = (favRoll == 6) ? (lockedConsecSix + 1) : 0;
+            int chosenIdx = -1;
+            int bestSteps = -2;
+            for (int i = 0; i < lockedSteps.length; i++) {
+                int s = lockedSteps[i];
+                if (s == -1 && favRoll == 6) {
+                    if (chosenIdx == -1) {
+                        chosenIdx = i;
+                        bestSteps = -1;
+                    }
+                } else if (s >= 0 && s < 56 && s + favRoll <= 56) {
+                    if (s + favRoll == 56 || s > bestSteps) {
+                        chosenIdx = i;
+                        bestSteps = (s + favRoll == 56) ? 100 : s;
+                    }
+                }
+            }
+            if (chosenIdx != -1) {
+                if (lockedSteps[chosenIdx] == -1) {
+                    lockedSteps[chosenIdx] = 0;
+                } else {
+                    lockedSteps[chosenIdx] += favRoll;
+                    if (lockedSteps[chosenIdx] == 56) {
+                        lockedCompleted++;
+                    }
+                }
+            }
+            if (lockedCompleted == 4) {
+                lockedWon = true;
+            }
+        }
+        assertTrue("Locked winner must ALWAYS finish all 4 tokens and win 1st place", lockedWon);
+        assertEquals(3, oppCompleted);
     }
 }

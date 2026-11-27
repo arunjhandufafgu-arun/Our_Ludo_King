@@ -1471,6 +1471,26 @@ public class MainActivity extends AppCompatActivity {
         if (bestCand != -1) {
             return bestCand;
         }
+        // Pass 2 safety net: never violate hardBlockedFaces (e.g. opponent match-winning win-gate)
+        // even if consecutive-6 suppression eliminated all other candidates.
+        if (hardBlockedFaces != null) {
+            int fallbackCand = -1;
+            int minOverlaps = Integer.MAX_VALUE;
+            for (int offset = 0; offset < 6; offset++) {
+                int cand = ((start - 1 + offset) % 6) + 1;
+                if (hardBlockedFaces.length > cand && hardBlockedFaces[cand]) {
+                    continue;
+                }
+                int overlaps = countSameColorOverlapsForRoll(cand, playerPieceSteps);
+                if (overlaps < minOverlaps) {
+                    minOverlaps = overlaps;
+                    fallbackCand = cand;
+                }
+            }
+            if (fallbackCand != -1) {
+                return fallbackCand;
+            }
+        }
         return normalized;
     }
 
@@ -1997,7 +2017,18 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     long now = System.currentTimeMillis();
-                    String tapColor = getActiveOrInitialColor();
+                    String baseTurnColor = (currentPlayerColor != null && !currentPlayerColor.isEmpty())
+                            ? currentPlayerColor
+                            : getActiveOrInitialColor();
+                    String tapColor = resolveRapidDiceTapColor(
+                            isRolling,
+                            activeRollColor,
+                            baseTurnColor,
+                            lastTappedColor,
+                            lastRapidTapTime,
+                            now,
+                            isBotForColor(baseTurnColor)
+                    );
                     handleSilentWinnerLockTap(tapColor, now);
 
                     if(!isRolling && (isDiceClickable || isDiceMovableExtraChance)) {
@@ -2384,6 +2415,12 @@ public class MainActivity extends AppCompatActivity {
                                 List<Piece> enemypieces = getPiecesByColor(color);
                                 for (Piece tp : enemypieces) {
                                     if (tp.isAlive && !tp.hasCompletedItsPurpose && !safeSpots.contains(tp.currBlock)) {
+                                        if (d != null && d.lockedWinnerColor != null && !d.lockedWinnerColor.isEmpty()
+                                                && currentWinnerPosition == 1
+                                                && isFavoredColor(color, d.lockedWinnerColor, gametype)
+                                                && !isSafeForOpponentToCutFavoredPiece(tp)) {
+                                            continue;
+                                        }
                                         int attackerAfterLanding = countLiveTokensOfSideOnBlock(tp.currBlock, controlColor) + 1;
                                         int defenderCount = countLiveTokensOfSideOnBlock(tp.currBlock, color);
                                         if (!canSideCaptureEnemySide(attackerAfterLanding, defenderCount)) {
@@ -2406,6 +2443,17 @@ public class MainActivity extends AppCompatActivity {
                             y = 0;
                         } else {
                             y++;
+                        }
+                    }
+                    // For a locked winning side bot (e.g. Team Up bot teammate), always convert an exact home finish (step 56)
+                    if (d != null && d.lockedWinnerColor != null && !d.lockedWinnerColor.isEmpty()
+                            && currentWinnerPosition == 1
+                            && isFavoredColor(controlColor, d.lockedWinnerColor, gametype)) {
+                        for (Piece mp : movablePieces) {
+                            if (mp.isAlive && !mp.hasCompletedItsPurpose && mp.numberOfSteps + ch == 56) {
+                                bestMovablePiece = mp;
+                                break;
+                            }
                         }
                     }
                     // If the chosen bot token would land on a same-color token (only possible in an ultra-rare forced fallback),
@@ -3978,8 +4026,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static final long RAPID_TAP_INTERVAL_MS = 500L;
-    public static final int RAPID_TAP_THRESHOLD = 3;
+    public static final long RAPID_TAP_INTERVAL_MS = 600L;
+    public static final int RAPID_TAP_THRESHOLD = 4;
 
     public static int updateRapidTapCount(int currentTapCount, long lastTapTimeMs, long currentTapTimeMs) {
         if (lastTapTimeMs > 0L && (currentTapTimeMs - lastTapTimeMs) >= 0L && (currentTapTimeMs - lastTapTimeMs) <= RAPID_TAP_INTERVAL_MS) {
@@ -3998,8 +4046,33 @@ public class MainActivity extends AppCompatActivity {
         return 1;
     }
 
+    public static String resolveRapidDiceTapColor(
+            boolean isRolling,
+            String activeRollColor,
+            String currentTurnColor,
+            String lastTappedColor,
+            long lastTapTimeMs,
+            long nowMs,
+            boolean isCurrentTurnBot
+    ) {
+        if (isRolling && activeRollColor != null && !activeRollColor.isEmpty()) {
+            return activeRollColor;
+        }
+        boolean withinRapidBurst = lastTapTimeMs > 0L
+                && (nowMs - lastTapTimeMs) >= 0L
+                && (nowMs - lastTapTimeMs) <= RAPID_TAP_INTERVAL_MS;
+        if (withinRapidBurst
+                && lastTappedColor != null
+                && !lastTappedColor.isEmpty()
+                && lastTappedColor.equals(activeRollColor)
+                && (isCurrentTurnBot || !lastTappedColor.equals(currentTurnColor))) {
+            return lastTappedColor;
+        }
+        return currentTurnColor;
+    }
+
     public static boolean shouldForceSix(int rapidTapCount) {
-        // 3-tap forced 6 is disabled; 3 rapid taps now silently lock the winner color once per match
+        // Direct forced-6 on rapid taps is disabled; 4 instant taps silently lock the winner color once per match
         return false;
     }
 
@@ -4872,6 +4945,7 @@ public class MainActivity extends AppCompatActivity {
             if (aliveCount == 0 && baseCount > 0) {
                 boolean shouldOpenNow = (normalizedRoll == 6)
                         || opponentNearWin
+                        || isEmergencyCatchUp
                         || (d.favoredTurnsWithoutOpen >= 3)
                         || (d.favoredTurnsWithoutOpen >= 2 && (anyOpponentAlive || d.favoredNeedsReopenAfterCut) && Math.random() < 0.45);
                 if (d.consecutiveSixCount == 0 && shouldOpenNow) {
@@ -4880,7 +4954,10 @@ public class MainActivity extends AppCompatActivity {
                     return recordAndReturnRoll(6, true, turnColor);
                 }
                 d.favoredTurnsWithoutOpen++;
-                return recordAndReturnRoll(normalizedRoll, true, turnColor);
+                int safeWaitRoll = (normalizedRoll == 6 && d.consecutiveSixCount >= 1)
+                        ? (1 + (int) (Math.random() * 5))
+                        : normalizedRoll;
+                return recordAndReturnRoll(safeWaitRoll, true, turnColor);
             }
             d.favoredTurnsWithoutOpen = 0;
 
@@ -4907,6 +4984,10 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // 2. Subtle home-stretch finish assist so locked winner converts home-column tokens cleanly without stalling.
+                boolean isFavoredFinalToken = (gametype == 3)
+                        || (gametype == 2 && favoredTeamCompleted >= 7)
+                        || (gametype != 2 && myCompleted >= pantaValue - 1);
+                double overshootFinishChance = isFavoredFinalToken ? 0.55 : 0.36;
                 for (Piece p : myPieces) {
                     if (p.isAlive && !p.hasCompletedItsPurpose && p.numberOfSteps >= 50 && p.numberOfSteps < 56) {
                         int exactHomeRoll = 56 - p.numberOfSteps;
@@ -4915,7 +4996,7 @@ public class MainActivity extends AppCompatActivity {
                         if (exactHomeRoll >= 1 && exactHomeRoll <= 6
                                 && (exactHomeRoll != 6 || d.consecutiveSixCount == 0)
                                 && !doesRollAllowSameColorOverlap(exactHomeRoll, mySteps)
-                                && ((wouldOvershoot && Math.random() < 0.36) || (trailingOpponent && Math.random() < 0.38))) {
+                                && ((wouldOvershoot && Math.random() < overshootFinishChance) || (trailingOpponent && Math.random() < 0.38))) {
                             return recordAndReturnRoll(exactHomeRoll, true, turnColor);
                         }
                     }
