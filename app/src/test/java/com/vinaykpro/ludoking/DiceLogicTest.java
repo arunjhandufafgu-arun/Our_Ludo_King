@@ -250,21 +250,21 @@ public class DiceLogicTest {
     }
 
     @Test
-    public void sameColorTokens_cannotStackOnNonSafeOuterSquare_butAllowedOnSafeSpotsAndHomeStretch() {
+    public void sameColorTokens_canAlwaysStackOnOuterTrackSafeSpotsAndHomeStretch() {
         Set<Integer> safeSpots = new HashSet<>(Arrays.asList(0, 8, 13, 21, 26, 34, 39, 47));
 
-        // Non-safe outer square already occupied by another token of the same color -> BLOCKED
-        assertTrue(MainActivity.isSameColorLandingBlocked(20, false, true, safeSpots));
+        // Non-safe outer square already occupied by another token of the same color -> ALLOWED (never blocks valid move)
+        assertFalse(MainActivity.isSameColorLandingBlocked(20, false, true, safeSpots));
 
-        // Non-safe outer square empty (or occupied only by teammate/enemy, not same color) -> ALLOWED
+        // Non-safe outer square empty -> ALLOWED
         assertFalse(MainActivity.isSameColorLandingBlocked(20, false, false, safeSpots));
 
-        // Safe spots (stars and starting squares) -> ALLOWED even if same color is already there
+        // Safe spots (stars and starting squares) -> ALLOWED
         assertFalse(MainActivity.isSameColorLandingBlocked(0, false, true, safeSpots));
         assertFalse(MainActivity.isSameColorLandingBlocked(8, false, true, safeSpots));
         assertFalse(MainActivity.isSameColorLandingBlocked(26, false, true, safeSpots));
 
-        // Home stretch / finish -> ALLOWED even if same color is already there
+        // Home stretch / finish -> ALLOWED
         assertFalse(MainActivity.isSameColorLandingBlocked(64, true, true, safeSpots));
     }
 
@@ -316,18 +316,19 @@ public class DiceLogicTest {
     }
 
     @Test
-    public void lockedMatch_preventsOpponentDoubleSix_whileUnlockedAndFavoredRemainAuthentic() {
-        // Locked match + opponent already rolled one 6 -> second 6 is prevented
+    public void consecutiveSixSuppression_preventsMultipleSixStreaksForEveryPlayerSymmetrically() {
+        // After rolling one 6, another 6 is suppressed universally for every player (opponent, locked winner, unlocked)
+        assertTrue(MainActivity.shouldSuppressConsecutiveSix(1, 6));
+        assertTrue(MainActivity.shouldSuppressConsecutiveSix(2, 6));
         assertTrue(MainActivity.shouldPreventOpponentConsecutiveSix(true, false, 1, 6));
-        assertTrue(MainActivity.shouldPreventOpponentConsecutiveSix(true, false, 2, 6));
+        assertTrue(MainActivity.shouldPreventOpponentConsecutiveSix(true, true, 1, 6));
+        assertTrue(MainActivity.shouldPreventOpponentConsecutiveSix(false, false, 1, 6));
 
-        // First 6 for opponent is allowed freely; 1..5 after a 6 are allowed freely
+        // First 6 is always allowed freely; 1..5 after a 6 are allowed freely
+        assertFalse(MainActivity.shouldSuppressConsecutiveSix(0, 6));
+        assertFalse(MainActivity.shouldSuppressConsecutiveSix(1, 4));
         assertFalse(MainActivity.shouldPreventOpponentConsecutiveSix(true, false, 0, 6));
-        assertFalse(MainActivity.shouldPreventOpponentConsecutiveSix(true, false, 1, 4));
-
-        // Favored side and unlocked matches are never blocked by opponent double-6 rule
-        assertFalse(MainActivity.shouldPreventOpponentConsecutiveSix(true, true, 1, 6));
-        assertFalse(MainActivity.shouldPreventOpponentConsecutiveSix(false, false, 1, 6));
+        assertFalse(MainActivity.shouldPreventOpponentConsecutiveSix(true, false, 1, 3));
     }
 
     @Test
@@ -348,45 +349,144 @@ public class DiceLogicTest {
     }
 
     @Test
-    public void boardWidthReduction_scalesProportionallyAndRespectsShortScreens() {
-        // Standard 1080x2400 phone -> 92% of width (~994px), comfortably narrower than full screen width
-        int standardBoard = MainActivity.computeBoardSizePx(1080, 2320);
-        assertEquals(994, standardBoard);
-        assertTrue(standardBoard < 1080);
-
-        // Old small 480x800 phone -> 92% of width (442px) fits within 66% of height (508px)
-        int smallPhoneBoard = MainActivity.computeBoardSizePx(480, 770);
-        assertEquals(442, smallPhoneBoard);
-
-        // Very short / square 480x600 screen -> capped at 66% of height (396px) so top/bottom dice pads never clip
-        int shortScreenBoard = MainActivity.computeBoardSizePx(480, 600);
-        assertEquals(396, shortScreenBoard);
+    public void boardWidthReduction_leavesBalancedSideMarginsAndRespectsShortScreens() {
+        // Modern 1080x2400 phone -> 96% width = 1037px (slim 2% Ludo King side margin on left & right)
+        assertEquals(1037, MainActivity.computeBoardWidthPx(1080, 2400));
+        // Classic 720x1280 phone -> 96% width = 691px
+        assertEquals(691, MainActivity.computeBoardWidthPx(720, 1280));
+        // Old small 480x800 phone -> 96% width = 461px
+        assertEquals(461, MainActivity.computeBoardWidthPx(480, 800));
+        // Tiny 320x480 phone -> 96% width = 307px (fits comfortably within 72% of 480 = 346px)
+        assertEquals(307, MainActivity.computeBoardWidthPx(320, 480));
+        // Very short / square-ish 600x700 display -> capped at 72% of height = 504px so dice pads never clip
+        assertEquals(504, MainActivity.computeBoardWidthPx(600, 700));
     }
 
     @Test
-    public void diceAntiLoopGuard_detectsTripleRepeatsAndAlternatingPatterns() {
-        // Triple repeats (e.g. 4, 4, 4) flagged as suspicious loop
-        assertTrue(MainActivity.isSuspiciousRepeatPattern(4, 4, 4, 2));
+    public void antiLoopEngine_eliminatesTripleRepeatsAlternatingLoopsClusteringAndConsecutiveSixes() {
+        // Fresh distinct roll has zero penalty and is preserved untouched
+        assertEquals(0, MainActivity.computeAntiLoopPenalty(3, 3, 5, 2, 4));
+        assertEquals(3, MainActivity.resolveNaturalAntiLoopRoll(3, 0, 5, 2, 4, 0, 1, 3, 2, 1));
 
-        // Alternating robotic loop (e.g. 5, 4, 5 -> next 4) flagged as suspicious loop
-        assertTrue(MainActivity.isSuspiciousRepeatPattern(4, 5, 4, 5));
+        // Single natural repeat (e.g. 4 then 4) is completely natural (zero penalty)
+        assertEquals(0, MainActivity.computeAntiLoopPenalty(4, 4, 4, 2, 5));
 
-        // Normal double or varied rolls are completely allowed
-        assertFalse(MainActivity.isSuspiciousRepeatPattern(4, 4, 2, 5));
-        assertFalse(MainActivity.isSuspiciousRepeatPattern(3, 5, 4, 5));
-        assertFalse(MainActivity.isSuspiciousRepeatPattern(2, 1, 6, 3));
+        // Triple repeat (4, 4, 4) gets strongly penalized and broken cleanly
+        assertTrue(MainActivity.computeAntiLoopPenalty(4, 4, 4, 4, 2) >= 400);
+        int brokenTriple = MainActivity.resolveNaturalAntiLoopRoll(4, 0, 4, 4, 2, 2, 2, 2, 2, 3);
+        assertNotEquals(4, brokenTriple);
+        assertTrue(brokenTriple >= 1 && brokenTriple <= 6);
+
+        // Alternating A-B-A-B loop (5, 4, 5 -> candidate 4) gets broken cleanly
+        assertTrue(MainActivity.computeAntiLoopPenalty(4, 4, 5, 4, 5) >= 250);
+        int brokenAlt = MainActivity.resolveNaturalAntiLoopRoll(4, 0, 5, 4, 5, 2, 2, 2, 2, 0);
+        assertNotEquals(4, brokenAlt);
+
+        // High-frequency clustering (same number already appeared 3+ times in recent 5 rolls) gets broken
+        assertTrue(MainActivity.computeRecentWindowLoopPenalty(2, 2, 5, 2, 3, 3) >= 240);
+        int brokenCluster = MainActivity.resolveNaturalAntiLoopRoll(2, 0, 5, 2, 3, 3, 2, 2, 2, 1);
+        assertNotEquals(2, brokenCluster);
+
+        // Consecutive 6 after a 6 is always resolved to a varied non-6 roll (1..5)
+        for (int seed = 0; seed < 5; seed++) {
+            int afterSix = MainActivity.resolveNaturalAntiLoopRoll(6, 1, 6, 3, 1, 1, 1, 3, 0, seed);
+            assertNotEquals(6, afterSix);
+            assertTrue(afterSix >= 1 && afterSix <= 5);
+        }
+
+        // Prolonged 6-drought when 0 tokens are alive relieves smoothly with a 6
+        assertEquals(6, MainActivity.resolveNaturalAntiLoopRoll(2, 0, 4, 1, 5, 0, 0, 4, 6, 2));
     }
 
     @Test
-    public void opponentFinalTokenSmoothPacing_preventsEarlySprintToStep55Stall() {
-        // Opponent on final winning token at step 34 while locked winner still has 38 steps left -> trims 5/6 leaps
-        assertTrue(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, true, 34, 6, 38));
-        assertTrue(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, true, 34, 5, 38));
-        // Natural 1..4 moves are never trimmed so opponent keeps moving smoothly every turn
-        assertFalse(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, true, 34, 4, 38));
-        assertFalse(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, true, 34, 3, 38));
-        // Non-final tokens or when locked winner is ahead are never trimmed
-        assertFalse(MainActivity.shouldSmoothlyPaceOpponentFinalToken(false, true, 34, 6, 38));
-        assertFalse(MainActivity.shouldSmoothlyPaceOpponentFinalToken(true, false, 34, 6, 38));
+    public void sixDroughtRelief_preventsBaseLockoutForBothSidesWithoutDoubleSix() {
+        // Locked winner with 0 live tokens relieved at 3+ turns without 6
+        assertTrue(MainActivity.shouldGrantSixDroughtRelief(true, 0, 4, 3, 0));
+        assertFalse(MainActivity.shouldGrantSixDroughtRelief(true, 0, 4, 2, 0));
+        // Locked winner with 1 live token relieved at 7+ turns without 6
+        assertTrue(MainActivity.shouldGrantSixDroughtRelief(true, 1, 3, 7, 0));
+        assertFalse(MainActivity.shouldGrantSixDroughtRelief(true, 2, 2, 10, 0));
+        // Opponent with 0 live tokens relieved at 6+ turns without 6 so opponents never feel starved
+        assertTrue(MainActivity.shouldGrantSixDroughtRelief(false, 0, 4, 6, 0));
+        assertFalse(MainActivity.shouldGrantSixDroughtRelief(false, 0, 4, 5, 0));
+        assertFalse(MainActivity.shouldGrantSixDroughtRelief(false, 1, 3, 10, 0));
+        // Never triggers on consecutive six or when no base tokens remain
+        assertFalse(MainActivity.shouldGrantSixDroughtRelief(true, 0, 4, 8, 1));
+        assertFalse(MainActivity.shouldGrantSixDroughtRelief(true, 1, 0, 10, 0));
+    }
+
+    @Test
+    public void opponentFinalTokenSurge_trimsEarlierFromStep28AndQuickModeBlocksAllWinningSteps() {
+        // Trims 5 and 6 smoothly starting at step 28 while keeping 1..4 completely untouched
+        assertTrue(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 28, 5));
+        assertTrue(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 36, 6));
+        assertFalse(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 28, 4));
+        assertFalse(MainActivity.shouldTrimOpponentFinalTokenSurge(true, true, 27, 6));
+
+        // Quick mode (gameType == 3): opponent with 4 tokens at steps 55, 54, 53, 52 (needs 1, 2, 3, 4 to win)
+        // must never roll 1, 2, 3, or 4
+        int[] fourHomeTokens = new int[]{55, 54, 53, 52};
+        for (int raw = 1; raw <= 6; raw++) {
+            int chosen = MainActivity.selectSmartFairRoll(raw, false, fourHomeTokens, 0, 0, 3, 0);
+            assertTrue("Expected non-winning roll (5 or 6), got " + chosen, chosen == 5 || chosen == 6);
+        }
+    }
+
+    @Test
+    public void tokenDrawablesAndLowerRingResources_areValidAndIntact() throws Exception {
+        java.nio.file.Path resDir = java.nio.file.Paths.get("src/main/res");
+        java.nio.file.Path innerRingPng = resDir.resolve("drawable/token_inner_ring.png");
+        assertTrue("token_inner_ring.png must exist", java.nio.file.Files.exists(innerRingPng));
+        assertFalse("corrupt innercircle.png must remain removed", java.nio.file.Files.exists(resDir.resolve("drawable/innercircle.png")));
+        assertFalse("stale token_inner_ring.xml must not conflict with PNG", java.nio.file.Files.exists(resDir.resolve("drawable/token_inner_ring.xml")));
+
+        String layoutXml = new String(java.nio.file.Files.readAllBytes(resDir.resolve("layout/activity_main.xml")), java.nio.charset.StandardCharsets.UTF_8);
+        int innerRingSrcRefs = layoutXml.split("android:src=\"@drawable/token_inner_ring\"", -1).length - 1;
+        int innerRingCompatRefs = layoutXml.split("app:srcCompat=\"@drawable/token_inner_ring\"", -1).length - 1;
+        int outerRingSrcRefs = layoutXml.split("android:src=\"@drawable/outercircle\"", -1).length - 1;
+        int outerRingCompatRefs = layoutXml.split("app:srcCompat=\"@drawable/outercircle\"", -1).length - 1;
+        assertEquals("All 16 tokens must set android:src to @drawable/token_inner_ring", 16, innerRingSrcRefs);
+        assertEquals("All 16 tokens must set app:srcCompat to @drawable/token_inner_ring", 16, innerRingCompatRefs);
+        assertEquals("All 16 tokens must set android:src to @drawable/outercircle", 16, outerRingSrcRefs);
+        assertEquals("All 16 tokens must set app:srcCompat to @drawable/outercircle", 16, outerRingCompatRefs);
+
+        // Verify all token & lower-ring PNGs have valid PNG signature, non-truncated chunks, valid CRCs, and IEND
+        String[] criticalPngs = new String[]{
+                "drawable/token_inner_ring.png",
+                "drawable/outercircle.png",
+                "drawable/redpiece.png",
+                "drawable/greenpiece.png",
+                "drawable/bluepiece.png",
+                "drawable-nodpi/yellowpiece.png"
+        };
+        for (String rel : criticalPngs) {
+            byte[] data = java.nio.file.Files.readAllBytes(resDir.resolve(rel));
+            assertTrue(rel + " too small", data.length > 33);
+            assertEquals((byte) 0x89, data[0]);
+            assertEquals((byte) 'P', data[1]);
+            assertEquals((byte) 'N', data[2]);
+            assertEquals((byte) 'G', data[3]);
+            int pos = 8;
+            boolean hasIhdr = false;
+            boolean hasIend = false;
+            while (pos + 8 <= data.length) {
+                int len = ((data[pos] & 0xFF) << 24) | ((data[pos + 1] & 0xFF) << 16)
+                        | ((data[pos + 2] & 0xFF) << 8) | (data[pos + 3] & 0xFF);
+                assertTrue(rel + " truncated chunk at " + pos, pos + 12 + len <= data.length);
+                String type = new String(data, pos + 4, 4, java.nio.charset.StandardCharsets.US_ASCII);
+                java.util.zip.CRC32 crc = new java.util.zip.CRC32();
+                crc.update(data, pos + 4, 4 + len);
+                long expectedCrc = ((long) (data[pos + 8 + len] & 0xFF) << 24)
+                        | ((long) (data[pos + 9 + len] & 0xFF) << 16)
+                        | ((long) (data[pos + 10 + len] & 0xFF) << 8)
+                        | ((long) (data[pos + 11 + len] & 0xFF));
+                assertEquals(rel + " CRC mismatch in " + type, expectedCrc, crc.getValue());
+                if ("IHDR".equals(type)) hasIhdr = true;
+                if ("IEND".equals(type)) hasIend = true;
+                pos += 12 + len;
+            }
+            assertTrue(rel + " missing IHDR", hasIhdr);
+            assertTrue(rel + " missing IEND", hasIend);
+        }
     }
 }
