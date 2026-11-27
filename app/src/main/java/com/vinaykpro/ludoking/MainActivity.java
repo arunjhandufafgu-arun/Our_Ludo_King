@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
                 params.startToStart = pieceIcon.getId();
                 params.endToEnd = pieceIcon.getId();
                 this.readyToPick.setLayoutParams(params);
-                readyToPick.setScaleX(1.25f);readyToPick.setScaleY(1.25f);
+                readyToPick.setScaleX(1.2f);readyToPick.setScaleY(1.2f);
             } else {
                 pieceStandIcon.setImageResource(R.drawable.token_inner_ring);
                 pieceStandIcon.setVisibility(View.VISIBLE);
@@ -526,7 +526,9 @@ public class MainActivity extends AppCompatActivity {
             globalHandler.postDelayed(() -> {
                 if(n>1) {
                     int step = currBlock;
-                    showStep(n, this.colour, x[step], y[step]);
+                    globalHandler.postDelayed(() -> {
+                        showStep(n, this.colour, x[step], y[step]);
+                    }, 100);
                     numberOfSteps++;
                     move(n - 1);
                 } else {

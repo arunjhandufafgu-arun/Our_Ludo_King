@@ -153,9 +153,9 @@
 
             <ImageView
                 android:id="@+id/red1activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -197,9 +197,9 @@
 
             <ImageView
                 android:id="@+id/red2activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -241,9 +241,9 @@
 
             <ImageView
                 android:id="@+id/red3activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -285,9 +285,9 @@
 
             <ImageView
                 android:id="@+id/red4activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -329,9 +329,9 @@
 
             <ImageView
                 android:id="@+id/green1activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -373,9 +373,9 @@
 
             <ImageView
                 android:id="@+id/green2activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -417,9 +417,9 @@
 
             <ImageView
                 android:id="@+id/green3activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -461,9 +461,9 @@
 
             <ImageView
                 android:id="@+id/green4activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -505,9 +505,9 @@
 
             <ImageView
                 android:id="@+id/blue1activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -549,9 +549,9 @@
 
             <ImageView
                 android:id="@+id/blue2activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -593,9 +593,9 @@
 
             <ImageView
                 android:id="@+id/blue3activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -637,9 +637,9 @@
 
             <ImageView
                 android:id="@+id/blue4activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -682,9 +682,9 @@
 
             <ImageView
                 android:id="@+id/yellow1activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -726,9 +726,9 @@
 
             <ImageView
                 android:id="@+id/yellow2activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -770,9 +770,9 @@
 
             <ImageView
                 android:id="@+id/yellow3activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -814,9 +814,9 @@
 
             <ImageView
                 android:id="@+id/yellow4activecircle"
-                android:layout_width="31dp"
-                android:layout_height="31dp"
-                android:layout_marginTop="13dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
