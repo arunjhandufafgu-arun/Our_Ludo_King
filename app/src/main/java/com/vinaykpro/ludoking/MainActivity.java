@@ -1381,7 +1381,7 @@ public class MainActivity extends AppCompatActivity {
         return shouldSuppressConsecutiveSix(consecutiveSixCount, candidateRoll);
     }
 
-    public static final float BOARD_WIDTH_RATIO = 0.96f;
+    public static final float BOARD_WIDTH_RATIO = 1.0f;
     public static final float BOARD_MAX_HEIGHT_RATIO = 0.72f;
 
     public static int computeBoardWidthPx(int screenWidthPx, int screenHeightPx) {
@@ -2469,9 +2469,9 @@ public class MainActivity extends AppCompatActivity {
         float total = onePercentWidth * 40;
         float homeCircleWidth = (float) ((total * 0.64) * 0.25);
         float pieceBlockSize = (float) (pxWidth * 0.065);
-        pieceWidth = 34 * displayMetrics.density;
-        pieceHeight = 38 * displayMetrics.density;
-        float circleCenterY = (normalPiece ? 34.0f : 19.0f) * displayMetrics.density;
+        pieceWidth = 32 * displayMetrics.density;
+        pieceHeight = 34 * displayMetrics.density;
+        float circleCenterY = (normalPiece ? 28.5f : 17.0f) * displayMetrics.density;
         float trackLiftY = circleCenterY - (blockSize / 2f);
         float homeLiftY = circleCenterY - (homeCircleWidth / 2f);
         float pushx = (homeCircleWidth - pieceWidth) / 2f;

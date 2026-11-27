@@ -350,14 +350,14 @@ public class DiceLogicTest {
 
     @Test
     public void boardWidthReduction_leavesBalancedSideMarginsAndRespectsShortScreens() {
-        // Modern 1080x2400 phone -> 96% width = 1037px (slim 2% Ludo King side margin on left & right)
-        assertEquals(1037, MainActivity.computeBoardWidthPx(1080, 2400));
-        // Classic 720x1280 phone -> 96% width = 691px
-        assertEquals(691, MainActivity.computeBoardWidthPx(720, 1280));
-        // Old small 480x800 phone -> 96% width = 461px
-        assertEquals(461, MainActivity.computeBoardWidthPx(480, 800));
-        // Tiny 320x480 phone -> 96% width = 307px (fits comfortably within 72% of 480 = 346px)
-        assertEquals(307, MainActivity.computeBoardWidthPx(320, 480));
+        // Modern 1080x2400 phone -> 100% full-width 1:1 square board = 1080px
+        assertEquals(1080, MainActivity.computeBoardWidthPx(1080, 2400));
+        // Classic 720x1280 phone -> 100% full-width 1:1 square board = 720px
+        assertEquals(720, MainActivity.computeBoardWidthPx(720, 1280));
+        // Old small 480x800 phone -> 100% full-width 1:1 square board = 480px
+        assertEquals(480, MainActivity.computeBoardWidthPx(480, 800));
+        // Tiny 320x480 phone -> 100% full-width 1:1 square board = 320px (fits within 72% of 480 = 346px)
+        assertEquals(320, MainActivity.computeBoardWidthPx(320, 480));
         // Very short / square-ish 600x700 display -> capped at 72% of height = 504px so dice pads never clip
         assertEquals(504, MainActivity.computeBoardWidthPx(600, 700));
     }

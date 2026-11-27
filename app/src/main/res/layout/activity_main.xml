@@ -133,17 +133,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/redpiece1"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView7"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -153,9 +153,9 @@
 
             <ImageView
                 android:id="@+id/red1activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -165,8 +165,8 @@
 
             <ImageView
                 android:id="@+id/imageView6"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -177,17 +177,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/redpiece2"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView72"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -197,9 +197,9 @@
 
             <ImageView
                 android:id="@+id/red2activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -209,8 +209,8 @@
 
             <ImageView
                 android:id="@+id/imageView62"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -221,17 +221,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/redpiece3"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView73"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -241,9 +241,9 @@
 
             <ImageView
                 android:id="@+id/red3activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -253,8 +253,8 @@
 
             <ImageView
                 android:id="@+id/imageView63"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -265,17 +265,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/redpiece4"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView74"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -285,9 +285,9 @@
 
             <ImageView
                 android:id="@+id/red4activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -297,8 +297,8 @@
 
             <ImageView
                 android:id="@+id/imageView64"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -309,17 +309,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/greenpiece1"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView81"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -329,9 +329,9 @@
 
             <ImageView
                 android:id="@+id/green1activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -341,8 +341,8 @@
 
             <ImageView
                 android:id="@+id/imageView51"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -353,17 +353,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/greenpiece2"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView82"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -373,9 +373,9 @@
 
             <ImageView
                 android:id="@+id/green2activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -385,8 +385,8 @@
 
             <ImageView
                 android:id="@+id/imageView52"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -397,17 +397,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/greenpiece3"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView83"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -417,9 +417,9 @@
 
             <ImageView
                 android:id="@+id/green3activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -429,8 +429,8 @@
 
             <ImageView
                 android:id="@+id/imageView53"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -441,17 +441,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/greenpiece4"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView84"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -461,9 +461,9 @@
 
             <ImageView
                 android:id="@+id/green4activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -473,8 +473,8 @@
 
             <ImageView
                 android:id="@+id/imageView54"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -485,17 +485,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bluepiece1"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView91"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -505,9 +505,9 @@
 
             <ImageView
                 android:id="@+id/blue1activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -517,8 +517,8 @@
 
             <ImageView
                 android:id="@+id/imageView41"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -529,17 +529,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bluepiece2"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView92"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -549,9 +549,9 @@
 
             <ImageView
                 android:id="@+id/blue2activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -561,8 +561,8 @@
 
             <ImageView
                 android:id="@+id/imageView42"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -573,17 +573,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bluepiece3"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView93"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -593,9 +593,9 @@
 
             <ImageView
                 android:id="@+id/blue3activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -605,8 +605,8 @@
 
             <ImageView
                 android:id="@+id/imageView43"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -617,17 +617,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bluepiece4"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView94"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -637,9 +637,9 @@
 
             <ImageView
                 android:id="@+id/blue4activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -649,8 +649,8 @@
 
             <ImageView
                 android:id="@+id/imageView44"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -662,17 +662,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yellowpiece1"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView101"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -682,9 +682,9 @@
 
             <ImageView
                 android:id="@+id/yellow1activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -694,8 +694,8 @@
 
             <ImageView
                 android:id="@+id/imageView31"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -706,17 +706,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yellowpiece2"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView102"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -726,9 +726,9 @@
 
             <ImageView
                 android:id="@+id/yellow2activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -738,8 +738,8 @@
 
             <ImageView
                 android:id="@+id/imageView32"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -750,17 +750,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yellowpiece3"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView103"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -770,9 +770,9 @@
 
             <ImageView
                 android:id="@+id/yellow3activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -782,8 +782,8 @@
 
             <ImageView
                 android:id="@+id/imageView33"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -794,17 +794,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/yellowpiece4"
-            android:layout_width="34dp"
-            android:layout_height="52dp"
+            android:layout_width="32dp"
+            android:layout_height="46dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView104"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="16dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -814,9 +814,9 @@
 
             <ImageView
                 android:id="@+id/yellow4activecircle"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="19dp"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_marginTop="13dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -826,8 +826,8 @@
 
             <ImageView
                 android:id="@+id/imageView34"
-                android:layout_width="32dp"
-                android:layout_height="38dp"
+                android:layout_width="28dp"
+                android:layout_height="34dp"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
