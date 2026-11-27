@@ -489,4 +489,84 @@ public class DiceLogicTest {
             assertTrue(rel + " missing IEND", hasIend);
         }
     }
+
+    @Test
+    public void noSameColorOverlap_detectsTrackSafeHomeAndBaseStartOverlaps_butAllowsHomeFinishAndSplitting() {
+        // Two live tokens 4 steps apart on outer track (10 and 14) -> 4 is an exact same-color overlap, others are clean
+        int[] trackPair = new int[]{10, 14, -1, -1};
+        assertTrue(MainActivity.doesRollAllowSameColorOverlap(4, trackPair));
+        assertFalse(MainActivity.doesRollAllowSameColorOverlap(1, trackPair));
+        assertFalse(MainActivity.doesRollAllowSameColorOverlap(2, trackPair));
+        assertFalse(MainActivity.doesRollAllowSameColorOverlap(3, trackPair));
+        assertFalse(MainActivity.doesRollAllowSameColorOverlap(5, trackPair));
+        assertFalse(MainActivity.doesRollAllowSameColorOverlap(6, trackPair));
+
+        // Base token (-1) + token still sitting on start square (0) -> rolling 6 would drop 2nd token onto start (0)
+        int[] onStartWithBase = new int[]{0, -1, -1, -1};
+        assertTrue(MainActivity.doesRollAllowSameColorOverlap(6, onStartWithBase));
+        for (int r = 1; r <= 5; r++) {
+            assertFalse(MainActivity.doesRollAllowSameColorOverlap(r, onStartWithBase));
+        }
+
+        // Home-stretch squares (52 and 55): rolling 3 lands 52->55 (overlap!), rolling 4 finishes 52->56 (allowed!), rolling 1 finishes 55->56 (allowed!)
+        int[] homeStretch = new int[]{52, 55, -1, -1};
+        assertTrue(MainActivity.doesRollAllowSameColorOverlap(3, homeStretch));
+        assertFalse(MainActivity.doesRollAllowSameColorOverlap(4, homeStretch));
+        assertFalse(MainActivity.doesRollAllowSameColorOverlap(1, homeStretch));
+
+        // Two tokens already on the same square (e.g. 12 and 12): any roll 1..6 moves one off 12 and separates them
+        int[] alreadyStacked = new int[]{12, 12, -1, -1};
+        for (int r = 1; r <= 6; r++) {
+            assertFalse(MainActivity.doesRollAllowSameColorOverlap(r, alreadyStacked));
+        }
+    }
+
+    @Test
+    public void noSameColorOverlapRollResolver_neverReturnsSameColorStackingNumberAcrossBoardStates() {
+        // Test exact forbidden differences for 2, 3, and 4 tokens on track, safe spots, start square, and home stretch
+        int[][] states = new int[][]{
+                {10, 14, -1, -1},         // forbids 4
+                {0, 3, -1, -1},           // forbids 3 and 6
+                {5, 8, 13, -1},           // forbids 3 (5->8) and 5 (8->13)
+                {10, 11, 13, 16},         // forbids 1,2,3,5,6 -> only 4 is clean!
+                {51, 53, 55, -1},         // forbids 2 and 4 -> 1,3,5,6 clean
+                {0, 1, 2, 3},             // forbids 1,2,3 -> 4,5,6 clean
+                {20, 22, 25, 29}          // forbids 2,3,4,5 -> 1,6 clean
+        };
+        for (int[] st : states) {
+            for (int pref = 1; pref <= 6; pref++) {
+                for (int seed = 0; seed < 6; seed++) {
+                    int resolved = MainActivity.resolveNoSameColorOverlapRoll(
+                            pref, st, 0, 0, 0, 0, null, null, seed
+                    );
+                    assertTrue("Roll out of range: " + resolved, resolved >= 1 && resolved <= 6);
+                    assertFalse(
+                            "Expected zero same-color overlap for state " + Arrays.toString(st) + ", got " + resolved,
+                            MainActivity.doesRollAllowSameColorOverlap(resolved, st)
+                    );
+                }
+            }
+        }
+
+        // Specifically for {10, 11, 13, 16}, 4 is the ONLY overlap-free roll -> must ALWAYS resolve to 4
+        int[] golomb = new int[]{10, 11, 13, 16};
+        for (int pref = 1; pref <= 6; pref++) {
+            assertEquals(4, MainActivity.resolveNoSameColorOverlapRoll(pref, golomb, 0, 0, 0, 0, null, null, pref));
+        }
+
+        // Respects opponent win-gate blocked faces while also avoiding same-color overlaps
+        boolean[] winBlocked = new boolean[7];
+        winBlocked[2] = true; // e.g. step 54 + 2 == 56
+        int[] oppSteps = new int[]{54, 10, 13, 56}; // forbids 3 (10->13) and win-blocks 2 (54->56)
+        for (int pref = 1; pref <= 6; pref++) {
+            int resolved = MainActivity.resolveNoSameColorOverlapRoll(pref, oppSteps, 0, 0, 0, 0, null, winBlocked, pref);
+            assertNotEquals(2, resolved);
+            assertNotEquals(3, resolved);
+        }
+
+        // selectSmartFairRoll also avoids same-color overlap for both favored and opponent players
+        int[] pairSteps = new int[]{10, 14, -1, -1};
+        assertNotEquals(4, MainActivity.selectSmartFairRoll(4, true, pairSteps, 0, 0, 1, 0));
+        assertNotEquals(4, MainActivity.selectSmartFairRoll(4, false, pairSteps, 0, 0, 1, 0));
+    }
 }

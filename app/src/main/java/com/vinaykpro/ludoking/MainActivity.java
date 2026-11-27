@@ -1342,6 +1342,138 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    public static int countSameColorOverlapsForRoll(int candidateRoll, int[] playerPieceSteps) {
+        if (candidateRoll < 1 || candidateRoll > 6 || playerPieceSteps == null || playerPieceSteps.length < 2) {
+            return 0;
+        }
+        int overlaps = 0;
+        boolean hasBaseToken = false;
+        boolean hasTokenAtStart = false;
+        for (int s : playerPieceSteps) {
+            if (s == -1) {
+                hasBaseToken = true;
+            } else if (s == 0) {
+                hasTokenAtStart = true;
+            }
+        }
+        // Rolling 6 when a same-color token is still sitting on start (step 0) allows opening a 2nd token onto step 0
+        if (candidateRoll == 6 && hasBaseToken && hasTokenAtStart) {
+            overlaps++;
+        }
+        // Check if moving any live token by candidateRoll lands directly on another live same-color token (steps 0..55)
+        for (int i = 0; i < playerPieceSteps.length; i++) {
+            int cur = playerPieceSteps[i];
+            if (cur < 0 || cur >= 56) {
+                continue;
+            }
+            int next = cur + candidateRoll;
+            // Step 56 is the finish triangle (completion), not an on-board square overlap
+            if (next >= 56) {
+                continue;
+            }
+            for (int j = 0; j < playerPieceSteps.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+                int other = playerPieceSteps[j];
+                if (other >= 0 && other < 56 && other == next) {
+                    overlaps++;
+                    break;
+                }
+            }
+        }
+        return overlaps;
+    }
+
+    public static boolean doesRollAllowSameColorOverlap(int candidateRoll, int[] playerPieceSteps) {
+        return countSameColorOverlapsForRoll(candidateRoll, playerPieceSteps) > 0;
+    }
+
+    public static boolean hasLegalMoveForRoll(int candidateRoll, int[] playerPieceSteps) {
+        if (candidateRoll < 1 || candidateRoll > 6 || playerPieceSteps == null) {
+            return false;
+        }
+        for (int s : playerPieceSteps) {
+            if (s == -1 && candidateRoll == 6) {
+                return true;
+            }
+            if (s >= 0 && s < 56 && s + candidateRoll <= 56) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int resolveNoSameColorOverlapRoll(
+            int preferredRoll,
+            int[] playerPieceSteps,
+            int consecutiveSixCount,
+            int lastRoll,
+            int secondLastRoll,
+            int thirdLastRoll,
+            int[] recentCountsByFace,
+            boolean[] hardBlockedFaces,
+            int altSeed
+    ) {
+        int normalized = (preferredRoll >= 1 && preferredRoll <= 6) ? preferredRoll : 1;
+        boolean prefBlocked = (hardBlockedFaces != null && hardBlockedFaces.length > normalized && hardBlockedFaces[normalized])
+                || shouldSuppressConsecutiveSix(consecutiveSixCount, normalized);
+        if (!prefBlocked && !doesRollAllowSameColorOverlap(normalized, playerPieceSteps)) {
+            return normalized;
+        }
+
+        int start = Math.floorMod(altSeed, 6) + 1;
+        int bestCand = -1;
+        int bestScore = Integer.MIN_VALUE;
+
+        for (int offset = 0; offset < 6; offset++) {
+            int cand = ((start - 1 + offset) % 6) + 1;
+            if (hardBlockedFaces != null && hardBlockedFaces.length > cand && hardBlockedFaces[cand]) {
+                continue;
+            }
+            if (shouldSuppressConsecutiveSix(consecutiveSixCount, cand)) {
+                continue;
+            }
+            int overlaps = countSameColorOverlapsForRoll(cand, playerPieceSteps);
+            int score = 0;
+            // Strictly prioritize zero same-color overlap above all other soft preferences
+            if (overlaps == 0) {
+                score += 100000;
+            } else {
+                score -= overlaps * 25000;
+            }
+            if (hasLegalMoveForRoll(cand, playerPieceSteps)) {
+                score += 400;
+            }
+            if (cand == normalized) {
+                score += 40;
+            }
+            int recentCount = (recentCountsByFace != null && recentCountsByFace.length > cand)
+                    ? recentCountsByFace[cand]
+                    : 0;
+            score -= computeRecentWindowLoopPenalty(
+                    cand,
+                    normalized,
+                    lastRoll,
+                    secondLastRoll,
+                    thirdLastRoll,
+                    recentCount
+            );
+            if (cand == lastRoll) {
+                score -= 55;
+            }
+            if (score > bestScore) {
+                bestScore = score;
+                bestCand = cand;
+            }
+        }
+
+        if (bestCand != -1) {
+            return bestCand;
+        }
+        return normalized;
+    }
+
     public static boolean shouldCutRemainingAlliesOnDeparture(
             int fromBlock,
             int remainingAllySideCountOnBlock,
@@ -2274,6 +2406,24 @@ public class MainActivity extends AppCompatActivity {
                             y = 0;
                         } else {
                             y++;
+                        }
+                    }
+                    // If the chosen bot token would land on a same-color token (only possible in an ultra-rare forced fallback),
+                    // prefer an alternative movable token that does not stack two same-color tokens on the same square.
+                    if (wouldPieceLandOnSameColorToken(bestMovablePiece, ch, pieces)) {
+                        Piece nonStackingAlternative = null;
+                        int bestAltSteps = -1;
+                        for (Piece mp : movablePieces) {
+                            if (!wouldPieceLandOnSameColorToken(mp, ch, pieces)) {
+                                int stepsRank = mp.isAlive ? mp.numberOfSteps : 0;
+                                if (nonStackingAlternative == null || stepsRank > bestAltSteps) {
+                                    nonStackingAlternative = mp;
+                                    bestAltSteps = stepsRank;
+                                }
+                            }
+                        }
+                        if (nonStackingAlternative != null) {
+                            bestMovablePiece = nonStackingAlternative;
                         }
                     }
                     bestMovablePiece.onClickForBot();
@@ -3919,7 +4069,9 @@ public class MainActivity extends AppCompatActivity {
                 } else if (steps >= 0 && steps < 56) {
                     anyAlive = true;
                     int needed = 56 - steps;
-                    if (needed >= 1 && needed <= 6 && (needed != 6 || consecutiveSixes < 2)) {
+                    if (needed >= 1 && needed <= 6
+                            && (needed != 6 || consecutiveSixes < 2)
+                            && !doesRollAllowSameColorOverlap(needed, playerPieceSteps)) {
                         homeFinishRoll = needed;
                     }
                 }
@@ -3930,33 +4082,54 @@ public class MainActivity extends AppCompatActivity {
             if (!anyAlive && anyInBase && consecutiveSixes < 2) {
                 return 6;
             }
-            if (normalized == 6 && consecutiveSixes >= 2) {
-                return 4;
-            }
-            return normalized;
+            int baseRoll = (normalized == 6 && consecutiveSixes >= 2) ? 4 : normalized;
+            return resolveNoSameColorOverlapRoll(
+                    baseRoll,
+                    playerPieceSteps,
+                    consecutiveSixes >= 2 ? 1 : 0,
+                    0,
+                    0,
+                    0,
+                    null,
+                    null,
+                    normalized
+            );
         } else {
             // Opponent player: allow completing non-final pieces freely; only block the final match-winning piece
             boolean mustBlockCompletion = (gameType == 3) || (completedPieces >= pantaValue - 1);
 
             if (!mustBlockCompletion) {
-                if (normalized == 6 && consecutiveSixes >= 2) {
-                    return 4;
-                }
-                return normalized;
+                int baseRoll = (normalized == 6 && consecutiveSixes >= 2) ? 4 : normalized;
+                return resolveNoSameColorOverlapRoll(
+                        baseRoll,
+                        playerPieceSteps,
+                        consecutiveSixes >= 2 ? 1 : 0,
+                        0,
+                        0,
+                        0,
+                        null,
+                        null,
+                        normalized
+                );
             }
 
+            boolean[] blockedWinFaces = new boolean[7];
             int bestRoll = normalized;
-            int bestScore = -100000;
+            int bestScore = Integer.MIN_VALUE;
             for (int cand = 1; cand <= 6; cand++) {
                 int score = (cand == normalized) ? 50 : 15;
                 if (cand == 6 && consecutiveSixes >= 1) {
                     score -= 5000;
                 }
+                if (doesRollAllowSameColorOverlap(cand, playerPieceSteps)) {
+                    score -= 10000;
+                }
                 for (int steps : playerPieceSteps) {
                     if (steps >= 0 && steps < 56) {
                         int next = steps + cand;
                         if (next == 56) {
-                            score -= 50000;
+                            blockedWinFaces[cand] = true;
+                            score -= 500000;
                         }
                     }
                 }
@@ -3965,7 +4138,17 @@ public class MainActivity extends AppCompatActivity {
                     bestRoll = cand;
                 }
             }
-            return bestRoll;
+            return resolveNoSameColorOverlapRoll(
+                    bestRoll,
+                    playerPieceSteps,
+                    consecutiveSixes,
+                    0,
+                    0,
+                    0,
+                    null,
+                    blockedWinFaces,
+                    normalized
+            );
         }
     }
 
@@ -4335,6 +4518,59 @@ public class MainActivity extends AppCompatActivity {
         return count;
     }
 
+    private int[] extractPieceSteps(List<Piece> pieces) {
+        if (pieces == null || pieces.isEmpty()) {
+            return new int[0];
+        }
+        int[] steps = new int[pieces.size()];
+        for (int i = 0; i < pieces.size(); i++) {
+            Piece p = pieces.get(i);
+            if (p == null || p.hasCompletedItsPurpose || p.isThisPlayerWon || p.numberOfSteps >= 56) {
+                steps[i] = 56;
+            } else if (!p.isAlive) {
+                steps[i] = -1;
+            } else {
+                steps[i] = Math.max(0, p.numberOfSteps);
+            }
+        }
+        return steps;
+    }
+
+    private int[] buildRecentCountsByFace(String rollColor) {
+        int[] counts = new int[7];
+        for (int face = 1; face <= 6; face++) {
+            counts[face] = countRecentOccurrences(rollColor, face);
+        }
+        return counts;
+    }
+
+    private boolean wouldPieceLandOnSameColorToken(Piece movingPiece, int roll, List<Piece> sameColorPieces) {
+        if (movingPiece == null || sameColorPieces == null || roll < 1 || roll > 6) {
+            return false;
+        }
+        int targetStep;
+        if (!movingPiece.isAlive) {
+            if (roll != 6) {
+                return false;
+            }
+            targetStep = 0;
+        } else {
+            targetStep = movingPiece.numberOfSteps + roll;
+            if (targetStep >= 56) {
+                return false;
+            }
+        }
+        for (Piece other : sameColorPieces) {
+            if (other == null || other == movingPiece || !other.isAlive || other.hasCompletedItsPurpose || other.isThisPlayerWon) {
+                continue;
+            }
+            if (other.numberOfSteps == targetStep) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private int getTurnsSinceLastSixForColor(String rollColor) {
         if (d == null || rollColor == null || rollColor.isEmpty()) {
             return 0;
@@ -4397,8 +4633,8 @@ public class MainActivity extends AppCompatActivity {
         int playerThirdLastRoll = (d != null && d.thirdLastRollByColor.containsKey(turnColor)) ? d.thirdLastRollByColor.get(turnColor) : 0;
         int playerTurnsSinceSix = getTurnsSinceLastSixForColor(turnColor);
 
-        // Normal (non-locked) matches use fair, organic, anti-loop dice with no multiple-6 streaks
-        // and natural 6-drought relief so no player ever gets stuck in base or sees repetitive loops.
+        // Normal (non-locked) matches use fair, organic, anti-loop dice with no multiple-6 streaks,
+        // no exact same-color token stacking numbers, and natural 6-drought relief.
         if (d == null || d.lockedWinnerColor == null || d.lockedWinnerColor.isEmpty() || currentWinnerPosition > 1) {
             int unlockedAlive = 0;
             int unlockedBase = 0;
@@ -4414,6 +4650,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+            int[] unlockedSteps = extractPieceSteps(unlockedPieces);
             int cleanRoll = resolveNaturalAntiLoopRoll(
                     normalizedRoll,
                     d != null ? d.consecutiveSixCount : 0,
@@ -4425,6 +4662,17 @@ public class MainActivity extends AppCompatActivity {
                     unlockedBase,
                     playerTurnsSinceSix,
                     (int) (Math.random() * 5)
+            );
+            cleanRoll = resolveNoSameColorOverlapRoll(
+                    cleanRoll,
+                    unlockedSteps,
+                    d != null ? d.consecutiveSixCount : 0,
+                    playerLastRoll,
+                    playerSecondLastRoll,
+                    playerThirdLastRoll,
+                    buildRecentCountsByFace(turnColor),
+                    null,
+                    (int) (Math.random() * 6)
             );
             return recordAndReturnRoll(cleanRoll, false, turnColor);
         }
@@ -4617,6 +4865,9 @@ public class MainActivity extends AppCompatActivity {
                 || (gametype != 3 && minOpponentRemainingSteps <= 125 && effectiveFavoredRem > minOpponentRemainingSteps + 24)
                 || (gametype != 3 && maxOpponentCompleted >= 2 && effectiveFavoredRem > minOpponentRemainingSteps + 36);
 
+        int[] mySteps = extractPieceSteps(myPieces);
+        int[] recentCounts = buildRecentCountsByFace(turnColor);
+
         if (isFavored) {
             if (aliveCount == 0 && baseCount > 0) {
                 boolean shouldOpenNow = (normalizedRoll == 6)
@@ -4634,23 +4885,24 @@ public class MainActivity extends AppCompatActivity {
             d.favoredTurnsWithoutOpen = 0;
 
             // Normal early & mid-game play: preserve genuine uniform 1..6 randomness (zero dice doubt),
-            // with smooth invisible pace matching when falling behind so matches stay neck-and-neck
-            // and the opponent never sits visibly stranded at step 55.
+            // never hand out a perfect number to sit two same-color tokens on the same square,
+            // with smooth invisible pace matching when falling behind.
             if (!isEmergencyCatchUp) {
                 // 1. After a token was cut, wait at least 3 turns before offering a subtle reopen assist,
-                // or relieve an extended 6-drought when locked winner has <= 1 live token.
-                if ((d.favoredNeedsReopenAfterCut
+                // or relieve an extended 6-drought when locked winner has <= 1 live token (only if start square is clear).
+                if (!doesRollAllowSameColorOverlap(6, mySteps)
+                        && ((d.favoredNeedsReopenAfterCut
                         && baseCount > 0
                         && d.consecutiveSixCount == 0
                         && d.turnsSinceFavoredCut >= 3
                         && d.turnsSinceLastFavoredSix >= 3
                         && Math.random() < 0.28)
                         || (shouldGrantSixDroughtRelief(true, aliveCount, baseCount, d.turnsSinceLastFavoredSix, d.consecutiveSixCount)
-                        && (d.turnsSinceLastFavoredSix >= 10 || Math.random() < 0.38))) {
+                        && (d.turnsSinceLastFavoredSix >= 10 || Math.random() < 0.38)))) {
                     d.favoredNeedsReopenAfterCut = false;
                     return recordAndReturnRoll(6, true, turnColor);
                 }
-                if (normalizedRoll == 6 && baseCount > 0) {
+                if (normalizedRoll == 6 && baseCount > 0 && !doesRollAllowSameColorOverlap(6, mySteps)) {
                     d.favoredNeedsReopenAfterCut = false;
                 }
 
@@ -4662,6 +4914,7 @@ public class MainActivity extends AppCompatActivity {
                         boolean trailingOpponent = (effectiveFavoredRem > minOpponentRemainingSteps + 6);
                         if (exactHomeRoll >= 1 && exactHomeRoll <= 6
                                 && (exactHomeRoll != 6 || d.consecutiveSixCount == 0)
+                                && !doesRollAllowSameColorOverlap(exactHomeRoll, mySteps)
                                 && ((wouldOvershoot && Math.random() < 0.36) || (trailingOpponent && Math.random() < 0.38))) {
                             return recordAndReturnRoll(exactHomeRoll, true, turnColor);
                         }
@@ -4680,7 +4933,7 @@ public class MainActivity extends AppCompatActivity {
                 if (needsPaceRecovery && Math.random() < nudgeChance) {
                     int[] strideCandidates = (Math.random() < 0.5) ? new int[]{5, 4, 3} : new int[]{4, 5, 3};
                     for (int sc : strideCandidates) {
-                        if (sc == playerLastRoll) {
+                        if (sc == playerLastRoll || doesRollAllowSameColorOverlap(sc, mySteps)) {
                             continue;
                         }
                         boolean validNonCuttingMove = false;
@@ -4703,7 +4956,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                // Prevent consecutive multiple-6 streaks and triple/alternating/cluster loops naturally
+                // Prevent consecutive multiple-6 streaks, loops, and same-color token stacking numbers naturally
                 int cleanFavoredRoll = resolveNaturalAntiLoopRoll(
                         naturalRoll,
                         d.consecutiveSixCount,
@@ -4715,6 +4968,17 @@ public class MainActivity extends AppCompatActivity {
                         baseCount,
                         playerTurnsSinceSix,
                         (int) (Math.random() * 5)
+                );
+                cleanFavoredRoll = resolveNoSameColorOverlapRoll(
+                        cleanFavoredRoll,
+                        mySteps,
+                        d.consecutiveSixCount,
+                        playerLastRoll,
+                        playerSecondLastRoll,
+                        playerThirdLastRoll,
+                        recentCounts,
+                        null,
+                        (int) (Math.random() * 6)
                 );
                 return recordAndReturnRoll(cleanFavoredRoll, true, turnColor);
             }
@@ -4805,6 +5069,11 @@ public class MainActivity extends AppCompatActivity {
                     );
                 }
 
+                if (doesRollAllowSameColorOverlap(cand, mySteps)) {
+                    // Strictly avoid giving the exact number to land two same-color tokens on the same square
+                    maxPieceScore -= 80000;
+                }
+
                 candScores[cand] = maxPieceScore;
                 if (maxPieceScore > bestScore) {
                     bestScore = maxPieceScore;
@@ -4815,10 +5084,22 @@ public class MainActivity extends AppCompatActivity {
             if (!opponentNearWin
                     && !anyOpponentOnFinalHomeStretch
                     && !shouldSuppressConsecutiveSix(d.consecutiveSixCount, normalizedRoll)
+                    && !doesRollAllowSameColorOverlap(normalizedRoll, mySteps)
                     && candScores[normalizedRoll] >= 95
                     && Math.random() < 0.55) {
                 return recordAndReturnRoll(normalizedRoll, true, turnColor);
             }
+            bestCand = resolveNoSameColorOverlapRoll(
+                    bestCand,
+                    mySteps,
+                    d.consecutiveSixCount,
+                    playerLastRoll,
+                    playerSecondLastRoll,
+                    playerThirdLastRoll,
+                    recentCounts,
+                    null,
+                    (int) (Math.random() * 6)
+            );
             return recordAndReturnRoll(bestCand, true, turnColor);
         } else {
             // Opponent turn: 100% authentic zero-doubt Ludo King feel.
@@ -4881,9 +5162,15 @@ public class MainActivity extends AppCompatActivity {
                     score += 110;
                 }
 
+                // Never give the exact ("perfect") number to land two tokens of the same color on the same square
+                boolean candOverlapsSameColor = doesRollAllowSameColorOverlap(cand, mySteps);
+                if (candOverlapsSameColor) {
+                    score -= 100000;
+                }
+
                 int movableForCand = 0;
                 boolean candCutsFavoredSafely = false;
-                boolean candHardBlocked = shouldSuppressConsecutiveSix(d.consecutiveSixCount, cand);
+                boolean candHardBlocked = shouldSuppressConsecutiveSix(d.consecutiveSixCount, cand) || candOverlapsSameColor;
 
                 for (Piece p : myPieces) {
                     if (!canPieceLegallyAdvance(p, cand)) {
@@ -4952,7 +5239,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // Always allow natural opponent cuts when safe, with only a light organic assist if no cuts have happened yet
-            if (safeCutFavoredCand != -1 && !candWinsMatch[safeCutFavoredCand] && candScores[safeCutFavoredCand] >= 0) {
+            if (safeCutFavoredCand != -1
+                    && !candWinsMatch[safeCutFavoredCand]
+                    && !doesRollAllowSameColorOverlap(safeCutFavoredCand, mySteps)
+                    && candScores[safeCutFavoredCand] >= 0) {
                 if (normalizedRoll == safeCutFavoredCand) {
                     return recordAndReturnRoll(safeCutFavoredCand, false, turnColor);
                 }
@@ -4961,13 +5251,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            // Whenever the genuine random roll is valid, non-winning, and does not violate no-multiple-6,
-            // anti-loop, or soft final-token surge pacing, return it directly for 100% authentic feel.
+            // Whenever the genuine random roll is valid, non-winning, non-overlapping, and does not violate
+            // no-multiple-6, anti-loop, or soft final-token surge pacing, return it directly for 100% authentic feel.
             if (!candWinsMatch[normalizedRoll]
                     && !shouldSuppressConsecutiveSix(d.consecutiveSixCount, normalizedRoll)
+                    && !doesRollAllowSameColorOverlap(normalizedRoll, mySteps)
                     && candScores[normalizedRoll] >= 0) {
                 return recordAndReturnRoll(normalizedRoll, false, turnColor);
             }
+            bestCand = resolveNoSameColorOverlapRoll(
+                    bestCand,
+                    mySteps,
+                    d.consecutiveSixCount,
+                    playerLastRoll,
+                    playerSecondLastRoll,
+                    playerThirdLastRoll,
+                    recentCounts,
+                    candWinsMatch,
+                    (int) (Math.random() * 6)
+            );
             return recordAndReturnRoll(bestCand, false, turnColor);
         }
     }
